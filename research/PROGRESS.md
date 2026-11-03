@@ -305,3 +305,5 @@ the constant, which is the property the thesis claims (no layer fights the basel
 ## P11 batch 4: realistic IMU noise (cloud, 7 arms x 5)
 
 - [S] run 41692068353, 35/35 PASS. With SIH_GYR_STD 0.044: 13 ms delay harmless (rate u_ad max 0.004 vs 0.3 pinned with stock noise), so batch 2-3 delay risk was a noise artifact; motor-1 70 %: MRAC hold 0.226 -> 0.111 m (p 8e-4), att 0.62 -> 0.28 deg (p 1e-11); nominal att cost +0.07 deg. Batches 1-3 superseded.
+
+- [S] airframes/research-drone.json now boots with SIH_GYR_STD 0.044 / SIH_ACC_STD 0.2 (P8 noise closed); runs before sim repo commit after 39be9e7 used stock SIH noise.

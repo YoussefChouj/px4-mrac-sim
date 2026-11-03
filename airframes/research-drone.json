@@ -1,5 +1,5 @@
 {
- "about": "Research drone (0.99 kg X quad, 5 in props) as SIH quadx, from research/research_drone_params.yaml (P8): mass A (firmware MASS_KG, not weighed), inertia/arm/thrust/motor tau D. Q_MAX left at the SIH default (the yaw moment fit is flagged unchecked). PX4 gains at quadx defaults (untuned).",
+ "about": "Research drone (0.99 kg X quad, 5 in props) as SIH quadx, from research/research_drone_params.yaml (P8): mass A (firmware MASS_KG, not weighed), inertia/arm/thrust/motor tau D. Q_MAX left at the SIH default (the yaw moment fit is flagged unchecked). PX4 gains at quadx defaults (untuned). IMU noise SIH_GYR_STD/SIH_ACC_STD calibrated 2026-11-04 to the real drone (gyro 0.022-0.024 rad/s measured, real 0.020-0.024; P11 batch 4). Delay stays per scenario (SIH_ACT_DLY).",
  "base": "quadx",
  "params": {
   "SIH_MASS": 0.9885,
@@ -10,6 +10,8 @@
   "SIH_L_ROLL": 0.1414,
   "SIH_L_PITCH": 0.1414,
   "SIH_T_TAU": 0.0505,
-  "MPC_THR_HOVER": 0.38
+  "MPC_THR_HOVER": 0.38,
+  "SIH_GYR_STD": 0.044,
+  "SIH_ACC_STD": 0.2
  }
 }
