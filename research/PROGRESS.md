@@ -215,3 +215,19 @@ Reading:
   feed-forward) settles at 0.13–0.17, so the reference model (τ 1.0) and the PX4 vz closed loop still differ. Open:
   match the reference model to the identified PX4 vz closed loop (the reference model is the baseline closed loop, as in
   the augmentation practice above) and re-check tracking.
+
+Follow-up, does the reference model match the baseline vz loop? (same build, fig8 `tau-a015-p100`, bias off)
+
+| Arm | Runs | rms_track_err_m | pos θ_r at end | Run dir |
+|---|---|---|---|---|
+| pos layer route-only (MRL_EN_POS 2, no adaptation) | 2 | 3.549 [3.536..3.561] | – | 20261104T003633 |
+| adapt, MRL_P_TAU 1.0 | 3 | 3.507 [3.489..3.532] | 0.14–0.16 | 20261104T002650 |
+| adapt, MRL_P_TAU 0.85 | 3 | 3.462 [3.408..3.534] | 0.15–0.19 | 20261104T003841 |
+
+- First-order fit of PX4's vz loop alone (vz_sp → vz, airborne, scratchpad vzfit.py): τ 0.80 and 0.90 s, delay 0, R² 0.85
+  and 0.79. MRL_P_TAU 1.0 is within about 20% of that.
+- τ 0.85 does not shrink θ_r, and its tracking range overlaps τ 1.0, so the remaining θ_r is not a time-constant mismatch.
+  The baseline is only about first order (R² ≈ 0.8), and θ_r learns the vz_sp feed-forward the first-order model leaves out.
+  The default stays 1.0, which keeps the larger time-scale gap to the attitude layer.
+- Tracking ranking: bias on 3.34 < τ 0.85 3.46 ≈ τ 1.0 3.51 ≈ no adaptation 3.55 m. With the bias off, the z layer's
+  tracking gain is small. The bias-on gain came with in-flight clamp hits, which is the drift this item set out to remove.
