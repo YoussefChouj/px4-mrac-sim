@@ -285,20 +285,3 @@ the constant, which is the property the thesis claims (no layer fights the basel
   (was 0.32); lqr-plus-mrac track 0.16–0.18 m but post-figure hold drift 0.32–0.39 m vs 0.07–0.13 m alone.
 - Known: hold-1 starts while the 0.5 m takeoff is still settling (height err 0.29 m in every run, all airframes);
   hold limit 0.5 m kept. One alt-2 m run was a SIM-FAULT (baro dropout → flyaway), retried by arms.py.
-
-## P11 prep — research-drone SIH airframe, twin scenarios, sim position noise
-
-- `airframes/research-drone.json`: SIH quadx with the P8 values (mass 0.9885 kg [A], inertia, arm 0.1414 m, T_MAX 6.38 N,
-  motor tau 0.0505 s); PX4 gains untuned. 19 `scenarios/p11-*.json`: twins of `lab_e_exp_*` (takeoff 0.5 m, hold 3,
-  figure-8 0.3 m / 18 s, hold 3, land) for pid / lqr / adrc (WC 2.5) / mpc, alone and plus-mrac, plus lqr extras
-  (mass +31 %, T_MAX −25 %, injected dist NOT wind, motor tau 0.12, aggressive fig8 1 m / 6 s) and 2 stock-GPS arms.
-- [S] Diagnosis (local, `~/.cache/px4-arms/20261104T010530`): lqr-alone tracked the 0.3 m figure with rms 0.32 m at
-  0.5 m alt, 0.29 m at 2 m alt and 0.28 m on stock quadx → not altitude, not airframe. Cause: SIH `sensor_gps_sim`
-  adds 0.2 m white position noise; the lab drone is camera-positioned.
-- Fix (standard knob, not a metric change): `px4-mrac/patch_gps_noise.py` adds `SIM_GPS_NSCL` (scales simulated GPS
-  noise and reported eph/epv/s_variance; default 1 = stock). Twins use 0.1 with EKF2_GPS_P/V_NOISE 0.05 [A camera-class;
-  the lab camera noise is not measured yet].
-- [S] Check (`~/.cache/px4-arms/20261104T011640`, 2 runs each): lqr-alone hover drift 0.10–0.13 m, track rms 0.17–0.20 m
-  (was 0.32); lqr-plus-mrac track 0.16–0.18 m but post-figure hold drift 0.32–0.39 m vs 0.07–0.13 m alone.
-- Known: hold-1 starts while the 0.5 m takeoff is still settling (height err 0.29 m in every run, all airframes);
-  hold limit 0.5 m kept. One alt-2 m run was a SIM-FAULT (baro dropout → flyaway), retried by arms.py.
