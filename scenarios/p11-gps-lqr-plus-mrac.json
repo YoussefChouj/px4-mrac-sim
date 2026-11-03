@@ -1,0 +1,41 @@
+{
+ "sim": "sih",
+ "airframe": "research-drone",
+ "speed": 5,
+ "alt": 0.5,
+ "why": "P11 twin of ground_station lab_e_exp_* (takeoff 0.5 m, hold 3, figure-8 30 cm / 18 s, hold 3, land).  Sensitivity arm: stock SIH GPS noise.",
+ "params": {
+  "MRL_EN_RATE": 1,
+  "MRL_EN_ATT": 1,
+  "MRL_EN_POS": 1,
+  "XYC_MODE": 1
+ },
+ "steps": [
+  {
+   "do": "takeoff"
+  },
+  {
+   "do": "hold",
+   "s": 3
+  },
+  {
+   "do": "track",
+   "shape": "fig8",
+   "size": 0.3,
+   "period": 18,
+   "laps": 1
+  },
+  {
+   "do": "hold",
+   "s": 3
+  },
+  {
+   "do": "land"
+  }
+ ],
+ "limits": {
+  "max_hold_err_m": 0.5,
+  "max_tilt_deg": 35,
+  "must_land": true
+ }
+}

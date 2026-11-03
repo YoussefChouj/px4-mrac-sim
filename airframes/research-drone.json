@@ -1,0 +1,15 @@
+{
+ "about": "Research drone (0.99 kg X quad, 5 in props) as SIH quadx, from research/research_drone_params.yaml (P8): mass A (firmware MASS_KG, not weighed), inertia/arm/thrust/motor tau D. Q_MAX left at the SIH default (the yaw moment fit is flagged unchecked). PX4 gains at quadx defaults (untuned).",
+ "base": "quadx",
+ "params": {
+  "SIH_MASS": 0.9885,
+  "SIH_IXX": 0.01389,
+  "SIH_IYY": 0.01539,
+  "SIH_IZZ": 0.01133,
+  "SIH_T_MAX": 6.38,
+  "SIH_L_ROLL": 0.1414,
+  "SIH_L_PITCH": 0.1414,
+  "SIH_T_TAU": 0.0505,
+  "MPC_THR_HOVER": 0.38
+ }
+}
