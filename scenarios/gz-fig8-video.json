@@ -1,0 +1,12 @@
+{
+ "sim": "gz", "vehicle": "x500_chase", "world": "video", "video": ["overview", "chase"], "speed": 1, "alt": 4,
+ "why": "Gazebo-rendered video of the real x500 model (spinning props, true attitude): a fixed overview camera that shows the whole fig8 over a 1 m floor grid, plus the chase camera on the drone. Short on purpose: rendering gates the sim.",
+ "steps": [
+  {"do": "takeoff"},
+  {"do": "hold", "s": 3},
+  {"do": "track", "shape": "fig8", "size": 6, "period": 14, "laps": 1},
+  {"do": "hold", "s": 2},
+  {"do": "land"}
+ ],
+ "limits": {"max_tilt_deg": 45, "must_land": true}
+}

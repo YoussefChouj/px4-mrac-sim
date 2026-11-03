@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdf version="1.9">
+  <model name="x500_chase">
+    <include merge="true"><uri>model://x500</uri></include>
+    <!-- Chase camera: rides with the body (drone stays centred, the world tilts with it). Near-zero mass and
+         no collision so it does not change the vehicle. 960x540 keeps the MX130 render near 2-4 fps. -->
+    <link name="chase_link">
+      <pose relative_to="base_link">-2.2 0 0.9 0 0.39 0</pose>
+      <inertial><mass>1e-5</mass><inertia><ixx>1e-9</ixx><iyy>1e-9</iyy><izz>1e-9</izz></inertia></inertial>
+      <sensor name="chase" type="camera">
+        <always_on>1</always_on><update_rate>25</update_rate><topic>chase</topic>
+        <camera><horizontal_fov>1.0</horizontal_fov><image><width>960</width><height>540</height></image>
+          <clip><near>0.1</near><far>300</far></clip></camera>
+        <plugin filename="gz-sim-camera-video-recorder-system" name="gz::sim::systems::CameraVideoRecorder">
+          <service>/chase/record_video</service><use_sim_time>true</use_sim_time><fps>25</fps><bitrate>6000000</bitrate>
+        </plugin>
+      </sensor>
+    </link>
+    <joint name="chase_joint" type="fixed"><parent>base_link</parent><child>chase_link</child></joint>
+  </model>
+</sdf>

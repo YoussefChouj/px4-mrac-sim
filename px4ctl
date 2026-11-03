@@ -1,0 +1,256 @@
+#!/usr/bin/env bash
+# Framework-independent local PX4 interface. No worker launcher or agent service.
+set -euo pipefail
+tools=$(cd -- "$(dirname -- "$(readlink -f -- "$0")")" && pwd)
+state="$HOME/.local/state/px4"
+repo=$(realpath -e -- "${PX4_SOURCE:-$HOME/PX4-Autopilot}")
+build="$repo/build/px4_sitl_default"
+mkdir -p "$state/runs" "$state/logs"
+source_key=$(printf '%s' "$repo" | sha256sum | cut -d ' ' -f 1)
+source "$HOME/.venvs/px4/bin/activate"
+export CMAKE_BUILD_PARALLEL_LEVEL=2 OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2
+action=${1:-help}
+shift || true
+instance() {
+  id=${1:-0}
+  [[ $id =~ ^[0-8]$ ]] || { echo 'Instance must be 0..8' >&2; exit 2; }
+}
+case "$action" in
+  status)
+    python3 - "$repo" "$build" <<'PY'
+import json, pathlib, subprocess, sys
+repo, build = sys.argv[1:]
+def git(*args):
+    return subprocess.check_output(['git', '-C', repo, *args], text=True).strip()
+print(json.dumps(dict(source=repo, commit=git('rev-parse','HEAD'),
+    version=git('describe','--tags','--always'),
+    changes=git('status','--porcelain'),
+    binary=str(pathlib.Path(build)/'bin/px4'),
+    built=(pathlib.Path(build)/'bin/px4').is_file(),
+    python=sys.executable), indent=2))
+PY
+    ;;
+  build)
+    # A running simulator retains a shared source lock until it exits.
+    exec 8>"$state/source-$source_key.lock"
+    flock 8
+    exec 9>"$state/build.lock"
+    flock 9
+    # Explicit Ninja arguments avoid dependence on Makefile job auto-detection.
+    export GZ_DISTRO=harmonic
+    {
+      nice -n 10 make -C "$repo" px4_sitl_default -j2 PX4_MAKE_ARGS=-j2 \
+        CMAKE_ARGS=-DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+      # The default target leaves out the Gazebo plugins.
+      nice -n 10 cmake --build "$build" --target px4_gz_plugins -j2
+    } 2>&1 | tee "$state/logs/build-$(date -u +%Y%m%dT%H%M%S)-$$.log"
+    ;;
+  run|gz)
+    instance "${1:-0}"
+    run="$state/runs/instance-$id"
+    etc="$build/etc"
+    mkdir -p "$run"
+    [[ -x $build/bin/px4 ]] || { echo 'Run px4ctl build first' >&2; exit 1; }
+    exec 8>"$state/source-$source_key.lock"
+    flock -s 8
+    exec 9>"$state/instance-$id.lock"
+    flock -n 9 || { echo "Instance $id is already owned by another run" >&2; exit 1; }
+    export PX4_PARAM_MAV_0_BROADCAST=0 PX4_PARAM_MAV_1_BROADCAST=0
+    if [[ $action == gz ]]; then
+      # Headless Gazebo: no window, and a partition per instance so runs never meet.
+      [[ -f $build/rootfs/gz_env.sh ]] || { echo 'Gazebo support is not built' >&2; exit 1; }
+      set +u
+      source "$build/rootfs/gz_env.sh"
+      set -u
+      export PX4_SIM_MODEL=gz_${2:-x500} PX4_SIMULATOR=gz PX4_GZ_WORLD=${3:-default}
+      export HEADLESS=1 GZ_IP=127.0.0.1 GZ_PARTITION=px4-$id
+      # Worlds kept outside the PX4 tree (worlds/NAME.sdf, e.g. video) win over PX4's own of the same name.
+      if [[ -f $tools/worlds/$PX4_GZ_WORLD.sdf ]]; then
+        export PX4_GZ_WORLDS=$tools/worlds GZ_SIM_RESOURCE_PATH="$GZ_SIM_RESOURCE_PATH:$tools/worlds"
+      fi
+      # Vehicles kept outside the PX4 tree: their model joins the Gazebo path and their
+      # airframe goes into a per-instance copy of etc, so the source tree stays untouched.
+      vehicle="$tools/vehicles/${2:-x500}"
+      if [[ -d $vehicle ]]; then
+        etc="$state/etc-instance-$id"
+        rm -rf "$etc"
+        cp -r "$build/etc" "$etc"
+        cp "$vehicle"/[0-9]*_gz_"${2}" "$etc/init.d-posix/airframes/"
+        export PX4_GZ_MODELS="$tools/vehicles/models"
+        export GZ_SIM_RESOURCE_PATH="$GZ_SIM_RESOURCE_PATH:$PX4_GZ_MODELS"
+        [[ -f $PX4_GZ_MODELS/$2/model.sdf ]] || { echo "Model not generated: $2" >&2; exit 1; }
+      fi
+      # Same as SIH: fly from the shell, with no ground station attached. The airframe
+      # raises NAV_DLL_ACT during startup and PX4_PARAM_ does not win, so set it afterwards.
+      # The loop must not inherit the locks, or the instance stays held after PX4 exits.
+      (exec 8>&- 9>&-
+      for _ in {1..240}; do
+        if [[ $("$build/bin/px4-param" --instance "$id" show -q NAV_DLL_ACT) == *2* ]]; then
+          "$build/bin/px4-param" --instance "$id" set NAV_DLL_ACT 0
+          break
+        fi
+        sleep 0.5
+      done) >/dev/null 2>&1 &
+      nav_pid=$!
+      gz_stop() {
+        kill "$nav_pid" 2>/dev/null || true
+        for p in $(pgrep -u "$(id -u)" -f "gz sim" || true); do
+          grep -qz "^GZ_PARTITION=$GZ_PARTITION$" "/proc/$p/environ" 2>/dev/null && kill "$p" 2>/dev/null || true
+        done
+      }
+      trap gz_stop EXIT
+    else
+      # A stock v1.17 SIH airframe (quadx default; hex, airplane, xvert, standard_vtol); no physical controller required.
+      export PX4_SIM_MODEL=sihsim_${2:-quadx} PX4_SIMULATOR=sihsim PX4_SIM_SPEED_FACTOR=${PX4_SIM_SPEED_FACTOR:-1}
+    fi
+    # A removed worktree leaves this link behind, and PX4 then exits without a message.
+    [[ -e $run/test_data ]] || rm -f "$run/test_data"
+    # gz sim inherits this pipe, so tee ends only after it is stopped here.
+    (status=0
+     "$build/bin/px4" -i "$id" -d -w "$run" "$etc" 2>&1 || status=$?
+     [[ $action != gz ]] || gz_stop
+     exit "$status") | tee "$run/console-$(date -u +%Y%m%dT%H%M%S)-$$.log"
+    ;;
+  reset)
+    # Parameters persist per instance, so a lesson starts from a clean one.
+    instance "${1:-0}"
+    exec 9>"$state/instance-$id.lock"
+    flock -n 9 || { echo "Instance $id is running" >&2; exit 1; }
+    rm -f "$state/runs/instance-$id"/parameters*.bson
+    echo "Instance $id parameters reset"
+    ;;
+  cmd)
+    instance "${1:-0}"
+    shift
+    module=${1:?Usage: px4ctl cmd INSTANCE MODULE [ARGS...]}
+    shift
+    [[ $module =~ ^[a-zA-Z0-9_]+$ ]] || { echo 'Invalid module name' >&2; exit 2; }
+    [[ -x $build/bin/px4-$module ]] || { echo "Module not built: $module" >&2; exit 1; }
+    if [[ $module == shutdown ]]; then
+      # The daemon exits before it replies, so the client always returns 255.
+      # The run holds this lock until PX4 has exited, so the lock is the outcome.
+      exec 9>"$state/instance-$id.lock"
+      if flock -n 9; then echo "Instance $id is not running" >&2; exit 1; fi
+      "$build/bin/px4-shutdown" --instance "$id" "$@" || true
+      for ((n=0; n<20; n++)); do
+        if flock -n 9; then echo "Instance $id stopped"; exit 0; fi
+        sleep 0.5
+      done
+      echo "Instance $id is still running" >&2
+      exit 1
+    fi
+    exec "$build/bin/px4-$module" --instance "$id" "$@"
+    ;;
+  param|stream|watch|rtf)
+    # Over MAVLink, so the same call works on a real board: TARGET is 0..8 or a pymavlink URL.
+    target=${1:?Usage: px4ctl $action INSTANCE|URL ...}
+    shift
+    exec python "$tools/agent/mavlink_cli.py" "$target" "$action" "$@"
+    ;;
+  mavsdk)
+    instance "${1:-8}"
+    shift
+    script=${1:?Usage: px4ctl mavsdk INSTANCE SCRIPT [ARGS...]}
+    shift
+    [[ -f $script ]] || script="$tools/agent/$script"
+    exec python "$script" "$id" "$@"
+    ;;
+  view)
+    # Live MAVLink -> Foxglove WebSocket (connect Foxglove on Windows to ws://localhost:8765).
+    target=${1:?Usage: px4ctl view INSTANCE|URL [PORT] [SECONDS]}
+    shift
+    exec python "$tools/agent/foxglove_view.py" "$target" "$@"
+    ;;
+  live)
+    # Live MAVLink -> Rerun web viewer with a scrubbable timeline (open http://localhost:9090).
+    target=${1:?Usage: px4ctl live INSTANCE|URL [WEB_PORT] [SECONDS]}
+    shift
+    exec python "$tools/agent/rerun_view.py" "$target" "$@"
+    ;;
+  scenario)
+    # Starts its own sim, flies the steps, scores the limits, stops the sim. Exit 0 = pass.
+    instance "${1:-8}"
+    shift
+    file=${1:?Usage: px4ctl scenario INSTANCE FILE.json [OUTDIR]}
+    shift
+    [[ -f $file ]] || file="$tools/scenarios/$file"
+    [[ -f $file ]] || file="$file.json"
+    exec python "$tools/agent/scenario.py" "$id" "$file" "$@"
+    ;;
+  ab)
+    # One scenario on two built trees, RUNS times each; prints the metric diff table.
+    instance "${1:-8}"
+    shift
+    file=${1:?Usage: px4ctl ab INSTANCE FILE SRC_A SRC_B [RUNS]}
+    shift
+    [[ -f $file ]] || file="$tools/scenarios/$file"
+    [[ -f $file ]] || file="$file.json"
+    exec python "$tools/agent/ab.py" "$id" "$file" "$@"
+    ;;
+  smoke)
+    # Run in a fresh instance and query actual uORB data. No arming commands.
+    instance "${1:-8}"
+    log="$state/logs/smoke-$(date -u +%Y%m%dT%H%M%S)-$$.log"
+    setsid env PX4_SOURCE="$repo" "$tools/px4ctl" run "$id" >"$log" 2>&1 &
+    runner=$!
+    owned=0
+    cleanup() {
+      if [[ $owned == 1 ]]; then
+        timeout 5 "$build/bin/px4-shutdown" --instance "$id" >/dev/null 2>&1 || true
+      fi
+      # This process group contains only the run started above.
+      kill -TERM -- "-$runner" 2>/dev/null || true
+      for ((n=0; n<3; n++)); do
+        kill -0 -- "-$runner" 2>/dev/null || break
+        sleep 1
+      done
+      kill -KILL -- "-$runner" 2>/dev/null || true
+      wait "$runner" 2>/dev/null || true
+    }
+    trap cleanup EXIT
+    # Only claim ownership after this launch's startup has completed.
+    ready=0
+    for ((i=0; i<60; i++)); do
+      kill -0 "$runner" 2>/dev/null || { cat "$log"; exit 1; }
+      if grep -q 'Startup script returned successfully' "$log"; then
+        owned=1
+        ready=1
+        break
+      fi
+      sleep 1
+    done
+    if [[ $ready != 1 ]]; then
+      echo "Startup not verified; inspect $log. Stop this run before retrying." >&2
+      exit 1
+    fi
+    "$build/bin/px4-ver" --instance "$id" all
+    "$build/bin/px4-simulator_sih" --instance "$id" status
+    timeout 15 "$build/bin/px4-listener" --instance "$id" vehicle_status -n 1
+    timeout 15 "$build/bin/px4-listener" --instance "$id" sensor_combined -n 1
+    echo "PASS: SIH process, version, vehicle status and simulated sensor data; log: $log"
+    ;;
+  worktree)
+    name=${1:?Usage: px4ctl worktree NAME}
+    [[ $name =~ ^[a-z0-9][a-z0-9_-]{0,39}$ ]] || { echo 'Use a short lowercase name' >&2; exit 2; }
+    target="$HOME/px4-worktrees/$name"
+    mkdir -p "$HOME/px4-worktrees"
+    exec 9>"$state/build.lock"
+    flock 9
+    git -C "$repo" worktree add -b "agent/$name" "$target" HEAD
+    # Reuse the pinned submodule objects already on disk; no network is needed.
+    cp -a "$repo/.git/modules" "$(git -C "$target" rev-parse --absolute-git-dir)/modules"
+    git -C "$target" submodule update --init --recursive --no-fetch --jobs 2
+    echo "Source: $target"
+    echo "Build: PX4_SOURCE=$target $tools/px4ctl build"
+    ;;
+  lesson)
+    exec "$tools/lessons/lesson.sh" "$@"
+    ;;
+  debrief)
+    exec python "$tools/debrief/debrief.py" "$@"
+    ;;
+  *)
+    echo 'px4ctl status | build | run [0..8] [quadx|hex] | gz [0..8] [MODEL] [WORLD] | reset INSTANCE | cmd INSTANCE MODULE [ARGS...] | param T get NAME...|set NAME VALUE | stream T MSG HZ | watch T MSG [S] | rtf T [S] | view T [PORT] [S] | mavsdk INSTANCE SCRIPT [ARGS] | scenario INSTANCE FILE [OUTDIR] | ab INSTANCE FILE SRC_A SRC_B [RUNS] | smoke [INSTANCE] | worktree NAME | lesson 1..8|all|try NAME=VALUE... | debrief LOG.ulg'
+    echo 'PX4_SOURCE selects an independent source worktree. Default: ~/PX4-Autopilot.'
+    ;;
+esac

@@ -1,0 +1,5 @@
+{"name": "rate-osc",
+ "why": "P6 acceptance: a known oscillating case (rate P x4) must fail at the oscillation gate, the healthy baseline must pass",
+ "gates": {"osc_amp_rad_s": 0.06, "sat_pct": 5, "max_tilt_deg": 45, "landed": 1},
+ "flights": [{"scenario": "../mrac-off.json", "expect": "pass"},
+             {"scenario": "osc-rollrate-p.json", "expect": "osc_amp_rad_s"}]}

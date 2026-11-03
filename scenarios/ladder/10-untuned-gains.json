@@ -1,0 +1,39 @@
+{
+ "sim": "sih",
+ "airframe": "flycart30",
+ "speed": 5,
+ "alt": 8,
+ "expect": "fail",
+ "why": "stock quadx gains on the 95 kg plant: tilt overshoot past the cap on the square",
+ "steps": [
+  {
+   "do": "takeoff"
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "goto",
+   "n": 15,
+   "e": 0
+  },
+  {
+   "do": "goto",
+   "n": 15,
+   "e": 15
+  },
+  {
+   "do": "hold",
+   "s": 3
+  },
+  {
+   "do": "land"
+  }
+ ],
+ "limits": {
+  "max_tilt_deg": 35,
+  "must_land": true,
+  "max_overshoot_m": 1.0
+ }
+}

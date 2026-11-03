@@ -1,0 +1,14 @@
+{
+ "sim": "sih", "speed": 5, "alt": 5,
+ "params": {"MRL_EN_POS": 2, "MRL_EN_ATT": 0, "MRL_EN_RATE": 0, "MRL_DIST_T": 0.0},
+ "steps": [
+  {"do": "takeoff"},
+  {"do": "hold", "s": 8},
+  {"do": "param", "name": "MRL_DIST_T", "value": 0.08},
+  {"do": "hold", "s": 10},
+  {"do": "param", "name": "MRL_DIST_T", "value": 0.0},
+  {"do": "hold", "s": 5},
+  {"do": "land"}
+ ],
+ "limits": {"max_hold_err_m": 1.5, "max_alt_err_m": 1.5, "max_tilt_deg": 45, "must_land": true}
+}

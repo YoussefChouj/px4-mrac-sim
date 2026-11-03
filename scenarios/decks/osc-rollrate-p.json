@@ -1,0 +1,10 @@
+{
+ "sim": "sih", "speed": 5, "alt": 5,
+ "params": {"MRL_EN_RATE": 0, "SIH_T_TAU": 0.2, "MC_ROLLRATE_P": 1.0, "MC_PITCHRATE_P": 1.0, "MC_ROLLRATE_D": 0.01, "MC_PITCHRATE_D": 0.01},
+ "steps": [
+  {"do": "takeoff"},
+  {"do": "hold", "s": 15},
+  {"do": "land"}
+ ],
+ "limits": {"max_hold_err_m": 3.0, "max_tilt_deg": 60, "must_land": true}
+}

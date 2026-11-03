@@ -1,0 +1,12 @@
+{
+ "sim": "sih", "airframe": "flycart30", "speed": 5, "alt": 5,
+ "params": {"MPC_XY_VEL_MAX": 5.0},
+ "steps": [
+  {"do": "takeoff"},
+  {"do": "hold", "s": 10},
+  {"do": "goto", "n": 10, "e": 0},
+  {"do": "hold", "s": 8},
+  {"do": "land"}
+ ],
+ "limits": {"max_overshoot_m": 1.0, "max_hold_err_m": 1.0, "max_tilt_deg": 35, "must_land": true}
+}

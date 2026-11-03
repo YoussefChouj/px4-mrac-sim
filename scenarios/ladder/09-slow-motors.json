@@ -1,0 +1,39 @@
+{
+ "sim": "sih",
+ "airframe": "flycart30-tuned",
+ "speed": 5,
+ "alt": 8,
+ "expect": "fail",
+ "why": "motor lag 0.30 s (2.5x the model) with the same gains: phase loss -> attitude oscillation in the figure-8",
+ "steps": [
+  {
+   "do": "takeoff"
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "track",
+   "shape": "fig8",
+   "size": 15,
+   "period": 40,
+   "laps": 1
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "land"
+  }
+ ],
+ "limits": {
+  "max_tilt_deg": 30,
+  "must_land": true,
+  "rms_track_err_m": 1.0
+ },
+ "boot_params": {
+  "SIH_T_TAU": 0.3
+ }
+}

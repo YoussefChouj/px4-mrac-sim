@@ -1,0 +1,151 @@
+#include "MracLayers.hpp"
+
+MracLayers::MracLayers() :
+	ModuleParams(nullptr),
+	WorkItem(MODULE_NAME, px4::wq_configurations::rate_ctrl)
+{
+}
+
+bool MracLayers::init()
+{
+	if (!_torque_base_sub.registerCallback()) {
+		PX4_ERR("callback registration failed");
+		return false;
+	}
+
+	if (!_att_layer.init() || !_pos_layer.init() || !_xy_layer.init()) {
+		PX4_ERR("outer layer callback registration failed");
+		return false;
+	}
+
+	return true;
+}
+
+void MracLayers::Run()
+{
+	if (should_exit()) {
+		_torque_base_sub.unregisterCallback();
+		_att_layer.stop();
+		_pos_layer.stop();
+		_xy_layer.stop();
+		exit_and_cleanup();
+		return;
+	}
+
+	if (_parameter_update_sub.updated()) {
+		parameter_update_s pupdate;
+		_parameter_update_sub.copy(&pupdate);
+		updateParams();
+	}
+
+	vehicle_land_detected_s land{};
+
+	if (_land_detected_sub.update(&land)) { _landed = land.landed; }
+
+	vehicle_rates_setpoint_s rsp{};
+
+	if (_rates_sp_sub.update(&rsp)) {
+		_rate_sp[0] = rsp.roll;
+		_rate_sp[1] = rsp.pitch;
+		_rate_sp[2] = rsp.yaw;
+	}
+
+	vehicle_torque_setpoint_s base{};
+
+	if (!_torque_base_sub.update(&base)) { return; }
+
+	vehicle_angular_velocity_s av{};
+	_angular_velocity_sub.copy(&av);
+
+	const hrt_abstime now = base.timestamp_sample;
+	const float dt = (_last_t > 0) ? math::constrain((now - _last_t) * 1e-6f, 1e-4f, 0.02f) : 0.004f;
+	_last_t = now;
+
+	const int mode = _param_en_rate.get();                 // 1 route + adapt, 2 route only (u_ad = 0)
+	const bool adapt = (mode == 1) && !_landed;
+	const MracGains g{_param_tau.get(), _param_gamma.get(), _param_sigma.get(), _param_lim.get(), _param_umax.get()};
+	const float dist[3] {_param_dist_r.get(), _param_dist_p.get(), 0.f};
+
+	vehicle_torque_setpoint_s out = base;
+	mrac_rate_status_s st{};
+
+	for (int a = 0; a < 3; a++) {
+		const bool on = (mode == 1) && ((a < 2) || (_param_yaw.get() == 1));
+		const float u_ad = _ax[a].step(av.xyz[a], _rate_sp[a], dt, _landed, on, on, g);
+
+		out.xyz[a] = math::constrain(base.xyz[a] + u_ad + (_landed ? 0.f : dist[a]), -1.f, 1.f);
+
+		st.xm[a] = _ax[a].xm;
+		st.e[a] = _ax[a].e;
+		st.u_ad[a] = u_ad;
+
+		for (int i = 0; i < MracAxis::NPHI; i++) { st.theta[a * MracAxis::NPHI + i] = _ax[a].theta[i]; }
+	}
+
+	out.timestamp = hrt_absolute_time();
+	_torque_pub.publish(out);
+
+	if (++_status_div >= 4) {                               // ~1/4 of the rate loop
+		_status_div = 0;
+		st.timestamp = out.timestamp;
+		st.mode = (uint8_t)mode;
+		st.adapting = adapt;
+		_status_pub.publish(st);
+	}
+}
+
+int MracLayers::task_spawn(int argc, char *argv[])
+{
+	MracLayers *instance = new MracLayers();
+
+	if (instance) {
+		_object.store(instance);
+		_task_id = task_id_is_work_queue;
+
+		if (instance->init()) { return PX4_OK; }
+
+	} else {
+		PX4_ERR("alloc failed");
+	}
+
+	delete instance;
+	_object.store(nullptr);
+	_task_id = -1;
+	return PX4_ERROR;
+}
+
+int MracLayers::print_status()
+{
+	PX4_INFO("mode %d landed %d", (int)_param_en_rate.get(), (int)_landed);
+
+	for (int a = 0; a < 3; a++) {
+		PX4_INFO("rate axis %d theta %.4f %.4f %.4f", a, (double)_ax[a].theta[0], (double)_ax[a].theta[1],
+			 (double)_ax[a].theta[2]);
+	}
+
+	_att_layer.print();
+	_pos_layer.print();
+	_xy_layer.print();
+	return 0;
+}
+
+int MracLayers::custom_command(int argc, char *argv[])
+{
+	return print_usage("unknown command");
+}
+
+int MracLayers::print_usage(const char *reason)
+{
+	if (reason) { PX4_WARN("%s\n", reason); }
+
+	PRINT_MODULE_DESCRIPTION("MRAC augmentation layers at the uORB handoffs (rate layer).");
+	PRINT_MODULE_USAGE_NAME("mrac_layers", "controller");
+	PRINT_MODULE_USAGE_COMMAND("start");
+	PRINT_MODULE_USAGE_DEFAULT_COMMANDS();
+	return 0;
+}
+
+extern "C" __EXPORT int mrac_layers_main(int argc, char *argv[])
+{
+	return MracLayers::main(argc, argv);
+}

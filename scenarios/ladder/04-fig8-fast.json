@@ -1,0 +1,36 @@
+{
+ "sim": "sih",
+ "airframe": "flycart30-tuned",
+ "speed": 5,
+ "alt": 8,
+ "expect": "fail",
+ "why": "15 m figure-8, 14 s period: needs ~6 m/s^2, above the 25 deg tilt cap (g tan 25 = 4.6 m/s^2) -> saturated, track error grows",
+ "steps": [
+  {
+   "do": "takeoff"
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "track",
+   "shape": "fig8",
+   "size": 15,
+   "period": 14,
+   "laps": 2
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "land"
+  }
+ ],
+ "limits": {
+  "max_tilt_deg": 35,
+  "must_land": true,
+  "rms_track_err_m": 1.0
+ }
+}

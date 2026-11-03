@@ -1,0 +1,84 @@
+name: arms
+# Fly scenario arms on PX4 SIH in parallel: one build, then one runner per (scenario, run), then one table.
+on:
+  workflow_dispatch:
+    inputs:
+      scenarios:
+        description: 'scenario files under scenarios/, space separated, without .json'
+        default: 'mrac-off mrac-dist-adapt'
+      runs:
+        description: 'runs per scenario'
+        default: '2'
+
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.m.outputs.matrix }}
+    steps:
+      - id: m
+        env:
+          SCEN: ${{ inputs.scenarios }}
+          RUNS: ${{ inputs.runs }}
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json, os
+          s = os.environ['SCEN'].split()
+          r = range(1, int(os.environ['RUNS']) + 1)
+          print('matrix=' + json.dumps({'include': [{'scen': a, 'run': i} for a in s for i in r]}))
+          PY
+
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - id: key
+        run: echo "k=px4-v1.17.0-${{ hashFiles('px4-mrac/**', 'ci/build.sh') }}" >> "$GITHUB_OUTPUT"
+      - id: cache
+        uses: actions/cache@v4
+        with:
+          path: px4-sih.tar.zst
+          key: ${{ steps.key.outputs.k }}
+      - if: steps.cache.outputs.cache-hit != 'true'
+        run: bash ci/build.sh "$PWD/px4-sih.tar.zst"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: px4-sih
+          path: px4-sih.tar.zst
+          retention-days: 3
+
+  fly:
+    needs: [plan, build]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: px4-sih
+      - run: bash ci/run.sh "$PWD/px4-sih.tar.zst" "scenarios/${{ matrix.scen }}.json" ${{ matrix.run }} "$PWD/out"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: run-${{ matrix.scen }}-${{ matrix.run }}
+          path: out
+          retention-days: 14
+
+  collect:
+    needs: fly
+    if: always()
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: run-*
+          path: runs
+      - run: python3 ci/collect.py runs | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: all
+          path: runs/all.json

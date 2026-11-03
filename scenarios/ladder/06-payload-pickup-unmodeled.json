@@ -1,0 +1,38 @@
+{
+ "sim": "sih",
+ "airframe": "flycart30-tuned",
+ "speed": 5,
+ "alt": 8,
+ "expect": "pass",
+ "why": "empty-tuned hover (65 kg, THR_HOVER 0.387) then +30 kg unmodeled: sag, then recover",
+ "steps": [
+  {
+   "do": "takeoff"
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "param",
+   "name": "SIH_MASS",
+   "value": 95.0
+  },
+  {
+   "do": "hold",
+   "s": 10
+  },
+  {
+   "do": "land"
+  }
+ ],
+ "limits": {
+  "max_tilt_deg": 35,
+  "must_land": true,
+  "max_alt_err_m": 1.0
+ },
+ "boot_params": {
+  "SIH_MASS": 65.0,
+  "MPC_THR_HOVER": 0.387
+ }
+}

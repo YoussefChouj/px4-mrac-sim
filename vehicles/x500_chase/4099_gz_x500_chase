@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+# @name x500 with a chase camera (Gazebo)
+#
+# @type Quadrotor
+#
+# Stock x500 airframe and model plus a massless camera 4 m behind and 1.5 m above, welded to
+# base_link, that records the flight (scenario key "video": true). Lives outside the PX4 tree.
+#
+
+. ${R}etc/init.d-posix/airframes/4001_gz_x500

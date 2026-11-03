@@ -1,0 +1,14 @@
+{
+ "about": "DJI FlyCart 30-like heavy lift at MTOW (95 kg, 30 kg payload held rigid), flown as SIH quadx: each SIH motor is one coaxial arm pair of 54 in props. Derivation and labels: research/HEAVY-LIFT-MODELS.md. PX4 control gains are left at quadx defaults (untuned).",
+ "base": "quadx",
+ "params": {
+  "SIH_MASS": 95.0,
+  "SIH_IXX": 20.0, "SIH_IYY": 21.0, "SIH_IZZ": 25.0,
+  "SIH_T_MAX": 420.0,
+  "SIH_Q_MAX": 30.0,
+  "SIH_L_ROLL": 0.778, "SIH_L_PITCH": 0.778,
+  "SIH_T_TAU": 0.12,
+  "SIH_KDV": 27.0, "SIH_KDW": 1.0,
+  "MPC_THR_HOVER": 0.555
+ }
+}

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdf version="1.9">
+  <!-- Generated from PX4 Tools/simulation/gz/worlds/default.sdf (same physics, sun, origin) plus a floor grid
+       and an overview camera, for recorded flights. Fly it with `px4ctl gz INST VEHICLE video`. -->
+  <world name="video">
+    <physics type="ode">
+      <max_step_size>0.004</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+      <real_time_update_rate>250</real_time_update_rate>
+    </physics>
+    <gravity>0 0 -9.8</gravity>
+    <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
+    <atmosphere type="adiabatic"/>
+    <scene>
+      <grid>false</grid>
+      <ambient>0.4 0.4 0.4 1</ambient>
+      <background>0.7 0.7 0.7 1</background>
+      <shadows>true</shadows>
+    </scene>
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>1 1</size>
+            </plane>
+          </geometry>
+          <surface>
+            <friction>
+              <ode/>
+            </friction>
+            <bounce/>
+            <contact/>
+          </surface>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>500 500</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.8 0.8 0.8 1</ambient>
+            <diffuse>0.8 0.8 0.8 1</diffuse>
+            <specular>0.8 0.8 0.8 1</specular>
+          </material>
+        </visual>
+        <pose>0 0 0 0 -0 0</pose>
+        <inertial>
+          <pose>0 0 0 0 -0 0</pose>
+          <mass>1</mass>
+          <inertia>
+            <ixx>1</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>1</iyy>
+            <iyz>0</iyz>
+            <izz>1</izz>
+          </inertia>
+        </inertial>
+        <enable_wind>false</enable_wind>
+      </link>
+      <pose>0 0 0 0 -0 0</pose>
+      <self_collide>false</self_collide>
+    </model>
+    <!-- Floor grid, 1 m lines (5 m darker) over 30x30 m: gives the overview and chase cameras a
+         reference so motion and drift show. Visual only, no collision. -->
+    <model name="floor_grid"><static>true</static><link name="link">
+        <visual name="gx0"><pose>0 -15 0.001 0 0 0</pose><geometry><box><size>30 0.06 0.002</size></box></geometry><material><ambient>0.25 0.25 0.25 1</ambient><diffuse>0.25 0.25 0.25 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy0"><pose>-15 0 0.001 0 0 0</pose><geometry><box><size>0.06 30 0.002</size></box></geometry><material><ambient>0.25 0.25 0.25 1</ambient><diffuse>0.25 0.25 0.25 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx1"><pose>0 -14 0.001 0 0 0</pose><geometry><box><size>30 0.025 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy1"><pose>-14 0 0.001 0 0 0</pose><geometry><box><size>0.025 30 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx2"><pose>0 -13 0.001 0 0 0</pose><geometry><box><size>30 0.025 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy2"><pose>-13 0 0.001 0 0 0</pose><geometry><box><size>0.025 30 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx3"><pose>0 -12 0.001 0 0 0</pose><geometry><box><size>30 0.025 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy3"><pose>-12 0 0.001 0 0 0</pose><geometry><box><size>0.025 30 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx4"><pose>0 -11 0.001 0 0 0</pose><geometry><box><size>30 0.025 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy4"><pose>-11 0 0.001 0 0 0</pose><geometry><box><size>0.025 30 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx5"><pose>0 -10 0.001 0 0 0</pose><geometry><box><size>30 0.06 0.002</size></box></geometry><material><ambient>0.25 0.25 0.25 1</ambient><diffuse>0.25 0.25 0.25 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy5"><pose>-10 0 0.001 0 0 0</pose><geometry><box><size>0.06 30 0.002</size></box></geometry><material><ambient>0.25 0.25 0.25 1</ambient><diffuse>0.25 0.25 0.25 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx6"><pose>0 -9 0.001 0 0 0</pose><geometry><box><size>30 0.025 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy6"><pose>-9 0 0.001 0 0 0</pose><geometry><box><size>0.025 30 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx7"><pose>0 -8 0.001 0 0 0</pose><geometry><box><size>30 0.025 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy7"><pose>-8 0 0.001 0 0 0</pose><geometry><box><size>0.025 30 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx8"><pose>0 -7 0.001 0 0 0</pose><geometry><box><size>30 0.025 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy8"><pose>-7 0 0.001 0 0 0</pose><geometry><box><size>0.025 30 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx9"><pose>0 -6 0.001 0 0 0</pose><geometry><box><size>30 0.025 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy9"><pose>-6 0 0.001 0 0 0</pose><geometry><box><size>0.025 30 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx10"><pose>0 -5 0.001 0 0 0</pose><geometry><box><size>30 0.06 0.002</size></box></geometry><material><ambient>0.25 0.25 0.25 1</ambient><diffuse>0.25 0.25 0.25 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy10"><pose>-5 0 0.001 0 0 0</pose><geometry><box><size>0.06 30 0.002</size></box></geometry><material><ambient>0.25 0.25 0.25 1</ambient><diffuse>0.25 0.25 0.25 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx11"><pose>0 -4 0.001 0 0 0</pose><geometry><box><size>30 0.025 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy11"><pose>-4 0 0.001 0 0 0</pose><geometry><box><size>0.025 30 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx12"><pose>0 -3 0.001 0 0 0</pose><geometry><box><size>30 0.025 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy12"><pose>-3 0 0.001 0 0 0</pose><geometry><box><size>0.025 30 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx13"><pose>0 -2 0.001 0 0 0</pose><geometry><box><size>30 0.025 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy13"><pose>-2 0 0.001 0 0 0</pose><geometry><box><size>0.025 30 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx14"><pose>0 -1 0.001 0 0 0</pose><geometry><box><size>30 0.025 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy14"><pose>-1 0 0.001 0 0 0</pose><geometry><box><size>0.025 30 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx15"><pose>0 0 0.001 0 0 0</pose><geometry><box><size>30 0.06 0.002</size></box></geometry><material><ambient>0.25 0.25 0.25 1</ambient><diffuse>0.25 0.25 0.25 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy15"><pose>0 0 0.001 0 0 0</pose><geometry><box><size>0.06 30 0.002</size></box></geometry><material><ambient>0.25 0.25 0.25 1</ambient><diffuse>0.25 0.25 0.25 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx16"><pose>0 1 0.001 0 0 0</pose><geometry><box><size>30 0.025 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy16"><pose>1 0 0.001 0 0 0</pose><geometry><box><size>0.025 30 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx17"><pose>0 2 0.001 0 0 0</pose><geometry><box><size>30 0.025 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy17"><pose>2 0 0.001 0 0 0</pose><geometry><box><size>0.025 30 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx18"><pose>0 3 0.001 0 0 0</pose><geometry><box><size>30 0.025 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy18"><pose>3 0 0.001 0 0 0</pose><geometry><box><size>0.025 30 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx19"><pose>0 4 0.001 0 0 0</pose><geometry><box><size>30 0.025 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy19"><pose>4 0 0.001 0 0 0</pose><geometry><box><size>0.025 30 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx20"><pose>0 5 0.001 0 0 0</pose><geometry><box><size>30 0.06 0.002</size></box></geometry><material><ambient>0.25 0.25 0.25 1</ambient><diffuse>0.25 0.25 0.25 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy20"><pose>5 0 0.001 0 0 0</pose><geometry><box><size>0.06 30 0.002</size></box></geometry><material><ambient>0.25 0.25 0.25 1</ambient><diffuse>0.25 0.25 0.25 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx21"><pose>0 6 0.001 0 0 0</pose><geometry><box><size>30 0.025 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy21"><pose>6 0 0.001 0 0 0</pose><geometry><box><size>0.025 30 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx22"><pose>0 7 0.001 0 0 0</pose><geometry><box><size>30 0.025 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy22"><pose>7 0 0.001 0 0 0</pose><geometry><box><size>0.025 30 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx23"><pose>0 8 0.001 0 0 0</pose><geometry><box><size>30 0.025 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy23"><pose>8 0 0.001 0 0 0</pose><geometry><box><size>0.025 30 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx24"><pose>0 9 0.001 0 0 0</pose><geometry><box><size>30 0.025 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy24"><pose>9 0 0.001 0 0 0</pose><geometry><box><size>0.025 30 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx25"><pose>0 10 0.001 0 0 0</pose><geometry><box><size>30 0.06 0.002</size></box></geometry><material><ambient>0.25 0.25 0.25 1</ambient><diffuse>0.25 0.25 0.25 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy25"><pose>10 0 0.001 0 0 0</pose><geometry><box><size>0.06 30 0.002</size></box></geometry><material><ambient>0.25 0.25 0.25 1</ambient><diffuse>0.25 0.25 0.25 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx26"><pose>0 11 0.001 0 0 0</pose><geometry><box><size>30 0.025 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy26"><pose>11 0 0.001 0 0 0</pose><geometry><box><size>0.025 30 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx27"><pose>0 12 0.001 0 0 0</pose><geometry><box><size>30 0.025 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy27"><pose>12 0 0.001 0 0 0</pose><geometry><box><size>0.025 30 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx28"><pose>0 13 0.001 0 0 0</pose><geometry><box><size>30 0.025 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy28"><pose>13 0 0.001 0 0 0</pose><geometry><box><size>0.025 30 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx29"><pose>0 14 0.001 0 0 0</pose><geometry><box><size>30 0.025 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy29"><pose>14 0 0.001 0 0 0</pose><geometry><box><size>0.025 30 0.002</size></box></geometry><material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gx30"><pose>0 15 0.001 0 0 0</pose><geometry><box><size>30 0.06 0.002</size></box></geometry><material><ambient>0.25 0.25 0.25 1</ambient><diffuse>0.25 0.25 0.25 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+        <visual name="gy30"><pose>15 0 0.001 0 0 0</pose><geometry><box><size>0.06 30 0.002</size></box></geometry><material><ambient>0.25 0.25 0.25 1</ambient><diffuse>0.25 0.25 0.25 1</diffuse></material><cast_shadows>false</cast_shadows></visual>
+    </link></model>
+    <!-- Overview camera: fixed 10 m east of the origin at 5 m, looking west over the takeoff point (ENU world:
+         x east, y north), so a fig8 of size 6 (north +-3 m, east +-1.5 m) fills the frame. Recording service
+         /overview/record_video, same as the chase camera; scenario "video": ["overview", "chase"]. -->
+    <model name="overview_cam"><static>true</static><pose>10 0 5 0 0.12 3.14159</pose><link name="link">
+      <sensor name="overview" type="camera">
+        <always_on>1</always_on><update_rate>25</update_rate><topic>overview</topic>
+        <camera><horizontal_fov>0.9</horizontal_fov><image><width>960</width><height>540</height></image>
+          <clip><near>0.1</near><far>300</far></clip></camera>
+        <plugin filename="gz-sim-camera-video-recorder-system" name="gz::sim::systems::CameraVideoRecorder">
+          <service>/overview/record_video</service><use_sim_time>true</use_sim_time><fps>25</fps><bitrate>6000000</bitrate>
+        </plugin>
+      </sensor>
+    </link></model>
+    <light name="sunUTC" type="directional">
+      <pose>0 0 500 0 -0 0</pose>
+      <cast_shadows>true</cast_shadows>
+      <intensity>1</intensity>
+      <direction>0.001 0.625 -0.78</direction>
+      <diffuse>0.904 0.904 0.904 1</diffuse>
+      <specular>0.271 0.271 0.271 1</specular>
+      <attenuation>
+        <range>2000</range>
+        <linear>0</linear>
+        <constant>1</constant>
+        <quadratic>0</quadratic>
+      </attenuation>
+      <spot>
+        <inner_angle>0</inner_angle>
+        <outer_angle>0</outer_angle>
+        <falloff>0</falloff>
+      </spot>
+    </light>
+    <spherical_coordinates>
+      <surface_model>EARTH_WGS84</surface_model>
+      <world_frame_orientation>ENU</world_frame_orientation>
+      <latitude_deg>47.397971057728974</latitude_deg>
+      <longitude_deg> 8.546163739800146</longitude_deg>
+      <elevation>0</elevation>
+    </spherical_coordinates>
+  </world>
+</sdf>

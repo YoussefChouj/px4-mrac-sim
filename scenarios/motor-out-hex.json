@@ -1,0 +1,12 @@
+{
+ "sim": "sih", "speed": 5, "vehicle": "hex", "alt": 10,
+ "boot_params": {"SYS_FAILURE_EN": 1, "CA_FAILURE_MODE": 1},
+ "steps": [
+  {"do": "takeoff"},
+  {"do": "hold", "s": 5},
+  {"do": "failure", "unit": "SYSTEM_MOTOR", "type": "OFF", "instance": 1},
+  {"do": "hold", "s": 10},
+  {"do": "land"}
+ ],
+ "limits": {"max_tilt_deg": 90, "must_land": true}
+}

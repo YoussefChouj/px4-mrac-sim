@@ -1,0 +1,49 @@
+{
+ "sim": "sih",
+ "airframe": "flycart30-tuned",
+ "speed": 5,
+ "alt": 8,
+ "expect": "pass",
+ "why": "4 x 15 m steps, accel and tilt within the 25 deg cap",
+ "steps": [
+  {
+   "do": "takeoff"
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "goto",
+   "n": 15,
+   "e": 0
+  },
+  {
+   "do": "goto",
+   "n": 15,
+   "e": 15
+  },
+  {
+   "do": "goto",
+   "n": 0,
+   "e": 15
+  },
+  {
+   "do": "goto",
+   "n": 0,
+   "e": 0
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "land"
+  }
+ ],
+ "limits": {
+  "max_tilt_deg": 35,
+  "must_land": true,
+  "max_overshoot_m": 1.0
+ }
+}

@@ -1,0 +1,9 @@
+{
+ "sim": "gz", "vehicle": "research_drone", "speed": 1, "alt": 3,
+ "steps": [
+  {"do": "takeoff"},
+  {"do": "hold", "s": 30},
+  {"do": "land"}
+ ],
+ "limits": {"max_hold_err_m": 0.3, "max_tilt_deg": 30, "must_land": true}
+}

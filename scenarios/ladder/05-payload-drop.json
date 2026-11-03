@@ -1,0 +1,34 @@
+{
+ "sim": "sih",
+ "airframe": "flycart30-tuned",
+ "speed": 5,
+ "alt": 8,
+ "expect": "pass",
+ "why": "30 kg released in hover (SIH_MASS 95 -> 65): height jumps until the thrust integrator catches up",
+ "steps": [
+  {
+   "do": "takeoff"
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "param",
+   "name": "SIH_MASS",
+   "value": 65.0
+  },
+  {
+   "do": "hold",
+   "s": 10
+  },
+  {
+   "do": "land"
+  }
+ ],
+ "limits": {
+  "max_tilt_deg": 35,
+  "must_land": true,
+  "max_alt_err_m": 1.0
+ }
+}

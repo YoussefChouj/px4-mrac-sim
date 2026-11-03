@@ -1,0 +1,26 @@
+{
+ "sim": "sih",
+ "airframe": "flycart30-tuned",
+ "speed": 5,
+ "alt": 8,
+ "expect": "pass",
+ "why": "baseline: tuned 95 kg hover",
+ "steps": [
+  {
+   "do": "takeoff"
+  },
+  {
+   "do": "hold",
+   "s": 20
+  },
+  {
+   "do": "land"
+  }
+ ],
+ "limits": {
+  "max_tilt_deg": 35,
+  "must_land": true,
+  "max_hold_err_m": 0.5,
+  "max_alt_err_m": 0.5
+ }
+}

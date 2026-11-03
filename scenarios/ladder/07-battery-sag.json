@@ -1,0 +1,46 @@
+{
+ "sim": "sih",
+ "airframe": "flycart30-tuned",
+ "speed": 5,
+ "alt": 8,
+ "expect": "pass",
+ "why": "thrust ceiling -29% (T_MAX 420 -> 300, hover command 0.78) then slow figure-8: margin thin but enough",
+ "steps": [
+  {
+   "do": "takeoff"
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "param",
+   "name": "SIH_T_MAX",
+   "value": 300.0
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "track",
+   "shape": "fig8",
+   "size": 15,
+   "period": 40,
+   "laps": 1
+  },
+  {
+   "do": "hold",
+   "s": 3
+  },
+  {
+   "do": "land"
+  }
+ ],
+ "limits": {
+  "max_tilt_deg": 35,
+  "must_land": true,
+  "rms_track_err_m": 1.5,
+  "max_alt_err_m": 1.0
+ }
+}

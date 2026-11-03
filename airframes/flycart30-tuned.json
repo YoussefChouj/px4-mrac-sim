@@ -1,0 +1,18 @@
+{
+ "about": "flycart30 plant (same SIH params) plus a first-pass retune: rate-loop K raised by the plant-gain ratio to stock SIH quadx (L*T_MAX/I: 16.3 vs 40 rad/s^2 roll, Q_MAX/Izz: 1.2 vs 3.3 yaw), softer angle loop for the 0.12 s motor lag, and heavy-lift tilt/accel limits. See research/HEAVY-LIFT-MODELS.md.",
+ "base": "quadx",
+ "params": {
+  "SIH_MASS": 95.0,
+  "SIH_IXX": 20.0, "SIH_IYY": 21.0, "SIH_IZZ": 25.0,
+  "SIH_T_MAX": 420.0,
+  "SIH_Q_MAX": 30.0,
+  "SIH_L_ROLL": 0.778, "SIH_L_PITCH": 0.778,
+  "SIH_T_TAU": 0.12,
+  "SIH_KDV": 27.0, "SIH_KDW": 1.0,
+  "MPC_THR_HOVER": 0.555,
+  "MC_ROLLRATE_K": 2.4, "MC_PITCHRATE_K": 2.4, "MC_YAWRATE_K": 2.8,
+  "MC_ROLL_P": 4.5, "MC_PITCH_P": 4.5,
+  "MPC_TILTMAX_AIR": 25.0,
+  "MPC_ACC_HOR": 2.0, "MPC_ACC_HOR_MAX": 3.0, "MPC_JERK_AUTO": 4.0
+ }
+}
