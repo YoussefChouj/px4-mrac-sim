@@ -40,6 +40,7 @@ python3 "$SRC/patch_pos_xyc.py" src/modules
 python3 "$SRC/patch_gz_delay.py" .
 python3 "$SRC/patch_gps_noise.py" .
 python3 "$SRC/patch_sih_delay.py" .
+python3 "$SRC/patch_sih_imu_noise.py" .
 # xy baseline gains come from xyc_design.py (fitted from a flown ULog); refuse to build without them
 test -f "$SRC/xyc_gains.h" || { echo "missing $SRC/xyc_gains.h: run xyc_design.py first" >&2; exit 1; }
 cp "$SRC/xyc_gains.h" src/modules/mrac_layers/

@@ -297,3 +297,7 @@ the constant, which is the property the thesis claims (no layer fights the basel
 ## P11 batch 3: layer at 13 ms delay (cloud, 5 arms x 5)
 
 - [S] run 41690407503: the rate layer alone pins its 0.3 u_ad clamp in 5/5 runs at 13 ms (rate_rms 0.077 -> 0.287, 0/5 PASS); att-only and pos-only stay at baseline; all three 0.499. Cause located: rate layer vs delay. Seeds: one libc rand() seeded 1234, run spread = thread scheduling at speed 5; compare within a batch only.
+
+## P8 gyro/accel noise (local, SIH)
+
+- [S] stock SIH flying noise is hard-coded 0.14/0.07/0.03 rad/s; real-log estimator (diff/sqrt2, 100 Hz block avg, airborne) gives 0.074/0.037/0.015 rad/s, accel 0.24/0.86/0.82 m/s^2 vs real 0.020-0.024 rad/s, ~0.1 m/s^2. New patch_sih_imu_noise.py (SIH_GYR_STD/SIH_ACC_STD, 0 = stock). Cal flight GYR 0.044 ACC 0.2: gyro 0.024/0.024/0.022, accel 0.13/0.10/0.46 (z excess = thrust dynamics [A]). Same p11 lqr-alone flight: track 0.259 -> 0.055 m, att err 0.58 -> 0.15 deg, so stock noise dominated P11 numbers; key pairs re-run as p11n-*.
