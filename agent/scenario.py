@@ -39,7 +39,7 @@ import time
 
 from mavsdk_grpc import System
 from mavsdk_grpc.failure import FailureType, FailureUnit
-from mavsdk_grpc.offboard import OffboardError, PositionNedYaw, VelocityNedYaw
+from mavsdk_grpc.offboard import Attitude, OffboardError, PositionNedYaw, VelocityNedYaw
 
 PX4CTL = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'px4ctl')
 
@@ -207,6 +207,41 @@ async def fly(drone):
                 metrics['rms_track_err_m'] = max(metrics.get('rms_track_err_m', 0), rms)
                 metrics['max_track_err_m'] = max(metrics.get('max_track_err_m', 0), max(errs, default=0))
                 say(f'track {shape} {a} m / {T} s x{laps}: rms {rms:.2f} m, max {max(errs, default=0):.2f} m')
+            elif do == 'excite':
+                # Attitude multisine, the twin of the real drone's angle sysid (ground_station/autotune/excitation.py:
+                # 20 log-spaced tones, Schroeder phases, f/f0 pre-emphasis, 1.5 s cosine ramps). Flown in offboard
+                # attitude; height is held by a PD+I on thrust around MPC_THR_HOVER. Setpoints go at 100 Hz wall,
+                # so run this scenario at speed 1. FRF: ULog vehicle_attitude_setpoint -> vehicle_attitude.
+                axis, amp = step.get('axis', 'roll'), float(step.get('amp', 6))
+                f0, f1, dur = float(step.get('f0', 0.2)), float(step.get('f1', 6)), float(step.get('duration_s', 30))
+                K, rmp = 20, 1.5
+                fk = [f0 * (f1 / f0) ** (k / (K - 1)) for k in range(K)]
+                ph = [-math.pi * k * k / K for k in range(K)]
+                wk = [f / f0 for f in fk]
+                tone = lambda t: sum(w * math.sin(2 * math.pi * f * t + p) for f, p, w in zip(fk, ph, wk))
+                norm = 1.05 * max(abs(tone(i * 0.002)) for i in range(int(min(dur, 8) / 0.002) + 1))
+                hov = await drone.param.get_param_float('MPC_THR_HOVER')
+                if not offboard:
+                    await drone.offboard.set_position_ned(PositionNedYaw(pos()[1], pos()[2], -(ground + alt), 0))
+                    await drone.offboard.start()
+                    offboard = True
+                href, integ, tstart = ground + alt, 0.0, time.monotonic()
+                h_prev, t_prev, vz = pos()[3], tstart, 0.0
+                while (t := time.monotonic() - tstart) < dur + 2 * rmp:
+                    env = 0.5 * (1 - math.cos(math.pi * t / rmp)) if t < rmp else \
+                        1.0 if t < rmp + dur else 0.5 * (1 + math.cos(math.pi * (t - rmp - dur) / rmp))
+                    d = amp * env * tone(t) / norm
+                    now, h = time.monotonic(), pos()[3]
+                    if h != h_prev:  # new position sample (50 Hz stream)
+                        vz, h_prev, t_prev = (h - h_prev) / max(now - t_prev, 1e-3), h, now
+                    e = href - h
+                    integ = max(-0.1, min(0.1, integ + 0.05 * e * 0.01))
+                    thr = (hov + 0.15 * e - 0.12 * vz + integ) / max(math.cos(math.radians(d)), 0.8)
+                    r, p_ = (d, 0.0) if axis == 'roll' else (0.0, d)
+                    await drone.offboard.set_attitude(Attitude(r, p_, 0.0, max(0.05, min(0.9, thr))))
+                    await asyncio.sleep(0.01)
+                await drone.offboard.set_position_ned(PositionNedYaw(pos()[1], pos()[2], -(ground + alt), 0))
+                say(f'excite {axis} multisine {f0}-{f1} Hz {amp} deg {dur} s done (hover thrust {hov:.2f})')
             elif do == 'param':
                 old = await set_param(drone, step['name'], step['value'])
                 restore.setdefault(step['name'], old)

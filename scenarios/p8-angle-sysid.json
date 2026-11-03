@@ -1,0 +1,26 @@
+{
+ "sim": "sih",
+ "airframe": "research-drone",
+ "speed": 1,
+ "alt": 1.0,
+ "why": "P8 twin of the real lab_d_sysid_angle flight (2026-10-28): roll then pitch attitude multisine 0.2-6 Hz, 6 deg, 30 s each, same tone set as ground_station/autotune/excitation.py. Closed-loop attitude FRF (setpoint -> attitude) compared with the real one. Speed 1 because the excitation is sent from the scenario at 100 Hz wall. Alt 1.0 (real 0.5): SIH has no ground effect, the margin is for the thrust-PI height hold.",
+ "params": {
+  "MRL_EN_RATE": 0,
+  "MRL_EN_ATT": 0,
+  "MRL_EN_POS": 0
+ },
+ "steps": [
+  {"do": "takeoff"},
+  {"do": "hold", "s": 8},
+  {"do": "excite", "axis": "roll", "f0": 0.2, "f1": 6, "amp": 6, "duration_s": 30},
+  {"do": "hold", "s": 3},
+  {"do": "excite", "axis": "pitch", "f0": 0.2, "f1": 6, "amp": 6, "duration_s": 30},
+  {"do": "hold", "s": 3},
+  {"do": "land"}
+ ],
+ "limits": {
+  "max_hold_err_m": 3,
+  "max_tilt_deg": 35,
+  "must_land": true
+ }
+}

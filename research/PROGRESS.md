@@ -307,3 +307,16 @@ the constant, which is the property the thesis claims (no layer fights the basel
 - [S] run 41692068353, 35/35 PASS. With SIH_GYR_STD 0.044: 13 ms delay harmless (rate u_ad max 0.004 vs 0.3 pinned with stock noise), so batch 2-3 delay risk was a noise artifact; motor-1 70 %: MRAC hold 0.226 -> 0.111 m (p 8e-4), att 0.62 -> 0.28 deg (p 1e-11); nominal att cost +0.07 deg. Batches 1-3 superseded.
 
 - [S] airframes/research-drone.json now boots with SIH_GYR_STD 0.044 / SIH_ACC_STD 0.2 (P8 noise closed); runs before sim repo commit after 39be9e7 used stock SIH noise.
+
+## P8 attitude response: sim vs real angle-sysid flight
+
+- [S] Real: lab_d_sysid_angle 2026-10-28 (session 20261028-003820, 200 Hz), roll then pitch multisine 0.2-6 Hz 6 deg 30 s; sim twin scenarios/p8-angle-sysid.json (new scenario step `excite`: same 20 tones, Schroeder phases, ramps; offboard attitude, thrust PD+I height hold, speed 1), research-drone airframe, PX4 default attitude gains, PASS. Closed loop attitude setpoint -> attitude, CSD/Welch FRF (10 s segments, coherence > 0.6) + fit k e^{-sT}/(tau s + 1):
+
+| axis | -3 dB | -90 deg | peak | k | tau | delay | xcorr lag |
+|---|---|---|---|---|---|---|---|
+| real roll | 1.0 Hz | 1.1 Hz | +2.0 dB | 0.79 | 208 ms | 52 ms | 110 ms |
+| sim roll | 1.1 Hz | 1.4 Hz | +0.4 dB | 0.95 | 240 ms | 78 ms | 130 ms |
+| real pitch | 1.0 Hz | - | +1.4 dB | 0.82 | 202 ms | 53 ms | (window edge) |
+| sim pitch | 1.1 Hz | 1.3 Hz | +0.7 dB | 0.99 | 268 ms | 78 ms | 135 ms |
+
+- Bandwidth and lag match within ~10-20 %. Differences: real has a larger resonance peak (less damped, consistent with the real rate loop PM 42.8 deg from the same flight's autotune) and low-frequency gain 0.8 (the real position loop adds to the same setpoint channel; in sim the offboard attitude path has no outer loop). Sim is not faster than the real drone, so attitude-loop results do not flatter the sim. Pitch sign in the real log is inverted (k -0.82, sign convention); magnitude shown.
