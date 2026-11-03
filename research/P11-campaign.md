@@ -146,3 +146,43 @@ What this means:
 | p11-x-mot1-lqr | max_hold_err_m | 0.260 | 0.346 | +0.086 | +0.86 | 0.183 |
 | p11-x-mot1-lqr | att_track_rms_deg | 0.824 | 0.714 | -0.110 | -2.42 | 0.00827 |
 | p11-x-mot1-lqr | rate_rms_rp | 0.084 | 0.081 | -0.003 | -1.42 | 0.0657 |
+
+
+## Batch 3 — which layer reacts to the 13 ms delay
+
+[S] GitHub Actions run 41690407503 (sim repo e804168), 5 arms × 5 runs, all at SIH_ACT_DLY 13.
+
+| arm (13 ms) | rate_rms_rp | att err ° | rate-layer u_ad max | pass |
+|---|---|---|---|---|
+| lqr-alone | 0.077 | 0.60 | — | 5/5 |
+| att-only | 0.078 | 0.59 | — | 5/5 |
+| pos-only | 0.081 | 0.66 | — | 5/5 |
+| rate-only | 0.287 | 0.61 | 0.30 (clamp) in 5/5 | 0/5 |
+| all three | 0.499 | 1.25 | 0.30 (clamp) in 5/5 | 5/5 |
+
+What this means:
+- **The rate layer is the one that reacts to delay.** On its own it pins its 0.3 output clamp in every run, and rate
+  activity is 3.7× the baseline. The attitude and position layers do nothing harmful at 13 ms.
+- With all three layers on, rate activity is 6.5× and attitude error doubles. The outer layers amplify what the rate
+  layer starts. Tracking does not change (0.228 vs 0.227 m, p 0.97).
+- Fix direction [A]: make the rate layer delay-aware, not slower. Options: a reference model that includes the 13 ms
+  delay, or adapting on the delayed error (as in the time-delay MRAC literature). Then re-run this batch.
+- Seeds: all SIH noise comes from one libc rand() seeded 1234. At speed 5 the threads interleave differently each run.
+  "5 seeds" means 5 scheduling realisations, and only within-batch comparisons are valid.
+
+### Batch 3 tables (mean [min..max], n 5)
+
+| arm | n | pass | rms_track_err_m | max_hold_err_m | max_tilt_deg | att_track_rms_deg | rate_rms_rp |
+|---|---|---|---|---|---|---|---|
+| p11-x-dly13-attonly-lqr | 5 | 5/5 | 0.182 [0.13..0.24] | 0.227 [0.20..0.28] | 5.981 [4.70..7.33] | 0.591 [0.55..0.68] | 0.078 [0.08..0.08] |
+| p11-x-dly13-lqr-alone | 5 | 5/5 | 0.228 [0.10..0.28] | 0.254 [0.19..0.39] | 6.267 [4.84..7.12] | 0.600 [0.57..0.65] | 0.077 [0.08..0.08] |
+| p11-x-dly13-lqr-plus-mrac | 5 | 5/5 | 0.227 [0.20..0.27] | 0.225 [0.19..0.25] | 7.944 [7.30..8.51] | 1.248 [1.17..1.36] | 0.499 [0.48..0.52] |
+| p11-x-dly13-posonly-lqr | 5 | 5/5 | 0.201 [0.14..0.24] | 0.229 [0.18..0.36] | 5.712 [4.47..7.57] | 0.656 [0.56..0.78] | 0.081 [0.08..0.09] |
+| p11-x-dly13-rateonly-lqr | 5 | 0/5 | 0.233 [0.22..0.25] | 0.277 [0.21..0.42] | 8.316 [6.90..9.49] | 0.607 [0.60..0.62] | 0.287 [0.28..0.29] |
+
+| pair (alone -> plus-mrac) | metric | alone | plus-mrac | diff | g | p (Welch) |
+|---|---|---|---|---|---|---|
+| p11-x-dly13-lqr | rms_track_err_m | 0.228 | 0.227 | -0.001 | -0.02 | 0.972 |
+| p11-x-dly13-lqr | max_hold_err_m | 0.254 | 0.225 | -0.029 | -0.45 | 0.467 |
+| p11-x-dly13-lqr | att_track_rms_deg | 0.600 | 1.248 | +0.648 | +10.97 | 4.07e-06 |
+| p11-x-dly13-lqr | rate_rms_rp | 0.077 | 0.499 | +0.422 | +31.59 | 5.4e-07 |

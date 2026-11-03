@@ -293,3 +293,7 @@ the constant, which is the property the thesis claims (no layer fights the basel
 ## P11 batch 2 (cloud, 11 arms x 5)
 
 - [S] run 41688393980, 55/55 PASS; SIH_ACT_DLY + SIH_MOT1_EFF patch. At the real 13 ms delay MRAC rate_rms x6.6 (p 6e-6), at 40 ms att err 5.7 deg; motor-1 70 %: MRAC lowers att err (p 0.008). lqr-alone control moved 0.255 -> 0.152 m between batches: quote only effects that repeat. P11 done except wind (needs gz); follow-ups: layer at 13 ms, fixed seeds.
+
+## P11 batch 3: layer at 13 ms delay (cloud, 5 arms x 5)
+
+- [S] run 41690407503: the rate layer alone pins its 0.3 u_ad clamp in 5/5 runs at 13 ms (rate_rms 0.077 -> 0.287, 0/5 PASS); att-only and pos-only stay at baseline; all three 0.499. Cause located: rate layer vs delay. Seeds: one libc rand() seeded 1234, run spread = thread scheduling at speed 5; compare within a batch only.
