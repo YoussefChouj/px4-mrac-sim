@@ -81,3 +81,68 @@ Not covered yet from the P11 list: wind gusts (SIH has no wind), motor loss, add
 | p11-x-slow-lqr-plus-mrac | 5 | 5/5 | 0.202 [0.16..0.30] | 0.227 [0.21..0.26] | 5.224 [4.02..6.80] | 0.778 [0.61..0.90] | 0.088 [0.08..0.09] |
 | p11-x-tmax-lqr-alone | 5 | 5/5 | 0.161 [0.12..0.20] | 0.231 [0.14..0.35] | 5.407 [4.63..6.20] | 0.563 [0.50..0.59] | 0.072 [0.07..0.07] |
 | p11-x-tmax-lqr-plus-mrac | 5 | 5/5 | 0.177 [0.16..0.22] | 0.205 [0.12..0.24] | 5.894 [3.68..6.72] | 0.781 [0.63..0.92] | 0.082 [0.08..0.09] |
+
+
+## Batch 2 — delay, partial motor loss, one layer at a time
+
+[S] GitHub Actions run 41688393980 (sim repo 4ad8b9f), 11 arms × 5 seeds, 55/55 PASS. New sim patch
+`px4-mrac/patch_sih_delay.py`: SIH_ACT_DLY (pure actuator delay, ms) and SIH_MOT1_EFF (motor 1 thrust scale).
+Local check: with eff 0.7, motor 1 is commanded 0.544 vs 0.38 for the others (ratio 0.70). The two lqr twins were
+re-run on this build as controls.
+
+| question | answer [S] |
+|---|---|
+| With the real drone's delay (13 ms) | MRAC rate activity rate_rms 0.078 → 0.514 (×6.6, p 6e-6), att error 0.59 → 1.50° (p 0.002); hold error lower (0.305 → 0.207 m, p 0.04); tracking unchanged. |
+| With 40 ms delay | MRAC near its stability edge: rate_rms 0.12 → 1.92, att error 0.63 → 5.70° (p < 1e-7); position still unchanged. |
+| Motor 1 at 70 % mid-flight | The only case where MRAC LOWERS attitude error: 0.82 → 0.71° (p 0.008); position n.s. |
+| One layer at a time (no delay) | track rate-only 0.227, att-only 0.183, pos-only 0.250 m vs alone 0.152 / all three 0.212; hold all 0.22–0.25 m. |
+| Re-run controls | lqr-alone track 0.152 here vs 0.255 in batch 1; lqr-plus-mrac 0.212 vs 0.229. Batch 2 says MRAC tracks worse (p 0.01), batch 1 slightly better (n.s.). |
+
+What this means:
+- **Delay is the thesis-relevant risk.** The twins without delay are optimistic for MRAC. At the real 13 ms, the
+  adaptive layers already turn rate activity up six-fold. Next check: which layer causes it (dly13 + one layer on).
+  The candidate fix is the adaptation rate or a delay-aware reference model, not a lower bandwidth.
+- **The control arm moved between batches.** lqr-alone track 0.152 vs 0.255 is a batch-to-batch shift. The only
+  build difference is the SIH patch at its no-op default. So n = 5 does not resolve the tracking effects of
+  ±0.05 m, and only effects that repeat across batches (attitude cost, delay sensitivity, motor-loss benefit)
+  should be quoted.
+- Still not covered: wind (SIH has none; it needs gz). Full motor loss is unrecoverable on a quad for every arm.
+- **Next steps:**
+  - pinpoint the layer at 13 ms delay;
+  - seed control (fixed seeds per arm), so batches can be compared;
+  - wind gusts in gz.
+
+### Batch 2 tables (mean [min..max], n 5; pairs with Hedges g and Welch p)
+
+| arm | n | pass | rms_track_err_m | max_hold_err_m | max_tilt_deg | att_track_rms_deg | rate_rms_rp |
+|---|---|---|---|---|---|---|---|
+| p11-lqr-alone | 5 | 5/5 | 0.152 [0.11..0.18] | 0.245 [0.13..0.33] | 5.193 [3.80..7.34] | 0.593 [0.57..0.61] | 0.074 [0.07..0.07] |
+| p11-lqr-plus-mrac | 5 | 5/5 | 0.212 [0.18..0.25] | 0.226 [0.15..0.37] | 6.260 [5.70..6.95] | 0.684 [0.60..0.71] | 0.078 [0.08..0.08] |
+| p11-x-attonly-lqr | 5 | 5/5 | 0.183 [0.12..0.27] | 0.249 [0.18..0.34] | 5.434 [4.13..5.99] | 0.586 [0.56..0.62] | 0.073 [0.07..0.07] |
+| p11-x-dly13-lqr-alone | 5 | 5/5 | 0.206 [0.11..0.26] | 0.305 [0.23..0.38] | 5.186 [4.23..5.96] | 0.591 [0.52..0.64] | 0.078 [0.08..0.08] |
+| p11-x-dly13-lqr-plus-mrac | 5 | 5/5 | 0.205 [0.14..0.23] | 0.207 [0.16..0.26] | 11.407 [8.23..16.91] | 1.504 [1.30..1.92] | 0.514 [0.49..0.56] |
+| p11-x-dly40-lqr-alone | 5 | 5/5 | 0.199 [0.15..0.25] | 0.247 [0.19..0.30] | 5.952 [5.34..6.51] | 0.633 [0.58..0.66] | 0.124 [0.12..0.13] |
+| p11-x-dly40-lqr-plus-mrac | 5 | 5/5 | 0.218 [0.15..0.28] | 0.250 [0.21..0.33] | 16.980 [13.39..22.45] | 5.698 [5.56..5.92] | 1.918 [1.88..1.96] |
+| p11-x-mot1-lqr-alone | 5 | 5/5 | 0.186 [0.13..0.23] | 0.260 [0.19..0.32] | 5.112 [4.62..5.54] | 0.824 [0.79..0.84] | 0.084 [0.08..0.08] |
+| p11-x-mot1-lqr-plus-mrac | 5 | 5/5 | 0.194 [0.17..0.22] | 0.346 [0.20..0.47] | 5.061 [3.97..6.08] | 0.714 [0.68..0.81] | 0.081 [0.08..0.08] |
+| p11-x-posonly-lqr | 5 | 5/5 | 0.250 [0.18..0.29] | 0.237 [0.16..0.40] | 6.264 [5.22..7.46] | 0.708 [0.61..0.81] | 0.076 [0.07..0.08] |
+| p11-x-rateonly-lqr | 5 | 5/5 | 0.227 [0.20..0.24] | 0.222 [0.19..0.27] | 6.216 [5.52..6.58] | 0.660 [0.64..0.69] | 0.077 [0.08..0.08] |
+
+| pair (alone -> plus-mrac) | metric | alone | plus-mrac | diff | g | p (Welch) |
+|---|---|---|---|---|---|---|
+| p11-lqr | rms_track_err_m | 0.152 | 0.212 | +0.061 | +1.94 | 0.00999 |
+| p11-lqr | max_hold_err_m | 0.245 | 0.226 | -0.019 | -0.21 | 0.728 |
+| p11-lqr | att_track_rms_deg | 0.593 | 0.684 | +0.092 | +2.41 | 0.00829 |
+| p11-lqr | rate_rms_rp | 0.074 | 0.078 | +0.005 | +1.98 | 0.0206 |
+| p11-x-dly13-lqr | rms_track_err_m | 0.206 | 0.205 | -0.001 | -0.01 | 0.982 |
+| p11-x-dly13-lqr | max_hold_err_m | 0.305 | 0.207 | -0.098 | -1.50 | 0.0379 |
+| p11-x-dly13-lqr | att_track_rms_deg | 0.591 | 1.504 | +0.914 | +4.07 | 0.00164 |
+| p11-x-dly13-lqr | rate_rms_rp | 0.078 | 0.514 | +0.436 | +17.63 | 6.49e-06 |
+| p11-x-dly40-lqr | rms_track_err_m | 0.199 | 0.218 | +0.019 | +0.34 | 0.565 |
+| p11-x-dly40-lqr | max_hold_err_m | 0.247 | 0.250 | +0.003 | +0.05 | 0.927 |
+| p11-x-dly40-lqr | att_track_rms_deg | 0.633 | 5.698 | +5.064 | +46.21 | 3.39e-08 |
+| p11-x-dly40-lqr | rate_rms_rp | 0.124 | 1.918 | +1.794 | +71.94 | 1.43e-08 |
+| p11-x-mot1-lqr | rms_track_err_m | 0.186 | 0.194 | +0.009 | +0.24 | 0.693 |
+| p11-x-mot1-lqr | max_hold_err_m | 0.260 | 0.346 | +0.086 | +0.86 | 0.183 |
+| p11-x-mot1-lqr | att_track_rms_deg | 0.824 | 0.714 | -0.110 | -2.42 | 0.00827 |
+| p11-x-mot1-lqr | rate_rms_rp | 0.084 | 0.081 | -0.003 | -1.42 | 0.0657 |

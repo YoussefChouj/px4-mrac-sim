@@ -289,3 +289,7 @@ the constant, which is the property the thesis claims (no layer fights the basel
 ## P11 campaign (cloud, 19 arms x 5)
 
 - [S] run 41683452873, 94/95 PASS; report `research/P11-campaign.md`. MRAC: no tracking effect on the 0.3 m twin, hold error lower (lqr g -1.2, mpc g -1.5), attitude error higher in every pair; helps most under mass +31 % (g -1.3), hurts with slow motors (g +1.0). Still open in P11: wind, motor loss, added delay, per-loop on/off.
+
+## P11 batch 2 (cloud, 11 arms x 5)
+
+- [S] run 41688393980, 55/55 PASS; SIH_ACT_DLY + SIH_MOT1_EFF patch. At the real 13 ms delay MRAC rate_rms x6.6 (p 6e-6), at 40 ms att err 5.7 deg; motor-1 70 %: MRAC lowers att err (p 0.008). lqr-alone control moved 0.255 -> 0.152 m between batches: quote only effects that repeat. P11 done except wind (needs gz); follow-ups: layer at 13 ms, fixed seeds.
