@@ -285,3 +285,7 @@ the constant, which is the property the thesis claims (no layer fights the basel
   (was 0.32); lqr-plus-mrac track 0.16–0.18 m but post-figure hold drift 0.32–0.39 m vs 0.07–0.13 m alone.
 - Known: hold-1 starts while the 0.5 m takeoff is still settling (height err 0.29 m in every run, all airframes);
   hold limit 0.5 m kept. One alt-2 m run was a SIM-FAULT (baro dropout → flyaway), retried by arms.py.
+
+## P11 campaign (cloud, 19 arms x 5)
+
+- [S] run 41683452873, 94/95 PASS; report `research/P11-campaign.md`. MRAC: no tracking effect on the 0.3 m twin, hold error lower (lqr g -1.2, mpc g -1.5), attitude error higher in every pair; helps most under mass +31 % (g -1.3), hurts with slow motors (g +1.0). Still open in P11: wind, motor loss, added delay, per-loop on/off.
