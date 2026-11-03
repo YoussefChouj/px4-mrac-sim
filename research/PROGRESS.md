@@ -185,3 +185,33 @@ Note: px4ctl accepts instances 0..8 only; instance 9 "hung" because the sim neve
   - Candidate standard fixes, to decide by cause: use the baseline closed loop as the reference model (Lavretsky & Wise, adaptive augmentation), or drop the bias regressor on a layer whose baseline has integral action.
   - Not fixed yet. The P11 thrust-disturbance arm needs it, because a layer pinned at its clamp has no authority left.
 - MRL_P_TAU default set to 1.0 (the decision above).
+
+## P11-prep — position layer drops the bias regressor (MRL_P_BIAS, local SIH, ×3 per arm, 2026-11-04)
+
+Why: the pos layer's bias θ[1] (≈ −0.15) duplicated PX4's vz integrator and hover-thrust estimator, which already
+integrate the constant thrust error. Two integrators on one constant form a null direction that only σ splits, so u_ad
+sat at its 0.15 clamp mid-flight. Adaptive augmentation of a baseline with integral action drops that bias term so the
+adaptive loop does not fight the nominal integrator (arXiv 1604.01882; Lavretsky & Wise style augmentation).
+Change: `MracAxis::bias`; new param MRL_P_BIAS (default 0 = off), read by MracPosLayer. Rate/att layers keep the bias.
+
+One build, arms differ only in MRL_P_BIAS. Run `~/.cache/px4-arms/20261104T002650`, all 12 flights PASS.
+
+| Metric (mean [min..max]) | fig8 bias off | fig8 bias on | thrust step bias off | thrust step bias on |
+|---|---|---|---|---|
+| pos u_ad at clamp, whole flight | 0.000–0.077 | 0.069–0.121 | 0.050–0.059 | 0.000–0.114 |
+| where the clamp hits | touchdown only (60–67 s) | mid-flight (19–68 s) | touchdown only (42–46 s) | mid-flight (18–27 s) in 1/3 |
+| dist_z_peak_m (thrust −0.08 step) | – | – | 0.220 [0.179..0.295] | 0.289 [0.113..0.415] |
+| rms_track_err_m | 3.507 [3.489..3.532] | 3.345 [3.272..3.407] | – | – |
+| rate_rms_rp | 0.134 | 0.128 | 0.091 | 0.083 |
+
+Reading:
+- With the bias off, the in-flight clamp is gone. In fig8 run 1 the largest in-flight |u_ad| is 0.088 (t 57 s). The remaining
+  clamp hits are at touchdown: vz stops while vz_sp still descends, so u = θ_r·vz_sp (θ_r ≈ 0.16) saturates on the
+  less-thrust side. θ is frozen there (ground_contact gate + saturation-aware law), and less thrust at touchdown is
+  the direction PX4's own land logic takes.
+- Rejecting the constant thrust step is no worse with the bias off: the peak overlaps and the mean is lower. PX4's
+  integrator does the steady part.
+- Cost: fig8 tracking is 5% worse with the bias off (3.51 vs 3.34 m, the ranges do not overlap). θ_r (vz_sp
+  feed-forward) settles at 0.13–0.17, so the reference model (τ 1.0) and the PX4 vz closed loop still differ. Open:
+  match the reference model to the identified PX4 vz closed loop (the reference model is the baseline closed loop, as in
+  the augmentation practice above) and re-check tracking.

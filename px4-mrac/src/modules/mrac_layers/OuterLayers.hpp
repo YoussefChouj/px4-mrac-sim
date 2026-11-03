@@ -95,6 +95,7 @@ private:
 		(ParamFloat<px4::params::MRL_P_SIG>) _param_sigma,
 		(ParamFloat<px4::params::MRL_P_LIM>) _param_lim,
 		(ParamFloat<px4::params::MRL_P_UMAX>) _param_umax,
-		(ParamFloat<px4::params::MRL_DIST_T>) _param_dist_t
+		(ParamFloat<px4::params::MRL_DIST_T>) _param_dist_t,
+		(ParamInt<px4::params::MRL_P_BIAS>) _param_bias
 	)
 };

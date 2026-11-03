@@ -202,6 +202,15 @@ PARAM_DEFINE_FLOAT(MRL_P_LIM, 0.3f);
 PARAM_DEFINE_FLOAT(MRL_P_UMAX, 0.15f);
 
 /**
+ * Position layer keeps the constant (bias) regressor.
+ *
+ * Off by default: the PX4 vz integrator and hover thrust estimator already integrate the constant term.
+ * @boolean
+ * @group MRAC layers
+ */
+PARAM_DEFINE_INT32(MRL_P_BIAS, 0);
+
+/**
  * Test disturbance: collective thrust offset in flight (positive = less thrust, like extra mass), MRL_EN_POS >= 1.
  * @min -0.3
  * @max 0.3

@@ -18,6 +18,9 @@ struct MracAxis {
 	float theta[NPHI] {};
 	float e{0.f};
 	float u_raw{0.f};     // last unclamped u_ad
+	// false drops the constant regressor: on a layer whose baseline already integrates the constant (PX4 vz
+	// integrator + hover thrust estimate) the two biases share one null direction and only sigma splits them
+	bool bias{true};
 
 	void reset() { xm = 0.f; e = 0.f; u_raw = 0.f; for (float &t : theta) { t = 0.f; } }
 
@@ -35,7 +38,7 @@ struct MracAxis {
 
 		if (!on) { return 0.f; }
 
-		const float phi[NPHI] {x, r, 1.f};
+		const float phi[NPHI] {x, r, bias ? 1.f : 0.f};
 
 		if (adapt && !landed) {
 			float denom = 1.f;

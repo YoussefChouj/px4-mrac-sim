@@ -118,6 +118,9 @@ void MracPosLayer::Run()
 	const MracGains g{_param_tau.get(), _param_gamma.get(), _param_sigma.get(), _param_lim.get(), _param_umax.get()};
 
 	// x = vz (NED, down positive); less negative thrust_body[2] = less thrust = vz goes up, so d x / d u > 0.
+	// PX4's vz integrator and hover thrust estimate own the constant term; adaptive augmentation of an integral
+	// baseline drops the bias regressor so the two do not share one null direction (arXiv 1604.01882)
+	_z.bias = _param_bias.get() != 0;
 	const float u = _z.step(lpos.vz, _vz_sp, dt, _landed, mode == 1, mode == 1, g);
 	const float dist = _landed ? 0.f : _param_dist_t.get();
 
