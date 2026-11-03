@@ -231,3 +231,18 @@ Follow-up, does the reference model match the baseline vz loop? (same build, fig
   The default stays 1.0, which keeps the larger time-scale gap to the attitude layer.
 - Tracking ranking: bias on 3.34 < τ 0.85 3.46 ≈ τ 1.0 3.51 ≈ no adaptation 3.55 m. With the bias off, the z layer's
   tracking gain is small. The bias-on gain came with in-flight clamp hits, which is the drift this item set out to remove.
+
+Cloud A/B (GitHub Actions run 41676782877, `tau-a015-p100` bias off vs `tau-a015-p100-b1` bias on, 5 runs each, all PASS):
+
+| Metric | bias off (default) | bias on |
+|---|---|---|
+| rms_track_err_m | 3.511 [3.469..3.572] | 3.425 [3.387..3.444] |
+| pos_uad_max | 0.145 [0.127..0.150] | 0.150 [0.150..0.150] |
+| pos_theta_end | 0.150 [0.137..0.161] | 0.093 [0.061..0.108] |
+| rate_rms_rp | 0.171 [0.126..0.214] | 0.140 [0.116..0.206] |
+| rate uad_max | 0.112 | 0.120 |
+
+The cloud matches the local runs. Bias off leaves the clamp in 2 of 5 runs, which fits the local touchdown-only hits (the
+artifact has no ULogs, so the timing is not checked here). Tracking costs about 2.5% (ranges just touch). The
+rate_rms ranges overlap. Decision: MRL_P_BIAS stays 0. It removes the mid-flight clamp and the double integrator on
+the constant, which is the property the thesis claims (no layer fights the baseline).
