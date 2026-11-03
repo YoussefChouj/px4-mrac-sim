@@ -17,11 +17,16 @@ struct MracAxis {
 	float xm{0.f};
 	float theta[NPHI] {};
 	float e{0.f};
+	float u_raw{0.f};     // last unclamped u_ad
 
-	void reset() { xm = 0.f; e = 0.f; for (float &t : theta) { t = 0.f; } }
+	void reset() { xm = 0.f; e = 0.f; u_raw = 0.f; for (float &t : theta) { t = 0.f; } }
 
 	// landed: hold xm on the plant and freeze Theta. adapt: update Theta. Returns u_ad (0 when !on).
-	float step(float x, float r, float dt, bool landed, bool on, bool adapt, const MracGains &g)
+	// sat_pos/sat_neg: the mixer cannot deliver more in that direction (control_allocator_status, as
+	// mc_rate_control's integrator). Like there, Theta is not pushed further into a saturated direction;
+	// the own u_ad clamp counts as saturation too. Leakage still runs.
+	float step(float x, float r, float dt, bool landed, bool on, bool adapt, const MracGains &g,
+		   bool sat_pos = false, bool sat_neg = false)
 	{
 		if (landed) { xm = x; }
 
@@ -37,8 +42,12 @@ struct MracAxis {
 
 			for (int i = 0; i < NPHI; i++) { denom += phi[i] * phi[i]; }
 
+			// the gradient step moves u along -e
+			const bool blocked = (-e > 0.f && (sat_pos || u_raw >= g.umax)) || (-e < 0.f && (sat_neg || u_raw <= -g.umax));
+			const float grad = blocked ? 0.f : 1.f;
+
 			for (int i = 0; i < NPHI; i++) {
-				theta[i] = math::constrain(theta[i] + dt * g.gam * (-e * phi[i] / denom - g.sig * theta[i]), -g.lim, g.lim);
+				theta[i] = math::constrain(theta[i] + dt * g.gam * (-grad * e * phi[i] / denom - g.sig * theta[i]), -g.lim, g.lim);
 			}
 		}
 
@@ -46,6 +55,7 @@ struct MracAxis {
 
 		for (int i = 0; i < NPHI; i++) { u += theta[i] * phi[i]; }
 
+		u_raw = u;
 		return math::constrain(u, -g.umax, g.umax);
 	}
 };

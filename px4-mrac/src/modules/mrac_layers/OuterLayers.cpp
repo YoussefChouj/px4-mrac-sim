@@ -27,7 +27,7 @@ void MracAttLayer::Run()
 
 	vehicle_land_detected_s land{};
 
-	if (_land_detected_sub.update(&land)) { _landed = land.landed; }
+	if (_land_detected_sub.update(&land)) { _landed = land.landed || land.maybe_landed; }
 
 	vehicle_attitude_setpoint_s asp{};
 
@@ -99,7 +99,9 @@ void MracPosLayer::Run()
 
 	vehicle_land_detected_s land{};
 
-	if (_land_detected_sub.update(&land)) { _landed = land.landed; }
+	// mc_pos_control resets its velocity integrator on ground_contact (flying_but_ground_contact): vz stops at
+	// touchdown while vz_sp still descends, so adapting there only winds Theta up
+	if (_land_detected_sub.update(&land)) { _landed = land.landed || land.maybe_landed || land.ground_contact; }
 
 	vehicle_attitude_setpoint_s base{};
 

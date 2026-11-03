@@ -144,3 +144,44 @@ Note: px4ctl accepts instances 0..8 only; instance 9 "hung" because the sim neve
 - Smoke run 1 (41657285352) failed at build: `apply.sh` needs `xyc_gains.h`, which was not in the repo. Fixed by committing the generated header (aadddfc), with the ULog paths stripped.
 - **Smoke run 2 (41658077476) [S]: success.** Build 6 min (cold cache), each fly job 1 min, collect OK. `all.json`: mrac-off rate_rms_rp 0.084, hold max 1.28 m; mrac-dist-adapt dist_roll_peak 3.76°, dist_rate_rms 0.104, uad_max 0.087, hold max 0.62 m. Both pass. One run per arm, so this checks the pipeline, not the statistics. For comparison, the local P10 +MRAC arms (5 runs each, all three xy controllers) gave 4.04–7.13°.
 - Next: dispatch sweeps with `runs` 10 (outer tau, ADRC XYC_WC, P11 campaign).
+
+## P11-prep — outer reference-model tau sweep (cloud, 2026-11-04)
+- **Setup.** GH Actions run 41666014724: 53 jobs, all success. Base: `ladder-all.json` (SIH, all 3 layers, degraded plant MC_*RATE_K 0.5 + SIH_T_TAU 0.08, DIST_R/T 0.08, hold + 2 fig8 laps). Arms: MRL_A_TAU {0.15, 0.30, 0.60} × MRL_P_TAU {0.5, 1.0, 2.0}, plus ladder-off; 5 runs each. Rate tau fixed at 0.06.
+- **Prediction (written before the results).** Larger outer tau means less layer interaction, but slower outer rejection.
+- **Medians [S]** (half-range in brackets):
+
+| arm | fig8 rms m | dist roll peak ° | rate rms | rate u_ad max | runs with u_ad at the clamp | tilt max ° |
+|---|---|---|---|---|---|---|
+| ladder-off | 3.71 | 19.99 | 0.151 | – | – | 42.1 |
+| a0.15 p0.5 (default) | 3.48 | 6.50 | 0.155 | 0.300 | 4/5 | 42.5 |
+| a0.15 p1.0 | 3.44 | 5.70 | 0.120 (0.24) | 0.123 | 2/5 | 42.6 |
+| a0.15 p2.0 | 3.41 | 5.61 | 0.119 (0.14) | 0.294 | 3/5 (≥0.29) | 42.2 |
+| a0.30 p0.5 / p1.0 / p2.0 | 3.78 / 3.73 / 3.71 | 6.40 / 5.80 / 5.78 | 0.169 / 0.123 / 0.120 | 0.300 | – | ~40.6 |
+| a0.60 p0.5 / p1.0 / p2.0 | 4.36 / 4.27 / 4.27 | 6.15 / 5.85 / 5.59 | 0.155 / 0.119 / 0.130 | 0.26–0.30 | – | ~36.1 |
+
+- **Reading.**
+  - Every adaptive arm cuts the disturbance roll peak about 3× (20° to 5.6–6.5°).
+  - A slower attitude tau costs fig8 tracking: 0.30 matches off and 0.60 is +15%. The lower tilt there is sluggishness, not better control.
+  - A slower position tau (0.5 to 1.0) lowers the rate rms (0.155 to 0.120) and the disturbance peak (6.5° to 5.7°) without hurting tracking. Going to 2.0 adds nothing.
+- **Decision: keep MRL_A_TAU 0.15 and set MRL_P_TAU 1.0.** That is 2.5× rate→att and 6.7× att→pos. The literature's 3–5× per loop is roughly met; a slower attitude loop measurably hurts tracking.
+- **Finding (separate problem): rate-layer parameter drift is bimodal.** In every arm, some runs end with the rate θ at about 0.9–1.1 and u_ad pinned at UMAX 0.3. The rest end at θ 0.1–0.3 and u_ad around 0.11.
+  - The worst run (a0.15 p1.0 #4) has rate rms 0.60 and att rms 7.7°, which is a burst.
+  - Outer tau changes how often the drift happens, not whether it happens. So the cause is in the rate law itself (σ 0.05, γ 2, the clamp acting as saturation), not in loop separation.
+  - Next item (P11 blocker): find what drives θ (its time history in a drifting ULog). Then pick a standard robust-MRAC fix (dead-zone, e-mod, or a projection bound tied to the u_ad limit, as in Ioannou & Sun ch. 8) by physical cause, not to make the number pass.
+
+## P11-prep — root cause of the θ drift, and the fix (local SIH, tau-a015-p100 ×3, 2026-11-04)
+- **Cause (from the ULog θ history, `drift_digest.py`).** The rate θ wound up at 60–61 s, while the vehicle was still airborne during the fast final descent, with a motor at 0.00. The land detector reported ground_contact at 63.8 s and maybe_landed at 64.8 s. So the adaptive law kept integrating error the mixer could not act on: actuator saturation, not loop separation.
+- **Attempt 1, rejected: gate on maybe_landed** (the same gate as mc_rate_control's integrator; kept because it is harmless). Arms run 20261103T235442: θ_end 0.27–0.67 and u_ad max 0.19–0.30. Not fixed.
+- **Fix: saturation-aware adaptation, reusing PX4's own rule.** MracLayers subscribes to `control_allocator_status`. Per axis it sets sat_pos/sat_neg from `unallocated_torque` exactly as `MulticopterRateControl::setSaturationStatus` does. `MracAxis::step` drops the gradient term when it would push u further into a saturated direction, or past its own UMAX clamp. Leakage still runs.
+
+| run (local, 3×) | θ_end rate | u_ad max rate | rate rms | fig8 track [m] | pos u_ad max | pass |
+|---|---|---|---|---|---|---|
+| maybe_landed only (…235442) | 0.27–0.67 | 0.19–0.30 | 0.148 | 3.49 | 0.150 | 3/3 |
+| + saturation-aware (…000057) | 0.096 [0.090..0.106] | 0.116 [0.109..0.126] | 0.132 | 3.37 | 0.150 | 3/3 |
+| + pos gate on ground_contact (…001204) | 0.098 [0.093..0.103] | 0.106 [0.101..0.110] | 0.129 | 3.35 | 0.150 | 3/3 |
+
+- **The position layer gate now copies mc_pos_control.** It freezes on ground_contact (PX4 resets its velocity integrator on `flying_but_ground_contact`). Touchdown windup is smaller (e at touchdown went from −0.4/−0.5 to −0.19) but not gone.
+- **Open finding: the position layer bias duplicates PX4's vz integrator.** θ[1] builds to about −0.15 during the takeoff climb (mean e +0.11–0.14) and stays there through the fig8. u_ad then sits at the 0.15 clamp 9–16% of the flight. PX4's velocity integrator and hover-thrust estimate already hold that constant, so the sum is fixed and the split between the two drifts, with only σ pulling it back.
+  - Candidate standard fixes, to decide by cause: use the baseline closed loop as the reference model (Lavretsky & Wise, adaptive augmentation), or drop the bias regressor on a layer whose baseline has integral action.
+  - Not fixed yet. The P11 thrust-disturbance arm needs it, because a layer pinned at its clamp has no authority left.
+- MRL_P_TAU default set to 1.0 (the decision above).

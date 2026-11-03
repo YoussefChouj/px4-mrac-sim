@@ -40,7 +40,17 @@ void MracLayers::Run()
 
 	vehicle_land_detected_s land{};
 
-	if (_land_detected_sub.update(&land)) { _landed = land.landed; }
+	// same freeze as mc_rate_control's integrator: maybe_landed comes seconds before landed at touchdown
+	if (_land_detected_sub.update(&land)) { _landed = land.landed || land.maybe_landed; }
+
+	control_allocator_status_s cas{};
+
+	if (_alloc_status_sub.update(&cas)) {   // same rule as mc_rate_control setSaturationStatus
+		for (int i = 0; i < 3; i++) {
+			_sat_pos[i] = !cas.torque_setpoint_achieved && cas.unallocated_torque[i] > FLT_EPSILON;
+			_sat_neg[i] = !cas.torque_setpoint_achieved && cas.unallocated_torque[i] < -FLT_EPSILON;
+		}
+	}
 
 	vehicle_rates_setpoint_s rsp{};
 
@@ -83,7 +93,7 @@ void MracLayers::Run()
 
 	for (int a = 0; a < 3; a++) {
 		const bool on = (mode == 1) && ((a < 2) || (_param_yaw.get() == 1));
-		const float u_ad = _ax[a].step(av.xyz[a], _rate_sp[a], dt, _landed, on, on, g);
+		const float u_ad = _ax[a].step(av.xyz[a], _rate_sp[a], dt, _landed, on, on, g, _sat_pos[a], _sat_neg[a]);
 
 		out.xyz[a] = math::constrain(base.xyz[a] + u_ad + (_landed ? 0.f : dist[a]), -1.f, 1.f);
 

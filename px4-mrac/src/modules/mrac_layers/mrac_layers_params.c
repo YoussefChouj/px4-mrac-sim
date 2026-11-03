@@ -160,11 +160,14 @@ PARAM_DEFINE_INT32(MRL_EN_POS, 0);
 
 /**
  * Vertical velocity reference model time constant [s].
+ *
+ * 1.0 keeps a 6.7x time-scale gap to the attitude layer (MRL_A_TAU 0.15); see research/PROGRESS.md P11-prep tau sweep.
+ *
  * @min 0.05
  * @max 5
  * @group MRAC layers
  */
-PARAM_DEFINE_FLOAT(MRL_P_TAU, 0.5f);
+PARAM_DEFINE_FLOAT(MRL_P_TAU, 1.0f);
 
 /**
  * Position layer learning rate gamma.

@@ -23,6 +23,7 @@
 #include <uORB/topics/parameter_update.h>
 #include <uORB/topics/vehicle_angular_velocity.h>
 #include <uORB/topics/vehicle_land_detected.h>
+#include <uORB/topics/control_allocator_status.h>
 #include <uORB/topics/vehicle_rates_setpoint.h>
 #include <uORB/topics/vehicle_torque_setpoint.h>
 
@@ -49,6 +50,8 @@ private:
 	uORB::Subscription _angular_velocity_sub{ORB_ID(vehicle_angular_velocity)};
 	uORB::Subscription _rates_sp_sub{ORB_ID(vehicle_rates_setpoint)};
 	uORB::Subscription _land_detected_sub{ORB_ID(vehicle_land_detected)};
+	uORB::Subscription _alloc_status_sub{ORB_ID(control_allocator_status)};
+	bool _sat_pos[3] {}, _sat_neg[3] {};
 
 	uORB::Publication<vehicle_torque_setpoint_s> _torque_pub{ORB_ID(vehicle_torque_setpoint)};
 	uORB::Publication<mrac_rate_status_s> _status_pub{ORB_ID(mrac_rate_status)};
