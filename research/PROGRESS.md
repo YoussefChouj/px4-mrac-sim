@@ -246,3 +246,25 @@ The cloud matches the local runs. Bias off leaves the clamp in 2 of 5 runs, whic
 artifact has no ULogs, so the timing is not checked here). Tracking costs about 2.5% (ranges just touch). The
 rate_rms ranges overlap. Decision: MRL_P_BIAS stays 0. It removes the mid-flight clamp and the double integrator on
 the constant, which is the property the thesis claims (no layer fights the baseline).
+
+## P10 follow-up — ADRC xy bandwidth sweep (XYC_WC), cloud
+
+- [S] GitHub Actions run 41678708699 (`arms.yml`, runs 3), scenarios `adrc-wc-{08,12,15,20,25,30}` = `xyc-adrc-a7`
+  (SIH, XYC_MODE 2, XYC_AMAX 7, hold 8 s + fig8 8 m / 12 s ×2) with XYC_WC 0.8 … 3.0. 18 runs, 21/21 jobs green.
+
+| XYC_WC | pass | rms_track_err_m | max_hold_err_m | att_track_rms_deg | rate_rms_rp | max_tilt_deg |
+|---|---|---|---|---|---|---|
+| 0.8 | 0/3 | 5.55 [5.49..5.62] | 1.66 | 2.90 | 0.076 | 35.7 |
+| 1.2 | 0/3 | 3.68 [3.65..3.70] | 1.89 | 3.87 | 0.089 | 35.3 |
+| 1.5 (default) | 3/3 | 2.98 [2.96..3.00] | 1.12 | 4.40 | 0.110 | 35.3 |
+| 2.0 | 3/3 | 2.17 [2.06..2.25] | 0.56 | 5.20 | 0.155 | 35.6 |
+| **2.5** | 3/3 | **1.07 [1.05..1.07]** | **0.40** | 5.51 | 0.198 | 35.6 |
+| 3.0 | 3/3 | 0.76 [0.72..0.79] | 0.61 [0.45..0.72] | **12.09** | **0.346** | 36.5 |
+
+- max_tilt is ~35.5° in every arm = atan(7/9.81): the XYC_AMAX 7 acceleration clamp, so tilt does not separate the arms.
+- 0.8 and 1.2 fail the 1.5 m hold limit (too slow to reject the post-takeoff offset).
+- 3.0 tracks best but attitude tracking error doubles (5.5 → 12.1°), roll/pitch rate RMS +75 % and hold error rises
+  again with wider spread: the onset of oscillation. 2.5 is the knee (best hold, track 1.07 m, rates still smooth).
+- Decision: tuned ADRC = XYC_WC 2.5 with XYC_AMAX 7, saved as `scenarios/xyc-adrc-tuned.json`. Firmware defaults are
+  unchanged (XYC_WC 1.5, XYC_AMAX 4) because XYC_AMAX is shared with the other xy modes and 2.5 was only measured at
+  AMAX 7. The ADRC "untuned" P10 item is CLOSED for the fig8 case.
