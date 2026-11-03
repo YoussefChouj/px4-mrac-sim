@@ -1,0 +1,41 @@
+{
+ "sim": "sih",
+ "speed": 5,
+ "alt": 5,
+ "params": {
+  "MRL_EN_RATE": 0,
+  "MRL_EN_ATT": 0,
+  "MRL_EN_POS": 0,
+  "XYC_MODE": 2,
+  "XYC_AMAX": 7.0,
+  "XYC_WC": 1.2
+ },
+ "steps": [
+  {
+   "do": "takeoff"
+  },
+  {
+   "do": "hold",
+   "s": 8
+  },
+  {
+   "do": "track",
+   "shape": "fig8",
+   "size": 8,
+   "period": 12,
+   "laps": 2
+  },
+  {
+   "do": "hold",
+   "s": 4
+  },
+  {
+   "do": "land"
+  }
+ ],
+ "limits": {
+  "max_hold_err_m": 1.5,
+  "max_tilt_deg": 45,
+  "must_land": true
+ }
+}
