@@ -301,3 +301,7 @@ the constant, which is the property the thesis claims (no layer fights the basel
 ## P8 gyro/accel noise (local, SIH)
 
 - [S] stock SIH flying noise is hard-coded 0.14/0.07/0.03 rad/s; real-log estimator (diff/sqrt2, 100 Hz block avg, airborne) gives 0.074/0.037/0.015 rad/s, accel 0.24/0.86/0.82 m/s^2 vs real 0.020-0.024 rad/s, ~0.1 m/s^2. New patch_sih_imu_noise.py (SIH_GYR_STD/SIH_ACC_STD, 0 = stock). Cal flight GYR 0.044 ACC 0.2: gyro 0.024/0.024/0.022, accel 0.13/0.10/0.46 (z excess = thrust dynamics [A]). Same p11 lqr-alone flight: track 0.259 -> 0.055 m, att err 0.58 -> 0.15 deg, so stock noise dominated P11 numbers; key pairs re-run as p11n-*.
+
+## P11 batch 4: realistic IMU noise (cloud, 7 arms x 5)
+
+- [S] run 41692068353, 35/35 PASS. With SIH_GYR_STD 0.044: 13 ms delay harmless (rate u_ad max 0.004 vs 0.3 pinned with stock noise), so batch 2-3 delay risk was a noise artifact; motor-1 70 %: MRAC hold 0.226 -> 0.111 m (p 8e-4), att 0.62 -> 0.28 deg (p 1e-11); nominal att cost +0.07 deg. Batches 1-3 superseded.

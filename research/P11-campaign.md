@@ -186,3 +186,53 @@ What this means:
 | p11-x-dly13-lqr | max_hold_err_m | 0.254 | 0.225 | -0.029 | -0.45 | 0.467 |
 | p11-x-dly13-lqr | att_track_rms_deg | 0.600 | 1.248 | +0.648 | +10.97 | 4.07e-06 |
 | p11-x-dly13-lqr | rate_rms_rp | 0.077 | 0.499 | +0.422 | +31.59 | 5.4e-07 |
+
+
+## Batch 4 — realistic IMU noise (supersedes the delay findings of batches 2–3)
+
+[S] GitHub Actions run 41692068353 (sim repo d383927), 7 arms × 5 runs, 35/35 PASS. New patch
+`px4-mrac/patch_sih_imu_noise.py`: SIH_GYR_STD 0.044 / SIH_ACC_STD 0.2. This gives 0.022–0.024 rad/s with the
+real-log estimator (real drone 0.020–0.024). Stock SIH flies with 0.074/0.037/0.015 rad/s on the same estimator, 3× too noisy on roll.
+
+| case | lqr-alone → lqr-plus-mrac [S] | Welch p |
+|---|---|---|
+| nominal | track 0.073 → 0.084 m (n.s.), att err 0.154 → 0.219° | att 0.018 |
+| 13 ms delay | track 0.086 → 0.093 m, rate_rms 0.030 → 0.033, rate-layer u_ad max 0.004 (clamp 0.3) | rate 4e-4, others n.s. |
+| 13 ms, rate layer only | 5/5 PASS, u_ad max 0.003 (batch 3: 0/5, pinned at 0.3) | — |
+| motor 1 at 70 % | hold 0.226 → 0.111 m, att err 0.62 → 0.28°, track 0.097 → 0.084 m | hold 8e-4, att 1e-11 |
+
+What this means:
+- **The batch 2–3 delay risk was a noise artifact.** Stock SIH gyro noise is 3× too high. With the 13 ms delay,
+  the rate layer adapted to that noise until it saturated. With the measured noise, the layer stays quiet at 13 ms.
+  Delay is not a thesis risk at the real value. Batches 1–3 overstate every error, so do not quote them.
+- **Motor-1 partial loss is the clean MRAC result.** MRAC halves the hold error and cuts attitude error 55 %, with
+  very large effect sizes. That is the use case adaptive control is for.
+- Nominal cost: MRAC adds 0.07° attitude error and no tracking benefit when the plant is known.
+- From now on, every research-drone run uses SIH_GYR_STD 0.044 / SIH_ACC_STD 0.2.
+
+### Batch 4 tables (mean [min..max], n 5)
+
+| arm | n | pass | rms_track_err_m | max_hold_err_m | max_tilt_deg | att_track_rms_deg | rate_rms_rp |
+|---|---|---|---|---|---|---|---|
+| p11n-lqr-alone | 5 | 5/5 | 0.073 [0.06..0.09] | 0.070 [0.06..0.10] | 1.802 [1.56..2.43] | 0.154 [0.15..0.16] | 0.029 [0.03..0.03] |
+| p11n-lqr-plus-mrac | 5 | 5/5 | 0.084 [0.04..0.10] | 0.078 [0.06..0.10] | 1.958 [1.68..2.25] | 0.219 [0.16..0.25] | 0.032 [0.03..0.03] |
+| p11n-x-dly13-lqr-alone | 5 | 5/5 | 0.086 [0.07..0.11] | 0.094 [0.05..0.15] | 1.589 [1.47..1.84] | 0.153 [0.14..0.17] | 0.030 [0.03..0.03] |
+| p11n-x-dly13-lqr-plus-mrac | 5 | 5/5 | 0.093 [0.08..0.11] | 0.088 [0.06..0.12] | 2.040 [1.77..2.31] | 0.169 [0.16..0.21] | 0.033 [0.03..0.03] |
+| p11n-x-dly13-rateonly-lqr | 5 | 5/5 | 0.090 [0.08..0.10] | 0.072 [0.05..0.12] | 1.895 [1.55..2.21] | 0.161 [0.15..0.18] | 0.033 [0.03..0.03] |
+| p11n-x-mot1-lqr-alone | 5 | 5/5 | 0.097 [0.07..0.10] | 0.226 [0.18..0.28] | 3.234 [3.05..3.42] | 0.620 [0.61..0.64] | 0.050 [0.05..0.05] |
+| p11n-x-mot1-lqr-plus-mrac | 5 | 5/5 | 0.084 [0.07..0.09] | 0.111 [0.09..0.14] | 2.129 [1.55..2.86] | 0.277 [0.26..0.28] | 0.037 [0.04..0.04] |
+
+| pair (alone -> plus-mrac) | metric | alone | plus-mrac | diff | g | p (Welch) |
+|---|---|---|---|---|---|---|
+| p11n-lqr | rms_track_err_m | 0.073 | 0.084 | +0.011 | +0.48 | 0.431 |
+| p11n-lqr | max_hold_err_m | 0.070 | 0.078 | +0.008 | +0.44 | 0.464 |
+| p11n-lqr | att_track_rms_deg | 0.154 | 0.219 | +0.065 | +2.20 | 0.0177 |
+| p11n-lqr | rate_rms_rp | 0.029 | 0.032 | +0.003 | +2.35 | 0.0132 |
+| p11n-x-dly13-lqr | rms_track_err_m | 0.086 | 0.093 | +0.007 | +0.39 | 0.518 |
+| p11n-x-dly13-lqr | max_hold_err_m | 0.094 | 0.088 | -0.007 | -0.18 | 0.768 |
+| p11n-x-dly13-lqr | att_track_rms_deg | 0.153 | 0.169 | +0.016 | +0.82 | 0.21 |
+| p11n-x-dly13-lqr | rate_rms_rp | 0.030 | 0.033 | +0.003 | +3.95 | 0.000411 |
+| p11n-x-mot1-lqr | rms_track_err_m | 0.097 | 0.084 | -0.013 | -1.07 | 0.105 |
+| p11n-x-mot1-lqr | max_hold_err_m | 0.226 | 0.111 | -0.115 | -3.42 | 0.000797 |
+| p11n-x-mot1-lqr | att_track_rms_deg | 0.620 | 0.277 | -0.343 | -34.58 | 1.37e-11 |
+| p11n-x-mot1-lqr | rate_rms_rp | 0.050 | 0.037 | -0.014 | -33.63 | 7.75e-12 |
