@@ -72,6 +72,8 @@ private:
 		(ParamFloat<px4::params::MRL_R_UMAX>) _param_umax,
 		(ParamInt<px4::params::MRL_R_YAW>) _param_yaw,
 		(ParamFloat<px4::params::MRL_DIST_R>) _param_dist_r,
+		(ParamFloat<px4::params::MRL_ID_AMP>) _param_id_amp,
+		(ParamInt<px4::params::MRL_ID_AX>) _param_id_ax,
 		(ParamFloat<px4::params::MRL_DIST_P>) _param_dist_p
 	)
 };

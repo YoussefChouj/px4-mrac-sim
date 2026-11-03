@@ -1,0 +1,19 @@
+{
+ "sim": "gz", "vehicle": "research_drone", "speed": 1, "alt": 2,
+ "params": {"MRL_EN_RATE": 2, "MRL_ID_AMP": 0.0, "MRL_ID_AX": 0},
+ "steps": [
+  {"do": "takeoff"},
+  {"do": "hold", "s": 5},
+  {"do": "param", "name": "MRL_ID_AMP", "value": 0.06},
+  {"do": "hold", "s": 30},
+  {"do": "param", "name": "MRL_ID_AMP", "value": 0.0},
+  {"do": "param", "name": "MRL_ID_AX", "value": 1},
+  {"do": "hold", "s": 3},
+  {"do": "param", "name": "MRL_ID_AMP", "value": 0.06},
+  {"do": "hold", "s": 30},
+  {"do": "param", "name": "MRL_ID_AMP", "value": 0.0},
+  {"do": "hold", "s": 3},
+  {"do": "land"}
+ ],
+ "limits": {"max_hold_err_m": 1.5, "max_tilt_deg": 30, "must_land": true}
+}

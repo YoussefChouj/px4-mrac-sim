@@ -64,7 +64,19 @@ void MracLayers::Run()
 	const int mode = _param_en_rate.get();                 // 1 route + adapt, 2 route only (u_ad = 0)
 	const bool adapt = (mode == 1) && !_landed;
 	const MracGains g{_param_tau.get(), _param_gamma.get(), _param_sigma.get(), _param_lim.get(), _param_umax.get()};
-	const float dist[3] {_param_dist_r.get(), _param_dist_p.get(), 0.f};
+	float dist[3] {_param_dist_r.get(), _param_dist_p.get(), 0.f};
+
+	if (_param_id_amp.get() > 0.f && !_landed) {           // sysid multisine, rebuilt offline from timestamp_sample
+		const double ts = now * 1e-6;
+		float d = 0.f;
+
+		for (int k = 0; k < 12; k++) {
+			const double f = 0.5 * pow(40.0, k / 11.0), ph = M_PI * k * (k + 1) / 12.0;
+			d += (float)sin(2.0 * M_PI * f * ts + ph);
+		}
+
+		dist[math::constrain((int)_param_id_ax.get(), 0, 2)] += _param_id_amp.get() * d / 4.f;
+	}
 
 	vehicle_torque_setpoint_s out = base;
 	mrac_rate_status_s st{};

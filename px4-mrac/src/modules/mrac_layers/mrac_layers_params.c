@@ -64,6 +64,37 @@ PARAM_DEFINE_INT32(MRL_R_YAW, 0);
 PARAM_DEFINE_FLOAT(MRL_DIST_R, 0.0f);
 
 /**
+ * System-ID multisine torque amplitude (normalized, 0 = off), any MRL_EN_RATE >= 1, in flight only.
+ *
+ * Twelve log-spaced tones 0.5-20 Hz, Schroeder phases, time base hrt seconds of the torque timestamp_sample, so the
+ * dither is rebuilt offline from the log. The axis is MRL_ID_AX.
+ * @min 0
+ * @max 0.3
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_ID_AMP, 0.0f);
+
+/**
+ * System-ID multisine axis: 0 roll, 1 pitch, 2 yaw.
+ * @min 0
+ * @max 2
+ * @group MRAC layers
+ */
+PARAM_DEFINE_INT32(MRL_ID_AX, 0);
+
+/**
+ * Gazebo pure actuator delay added in the gz bridge ESC output (patch_gz_delay.py), sim only.
+ *
+ * The stock gz sim already shows about 10 ms rate-loop delay. 3 ms brings the fitted research-drone delay to the
+ * real 12.9-14.1 ms (plant_fit.py on rd-gz-id).
+ * @unit ms
+ * @min 0
+ * @max 50
+ * @group Simulator
+ */
+PARAM_DEFINE_INT32(SIM_GZ_ACT_DLY, 0);
+
+/**
  * Test disturbance: constant pitch torque added in flight (normalized), any MRL_EN_RATE >= 1.
  * @min -0.5
  * @max 0.5

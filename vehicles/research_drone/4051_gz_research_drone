@@ -52,3 +52,10 @@ param set-default SIM_GZ_EC_MAX4 969
 param set-default MPC_THR_HOVER 0.55
 
 param set-default NAV_DLL_ACT 2
+
+# Actuator delay (PX4-mrac tree only): stock gz shows ~10 ms rate-loop delay, the real drone 12.9-14.1 ms [D];
+# +3 ms fits 12.7-13.3 ms (plant_fit.py, rd-gz-id 2026-11-03).
+if param find SIM_GZ_ACT_DLY
+then
+	param set-default SIM_GZ_ACT_DLY 3
+fi

@@ -37,6 +37,7 @@ grep -q 'mrac_layers start' ROMFS/px4fmu_common/init.d/rc.mc_apps || sed -i 's/^
 python3 "$SRC/patch_rate_control.py" src/modules/mc_rate_control
 python3 "$SRC/patch_outer_control.py" src/modules
 python3 "$SRC/patch_pos_xyc.py" src/modules
+python3 "$SRC/patch_gz_delay.py" .
 # xy baseline gains come from xyc_design.py (fitted from a flown ULog); refuse to build without them
 test -f "$SRC/xyc_gains.h" || { echo "missing $SRC/xyc_gains.h: run xyc_design.py first" >&2; exit 1; }
 cp "$SRC/xyc_gains.h" src/modules/mrac_layers/
