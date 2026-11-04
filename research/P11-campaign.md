@@ -162,7 +162,7 @@ What this means:
 
 What this means:
 - **The rate layer is the one that reacts to delay.** On its own it pins its 0.3 output clamp in every run, and rate
-  activity is 3.7× the baseline. The attitude and position layers do nothing harmful at 13 ms.
+  activity is 3.7× the baseline. The attitude and vz layers do nothing harmful at 13 ms.
 - With all three layers on, rate activity is 6.5× and attitude error doubles. The outer layers amplify what the rate
   layer starts. Tracking does not change (0.228 vs 0.227 m, p 0.97).
 - Fix direction [A]: make the rate layer delay-aware, not slower. Options: a reference model that includes the 13 ms

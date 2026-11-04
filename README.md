@@ -1,6 +1,6 @@
 # px4-mrac-sim
 
-Multi-time-scale MRAC layers (rate, attitude, position) for PX4 v1.17.0, plus the tools that fly scenario
+Multi-time-scale MRAC layers (rate, attitude, vz, xy) for PX4 v1.17.0, plus the tools that fly scenario
 experiments in SIH or Gazebo and score them from the ULog.
 
 | folder | what |
@@ -11,6 +11,19 @@ experiments in SIH or Gazebo and score them from the ULog.
 | `vehicles/`, `airframes/`, `worlds/` | Gazebo research-drone model, SIH airframe params, worlds |
 | `px4ctl` | local PX4 control script (build, run, gz, param, scenario) |
 | `ci/` | GitHub Actions helpers: `build.sh`, `run.sh`, `collect.py` |
+
+## Layers and what each one adapts
+
+| Layer | Switch | Adapts | Code |
+|---|---|---|---|
+| rate | MRL_EN_RATE | body-rate setpoint -> torque, 3 axes | MracLayers.cpp |
+| attitude | MRL_EN_ATT | attitude error -> rate setpoint, roll/pitch | MracLayers.cpp |
+| vz | MRL_EN_POS | vertical velocity -> collective thrust only (the code calls it the pos layer) | OuterLayers.cpp |
+| xy | MRL_EN_XY | horizontal acceleration setpoint of XyCtrl, x and y | OuterLayers.cpp |
+
+Each switch: 0 off, 1 adapt, 2 status only (u_ad = 0). Per-loop regressor masks MRL_{R,A,P,X}_FEAT (default 7 = the
+original x, r, bias law) select extra terms; see MracAxis.hpp.
+
 
 ## Run a sweep in the cloud
 

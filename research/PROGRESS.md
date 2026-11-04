@@ -468,8 +468,16 @@ designed on the same fitted model (research/lqrk.py). The LQR position gain was 
 | pid-tuned (part 4) | - | - | - | 0.31 | - |
 
 Hold error falls steadily with the slow-pole frequency. Set 4 reaches the tuned PID's level, and tilt does not grow.
-This confirms part 4: the wind gap came from baseline bandwidth. The default stays 0 until fig8 tracking and the
-plus-mrac arm are checked with set 4.
+This confirms part 4: the wind gap came from baseline bandwidth.
+
+Checks with set 4 (~/.cache/px4-arms/p16set5, sim repo 2408fb5) [D]:
+- Aggressive fig8 (pg-def course, XYC_MODE 1):
+  - set 0: rms track 0.74 / 0.76 m, hold 0.18 / 0.13 m, max tilt 13.1 / 13.3 deg.
+  - set 4: rms track 0.49 / 0.47 m, hold 0.11 / 0.13 m, max tilt 20.6 / 20.5 deg.
+  - Set 4 tracks 36% better and holds no worse. It tilts more, in the same band as the tuned PID (18.9 deg).
+- lqr-plus-mrac on set 4, SIH wind: max hold 0.31 / 0.36 m, the same as lqr set 4 alone (0.26 / 0.44 m).
+  Seed 3 never flew (arm() COMMAND_DENIED at 5.8 s, an infra failure), so it needs a retry.
+- Decision: make XYC_LQR_SET default 4. Rebuild once gz is idle, so the queued P14/terrain lqr arms keep one build.
 
 ## P16 part 4: is the wind hold limited by the MRAC clamp or the LQR integral? (2026-11-04)
 Same SIH wind decks as part 3 (mean N1/E2 m/s, turbulence sigma 0.8, gust E5 m/s 8 s, KDV 0.45), runs 3, local
@@ -489,3 +497,65 @@ helps LQR by about 0.1 m (ranges overlap). Neither is the bottleneck: the 0.3 vs
 bandwidth during the gust transient (tuned PID has stiffer position + velocity gains). Defaults unchanged.
 Next: raise LQR position/velocity weights (stiffer baseline) and re-run; MRAC pos reference model tau 1.0 is slower
 than the gust, so it cannot reject it either (part of the same bandwidth story).
+
+## 2026-11-04 afternoon gz queue (relaunched after a session restart killed the agent-held waiters)
+
+- **P14 planner run 1** (`~/.cache/px4-arms/p14`, fig `figs/p14-plan.png`, LQR set 0 build): pid-alone PASS (clearance 0.42 m,
+  intrusion 0, tilt 40.5 deg, hold 0.08 m). lqr-alone FAIL (intrusion 0.11 m, flip: roll > 60 deg at t 43.7 s, 7 s into the plan,
+  ve 3.8 m/s at n 14.2 e 1.7); lqr-plus-mrac FAIL (intrusion 0.26 m, flip at t 47.0 s). Cause: `plan` sent each A* leg as a
+  raw position step (up to 7.6 m). PX4's position controller (pid arm) caps velocity at MPC_XY_VEL_MAX; the XyCtrl LQR path has
+  no velocity limit, so a 7.6 m error drives it to full tilt and it cuts corners into poles. Fix (agent/scenario.py `plan`):
+  every arm now gets the same reference moving along each leg at `speed` (default 1.0 m/s) with position + velocity feedforward
+  at 20 Hz. Rerun queued as p14b on the set 4 build. Open question for the thesis: should XyCtrl also saturate the velocity it
+  commands (as PX4 does) so a step reference cannot flip it? Recorded, not built.
+- **P13 terrain smoke** (`~/.cache/px4-arms/p13t`, baylands_wind, pid-alone): PASS on retry 1 (first try produced no
+  metrics, infra): hold 0.36 m, alt err 0.29 m, overshoot 0.35 m, tilt 46.5 deg, rate_rms 0.14. Elapsed 1243 s (baylands is slow).
+- **Drag check c 0.36** (`p13b-c036`, pid-alone x2, 2/2 PASS, tilt max 8.4 deg): implied linear drag 0.34 / 0.30 1/s
+  (mean |w| 2.34 / 2.22 m/s). Target 0.455 not reached; c 0.2 gave 0.21-0.25, so drag grows slower than linearly in c
+  (about 0.56 1/s per unit c between the two points). Next: c 0.6, runtime copy only, queued.
+- **P13 obstacle wind c 0.2** (`p13ow-c02`): only pid-alone-1 has metrics (PASS, clearance 0.40, tilt 27.7, hold 0.12,
+  fig `figs/p13ow-c02.png`); the other 4 runs died with the session restart (no metrics, infra). Rerun pending at the final c.
+- **Default XYC_LQR_SET = 4** set in mrac_layers_params.c; rebuild running (`~/.cache/lqrset4_build.log`).
+
+## 2026-11-04 errata after the Codex review (`research/reviews/codex-review-2026-11-04.md`)
+
+The review reproduced three numbers (bias-off rate RMS 0.134, z peak 0.220, set-4 tilt 20.6) [M]. Corrections:
+
+| Where | Old text | Correction |
+|---|---|---|
+| P16 "Next" (wind A/B) | "LQR has no integral, so steady wind leaves an offset" | Wrong: `XyCtrl.cpp` integrates the error inside a band. The wind offset is the band/gated integral and bandwidth, not a missing state. |
+| P5 / P10 summaries | "position layer", "claim holds in SIH for the inner loops" | The position layer adapts vertical velocity to collective thrust only (`OuterLayers.cpp`). No horizontal adaptation exists yet (OPEN-ITEMS V3). Results cover the common PX4 rate/attitude loops plus vz, not any controller on any layer. |
+| P16 delay/noise | "delay risk was a noise artifact" | The delay x noise failure is real outside the chosen noise calibration. It stays as a stress case (V5), not a dismissed artifact. |
+| P8 twin | "bandwidth and lag match within ~10-20 %" | Delays are 78 ms (real) vs 52/53 ms (sim), so sim lag is about 33 % short. The twin is a bounded surrogate, not a matched plant. |
+| P16 set 4 | "make XYC_LQR_SET default 4" | The default stays 4 for now, but it is a candidate chosen on the selection seeds. It needs a held-out check (V6) before the campaign. |
+| Cloud batches | "runs 5" | `ci/run.sh` ran each repetition as run 1, so every cloud wind repetition used seed 1. Non-wind decks differed only by scheduling. Fixed in `arms.py` (ARMS_RUN0); earlier cloud spreads understate the variance. |
+
+## 2026-11-04 afternoon: queue 2 results [S] (all measured, ~/.cache/px4-arms/{p16set5b,p14b,p13b-c06})
+
+| Check | Result | Reading |
+|---|---|---|
+| SIH wind, MRAC over LQR set 4, 3 seeds | 3/3 pass; max hold 0.38 [0.32..0.49] m, tilt 17.4 deg, att track 0.77 deg | vz layer u_ad sits AT its 0.15 clamp in wind (pos_uad_max 0.150 all seeds): the clamp, not the law, sets the vz action -> V5/V7 must vary MRL_P_UMAX |
+| P14b planner rerun (gz, 1 seed each) | pid 1/1 hold 0.07 m tilt 10.0; lqr 1/1 hold 0.07 tilt 23.3; lqr+mrac 1/1 hold 0.27 tilt 16.4 | all pass, 1 seed only = smoke, not evidence; figs/p14b-plan.png. P14 now parks (V-first order) |
+| gz drag point c 0.6, pid-alone x2 | implied linear drag 0.59 / 0.56 1/s (mean wind 2.3 m/s, tilt 8.0 / 7.3 deg); xy offset 0.018 m, spread 0.255 m; EKF-truth horiz rms 0.050 m | SIH reference KDV/m = 0.455 1/s; c 0.36..0.6 brackets it -> treat drag as a sensitivity RANGE (review), not an identified value. W worlds stay 0.36 |
+
+## V3 XY adaptation layer: wind A/B (2026-11-04 13:15, local SIH, 3 seeds per arm, median [min..max])
+Layer MRL_EN_XY on the XyCtrl acceleration output (1 = adapt, 2 = status only, u_ad 0). Deck v3-wind-*-xy(0).json.
+Logs ~/.cache/px4-arms/v3-lqr, v3-pid; 12/12 PASS.
+
+| metric | lqr xy adapt | lqr xy0 | pid xy adapt | pid xy0 |
+|---|---|---|---|---|
+| max_hold_err_m | 0.223 [0.195..0.243] | 0.347 [0.305..0.407] | 0.468 [0.389..0.525] | 0.800 [0.646..0.906] |
+| xy_err_rms_m | (not reported for lqr) | | 0.138 [0.120..0.154] | 0.280 [0.255..0.312] |
+| tilt_geo_max_deg | 17.0 | 17.3 | 15.7 | 16.1 |
+| xy_uad_max / clamp frac | 1.88 / 0 | 0 | 1.86 / 0 | 0 |
+| xy_theta_end | 1.04 | 0 | 1.02 | 0 |
+| motor_sat_frac | 0 | 0 | 0 | 0 |
+
+Decision: V3 DONE, the XY layer is built and kept (ranges do not overlap on hold error for either baseline; it never
+clamps). The thesis claim covers rate/att/vz/xy. Caveat: 3 seeds, local; V8 confirms with >=10 paired seeds.
+Gap: xy_err_rms_m missing on the lqr arms (setpoint topic check) -> follow up in V4 metrics.
+
+## V2 claim scope (2026-11-04 13:30): DONE
+Errata table above (P5/P10 "position layer", P16 delay/noise, P8 twin, set 4, cloud seeds). Naming fixed in the sim repo
+README (layer table: rate, att, vz = MRL_EN_POS, xy = MRL_EN_XY), OPEN-ITEMS P5 and P11-campaign.md. Code identifiers
+(MracPosLayer, MRL_P_*, mrac_pos_status) keep their names; docs say "vz layer".
