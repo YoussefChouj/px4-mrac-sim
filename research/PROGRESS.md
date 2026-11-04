@@ -571,3 +571,18 @@ Built rc 0. Same deck as V3 on the new binary, xy adapt, 3 seeds: lqr hold 0.211
 [0.195..0.243]), pid hold 0.438 [0.367..0.554] (was 0.468), pid xy rms 0.140 (was 0.138), xy theta_end 1.02 (was
 1.02-1.04); 6/6 PASS. Default masks reproduce the old law. The full 3-block v2 design (feature library + NN stack,
 frequency scheduler, physics reference model) waits for the operator's OK: research/notes/three-block-v2.md.
+
+## V5 uncertainty screen, model stage (2026-11-04 14:35) [model, not SIH]
+tools/v5_screen.py: roll rate axis (SIH_IXX, L_ROLL*T_MAX), PX4 rate PID defaults, 40 Hz gyro LPF, MRAC rate law copied
+from MracAxis.hpp (defaults tau 0.06, gam 2, sig 0.05, umax 0.3), torque step MRL_DIST_R 0.08 at 2-6 s, +-1 rad/s
+square reference. 360 cases: delay {0,10,20,30,45,60} ms x gyro noise {0, 0.01, 0.044, 0.1 white, 0.044 coloured 20 Hz}
+x motor tau {30, 50.5, 80, 120} ms x torque headroom {1, 0.5, 0.3}. Output research/v5/ (csv, v5-screen.png).
+- Verdicts (rms of w - xm, MRAC vs PID, 10 % band): 180 BENEFIT, 140 HARM, 40 NEUTRAL, 0 divergence.
+- Failure edge = delay: benefit at 0-20 ms in 160/180 cases, harm at 45-60 ms in 106/120; nominal lag/noise:
+  ratio 0.56 / 0.63 / 0.77 / 1.21 / 1.72 / 2.97 at 0/10/20/30/45/60 ms. Noise (white or coloured) changes the ratio
+  by < 0.02: the normalised law + LPF make noise a non-factor in this model (SIH noise result at 0.044 agrees).
+- Lever: adaptation gain, not reference tau. gam 0.5: 0.73 / 0.74 / 0.77 / 0.82 / 1.17 / 2.30 (edge 30 -> 45 ms, less
+  benefit at low delay). tau 0.12 / 0.2 at gam 2: edge stays 20-30 ms.
+- Rule candidate (V7 input) [S until SIH]: gam must fall with loop delay; the real drone's 78 ms (P8 twin) is past
+  the default edge -> the lab gains need gam << 2 or a delay-aware law.
+- NEXT: SIH confirmation at 20/30/45 ms delay with gam 2 vs 0.5 (selected cases), then V5 DONE.
