@@ -1,0 +1,23 @@
+v5-dly24-g2-5 FAIL rate_rms_rp=0.4935 dist_rate_rms=0.2663 dist_peak_rp=0.8578 dist_roll_peak_deg=4.1518 att_track_rms_deg=1.0426 tilt_geo_max_deg=8.7963 xy_err_rms_m=0.3048 xy_offset_m=0.2936 xy_spread_m=0.0821 motor_sat_frac=0.6529 sp_dt_p99_ms=216.0000 uad_max=0.3000 theta_end=0.2170 uad_clamp_frac=0.0518 theta_lim_frac=0.0000 max_hold_err_m=0.2994 rms_track_err_m=0.1100 max_tilt_deg=8.7083
+
+metric                           v5-dly24-g2
+att_track_rms_deg       1.0426 [1.043..1.043]
+dist_peak_rp           0.8578 [0.858..0.858]
+dist_rate_rms          0.2663 [0.266..0.266]
+dist_roll_peak_deg       4.1518 [4.152..4.152]
+max_hold_err_m         0.2994 [0.299..0.299]
+max_tilt_deg           8.7083 [8.708..8.708]
+motor_sat_frac         0.6529 [0.653..0.653]
+rate_rms_rp            0.4935 [0.494..0.494]
+rms_track_err_m        0.1100 [0.110..0.110]
+sp_dt_p99_ms     216.0000 [216.000..216.000]
+theta_end              0.2170 [0.217..0.217]
+theta_lim_frac         0.0000 [0.000..0.000]
+tilt_geo_max_deg       8.7963 [8.796..8.796]
+uad_clamp_frac         0.0518 [0.052..0.052]
+uad_max                0.3000 [0.300..0.300]
+xy_err_rms_m           0.3048 [0.305..0.305]
+xy_offset_m            0.2936 [0.294..0.294]
+xy_spread_m            0.0821 [0.082..0.082]
+pass                                     0/1
+-> /home/runner/work/px4-mrac-sim/px4-mrac-sim/out/v5-dly24-g2-r5
