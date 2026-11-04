@@ -77,8 +77,9 @@ def ulog_metrics(path):
     on = [ts * 1e-6 for ts, n, v in u.changed_parameters if n in ('MRL_DIST_R', 'MRL_DIST_P') and abs(v) > 0]
     if on:
         w = air & (t >= on[0]) & (t < on[0] + 3.0)
-        m['dist_rate_rms'] = float(np.sqrt(np.mean(err[w] ** 2)))
-        m['dist_peak_rp'] = float(np.max(np.abs(err[w])))
+        # empty window = vehicle not airborne at disturbance onset (crashed or landed): metric undefined
+        m['dist_rate_rms'] = float(np.sqrt(np.mean(err[w] ** 2))) if w.any() else float('nan')
+        m['dist_peak_rp'] = float(np.max(np.abs(err[w]))) if w.any() else float('nan')
     ton = [ts * 1e-6 for ts, n, v in u.changed_parameters if n == 'MRL_DIST_T' and abs(v) > 0]
     lp, lsp = topic(u, 'vehicle_local_position'), topic(u, 'vehicle_local_position_setpoint')
     if ton and lp is not None and lsp is not None:
