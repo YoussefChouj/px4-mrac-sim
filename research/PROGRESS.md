@@ -362,3 +362,35 @@ hard wind for both LQR arms. Open: wind-tuned LQR (integral state or higher posi
 Bugs on the way: scenario.py's fig8 step assigned a local `re` (east reference), shadowing the regex module, so the
 first A/B crashed at the wind step in every run (fixed: `import re as regex`); vehicle_local_position_setpoint x/y
 are NaN under XYC_MODE > 0, so digests use trajectory_setpoint.
+
+## P13 obstacle course, first runs (2026-11-04)
+
+worlds/obstacles.sdf (3 poles r 0.15 m, gate 1.2 m wide, end wall); route weaves 0.8 m beside each pole; drone radius
+0.21 m. Check: obstacle_intrusion_m = max(0, 0.21 - min clearance) must be 0. Figure: research/figs/p13-obstacles.png.
+
+| run | pass | min clearance m | closest | max tilt deg |
+|---|---|---|---|---|
+| calm pid-alone | PASS | 0.44 | pole_c | 27.9 |
+| calm lqr-alone | PASS | 0.45 | pole_c | 23.5 |
+| calm lqr-plus-mrac | PASS | 0.36 | gate_e | 24.2 |
+| wind pid-alone (drag c 1.0) | FAIL | 0.14 | pole_a | 128.2 |
+
+Wind run: the goto to (4, -0.8) flew straight up e = 0 (the east wind cancelled the west leg), hit pole_a at t 42 s
+(clearance 0.17 m, north velocity reversed +0.96 -> -1.31 m/s), tumbled to the ground and recovered. Run 2 failed to
+start 3x ("Timed out waiting for Gazebo world", transient), so the wind set is incomplete; rerun with corrected drag (P16).
+
+## P16 error-scale realism, part 1 (2026-11-04)
+
+Question (user): our hold errors are 0.5-1.5 m; published results are cm-level. Measured on existing logs (scratchpad p16a.py):
+- Estimator: EKF vs gz ground truth (vehicle_local_position_groundtruth) in p13b pid-1: horizontal rms 0.12 m, max 0.38 m,
+  vertical rms 0.08 m. Not the main cause of 0.5-1.5 m, but alone it equals the whole error budget of mocap results.
+- Wind force: steady tilt vs mean wind (sim 3-15 s after wind start, 6 runs): implied linear drag 1.20-1.34 1/s
+  (configured WindEffects c = 1.0; the rest likely the motor model's rotor drag).
+- Literature: Faessler et al. 2018 (arXiv 1712.02402), 0.61 kg quad: rotor drag d_x 0.49-0.54, d_y 0.24-0.39 1/s;
+  tracking 17.5 cm without drag compensation, 5.5-6.5 cm with. Neural-Fly (arXiv 2205.06908, Table 1, 2.6 kg, mocap+EKF,
+  fig8 6.28 s), rms cm at 0 / 15 / 31 / 44 km/h wind: nonlinear baseline with integral 11.9 / 10.7 / 16.3 / 23.9,
+  INDI 7.3 / 6.4 / 8.5 / 10.7, L1 4.6 / 5.8 / 12.1 / 22.7, Neural-Fly 3.2 / 4.0 / 5.8 / 9.4.
+- So our sim wind pushes 2.5-5x harder than measured rotor drag, and our PID in 2.2 m/s wind (0.57 m rms) is about 5x
+  worse than the Neural-Fly baseline in 12 m/s. Fix 1 (done): gusty.sdf force_approximation_scaling_factor 1.0 -> 0.2
+  (total about 0.45 1/s). Next: rerun P13b + windy obstacles with c 0.2, check the implied drag, then position-loop
+  gains for the 1 kg drone and an LQR integral state; GPS-level estimate error (0.12 m) bounds what any controller can show.

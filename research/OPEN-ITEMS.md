@@ -32,3 +32,13 @@ gusts (SIH has no wind; moved to P13). Open: P8 gyro noise + attitude step vs la
 Seeds: every sim noise source draws from one libc rand() seeded 1234 (sih.cpp, SensorBaroSim.cpp); at speed 5 the
 threads interleave differently each run, so runs differ by scheduling, not by seed. Compare arms only within one
 cloud batch (same build, same runner pool), with the controls re-run in that batch.
+
+## P16 error-scale realism (added 2026-11-04, user: "SOTA is cm-scale, we are at m-scale") — BEFORE P11
+- Research with quoted sources: measured hover/tracking error of small quads in calm and in wind (outdoor GPS vs
+  indoor mocap; Neural-Fly, Faessler rotor drag, PX4 flight-review numbers).
+- Truth vs estimate: in gz, log true pose and compare with EKF vehicle_local_position (our metric is estimate vs setpoint).
+- Wind force check: steady tilt at known wind speed vs a sourced drag coefficient; gz WindEffects + motor-model rotor
+  drag may double count [S].
+- Gains: PX4 default x500-style position/velocity gains on the 1 kg research drone (P13a ringing, damping ~0.05);
+  LQR without integral holds a steady offset in wind (P13b figure). Tune: LQR integral state or wind-tuned weights.
+- Obstacle wind run p13-obst-wind-pid-alone-1 FAILED with 128 deg tilt (crash) -> diagnose from report.html.
