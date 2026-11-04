@@ -20,6 +20,8 @@ P, I, D, IMAX = 0.15, 0.2, 0.003, 0.3     # PX4 MC_ROLLRATE_P/I/D, MC_RR_INT_LIM
 import os
 TAU, GAM, SIG, LIM, UMAX = float(os.environ.get("V5_TAU", 0.06)), float(os.environ.get("V5_GAM", 2.0)), 0.05, 0.5, 0.3   # MRL_R_* defaults
 DT, T_END = 0.001, 8.0
+TH0 = None                                # optional initial theta (n, 3): warm start / frozen-learned (V7)
+SNAP = {}                                 # theta snapshot at t = 5.9 s (end of the disturbance window)
 DIST = 0.08                               # MRL_DIST_R: normalised torque step at t = 2 s (same as the SIH runs)
 
 delays = [0, 10, 20, 30, 45, 60]                       # ms
@@ -39,8 +41,8 @@ def run(adapt, seed=1):
     rng = np.random.default_rng(seed)
     w = m = wf = integ = xm = cn = np.zeros(n)
     wf_prev = np.zeros(n)
-    th = np.zeros((n, 3))
-    buf = np.zeros((61, n))
+    th = np.zeros((n, 3)) if TH0 is None else np.array(TH0, float).copy()
+    buf = np.zeros((int(max(c[0] for c in cases)) + 1, n))
     a_lpf = DT / (DT + 1 / (2 * np.pi * 40))
     a_col = DT / (DT + 1 / (2 * np.pi * 20))
     col_gain = np.sqrt((2 - a_col) / a_col)           # keeps the coloured noise at the same std as the white
@@ -83,6 +85,8 @@ def run(adapt, seed=1):
         bad = ~np.isfinite(w) | (np.abs(w) > 50)
         dead |= bad
         w = np.where(bad, 0.0, w)
+        if k == int(5.9 / DT):
+            SNAP['th'] = th.copy()
         if t > 1.0:
             err2 += (w - xm) ** 2
             cnt += 1

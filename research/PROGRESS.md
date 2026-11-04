@@ -586,3 +586,28 @@ x motor tau {30, 50.5, 80, 120} ms x torque headroom {1, 0.5, 0.3}. Output resea
 - Rule candidate (V7 input) [S until SIH]: gam must fall with loop delay; the real drone's 78 ms (P8 twin) is past
   the default edge -> the lab gains need gam << 2 or a delay-aware law.
 - NEXT: SIH confirmation at 20/30/45 ms delay with gam 2 vs 0.5 (selected cases), then V5 DONE.
+
+## V7 time-scale table, model stage (2026-11-04)
+
+Tool `tools/v7_timescale.py` on the V5 roll-rate model (nominal motor lag, no noise, full headroom). Grid: ref tau {0.06, 0.12, 0.2}
+x gam {0.5, 1, 2, 4} x sigma {0.01, 0.05, 0.2} x delay {0, 20, 30, 45, 60, 78 ms}. Ratio = rms(PID+MRAC) / rms(PID); <0.9 = benefit.
+Two extra arms test weight memory: frozen = theta learned in the disturbance window, then gam 0; warm = same theta as start, gam on.
+CSV: `research/v7/v7_timescale.csv` [D, model].
+
+| delay ms | max gam with benefit (tau 0.06, sig 0.05) | best cell (tau, gam, sig): online / frozen / warm |
+|---|---|---|
+| 0 | 4 | 0.2, 2, 0.05: 0.47 / 0.60 / 0.50 |
+| 20 | 2 | 0.2, 0.5, 0.01: 0.58 / 0.58 / 0.57 |
+| 30 | 1 | 0.2, 0.5, 0.01: 0.63 / 0.62 / 0.65 |
+| 45 | none | 0.2, 0.5, 0.2: 0.73 / 0.70 / 0.84 |
+| 60 | none | 0.2, 0.5, 0.2: 1.35 / 1.24 / 2.53 |
+| 78 (real drone) | none | 0.06, 0.5, 0.2: 2.87 / 3.22 / 3.25 |
+
+Findings [model]:
+- Configuration rule: the largest safe gam halves per ~10 ms of delay (4 at 0, 2 at 20, 1 at 30). A slower reference model (tau 0.2)
+  extends benefit to 45 ms at gam 0.5. Leakage helps only near the edge (30 ms gam 2: sig 0.01 -> 1.29, sig 0.2 -> 1.03).
+- At 60-78 ms no tested cell helps. The rate-layer law with a delay-free reference model cannot help at the real drone's 78 ms;
+  the reference model (block 3) must carry the loop delay, or the rate layer stays off and adaptation lives in slower loops.
+- Weight memory: frozen-learned matches online (within ~0.1) up to 45 ms. Warm start from t = 0 is worse than online whenever the
+  fault is not yet present (30 ms gam 2: 1.64 vs 1.21) -> stored weights must be gated by the detected scenario, not applied blindly.
+- Next: SIH check of the rule rides on V5 (30 ms gam 2 already FAILs to land in run 1); smaller gam (0.1-0.25) at 78 ms is untested.
