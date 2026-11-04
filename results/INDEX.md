@@ -1,9 +1,10 @@
 # Cloud results (newest first)
 
-One folder per finished `arms` run: `all.json` (every flight; `run` = seed index), `meta.json` (status, lost jobs, error), `summary.md` (per-deck medians), `logs/` (output tail of jobs that did not pass), `build-tail.log` (failed build). Written by `ci/publish.py`; do not edit by hand.
+One folder per finished `arms` run: `all.json` (every flight; `run` = seed index), `meta.json` (status, lost jobs, error), `summary.md` (per-deck medians), `logs/` (output tail and scenario.py checks of jobs that did not pass), `build-tail.log` (failed build). Written by `ci/publish.py`; do not edit by hand.
 
 | finished UTC | wave | branch | sha | pass / jobs | lost | plan / build / fly | folder |
 |---|---|---|---|---|---|---|---|
+| 2026-11-04 09:49 | J-delay-check-replay | main | 92ddc9b | 0 / 9 | 0 | success / success / success | [J-delay-check-replay-41809780319](J-delay-check-replay-41809780319/) |
 | 2026-11-04 08:00 | I-b-pair-seeds | main | 1d27f15 | 80 / 80 | 0 | success / success / success | [I-b-pair-seeds-41795932701](I-b-pair-seeds-41795932701/) |
 | 2026-11-04 07:49 | H-delay-edge | main | bb07db0 | 116 / 200 | 0 | success / success / success | [H-delay-edge-41793765790](H-delay-edge-41793765790/) |
 | 2026-11-04 07:12 | smoke-1job | main | d2ccb66 | 1 / 1 | 0 | success / success / success | [smoke-1job-41790538668](smoke-1job-41790538668/) |
