@@ -93,6 +93,11 @@ void MracLayers::Run()
 
 	for (int a = 0; a < 3; a++) {
 		const bool on = (mode == 1) && ((a < 2) || (_param_yaw.get() == 1));
+		// block 1 structured terms of the rate loop: gyroscopic product w_j*w_k and the cross-axis rate
+		_ax[a].cfg(_param_feat.get(), _param_xs.get(), _param_ge0.get(), _param_gw.get(), _param_gk.get());
+		_ax[a].ub = base.xyz[a];
+		_ax[a].s[0] = av.xyz[(a + 1) % 3] * av.xyz[(a + 2) % 3];
+		_ax[a].s[1] = av.xyz[a == 0 ? 1 : 0];
 		const float u_ad = _ax[a].step(av.xyz[a], _rate_sp[a], dt, _landed, on, on, g, _sat_pos[a], _sat_neg[a]);
 
 		out.xyz[a] = math::constrain(base.xyz[a] + u_ad + (_landed ? 0.f : dist[a]), -1.f, 1.f);
@@ -102,6 +107,9 @@ void MracLayers::Run()
 		st.u_ad[a] = u_ad;
 
 		for (int i = 0; i < MracAxis::NPHI; i++) { st.theta[a * MracAxis::NPHI + i] = _ax[a].theta[i]; }
+
+		st.theta_norm[a] = _ax[a].tnorm();
+		st.n_phi = _ax[a].nphi;
 	}
 
 	out.timestamp = hrt_absolute_time();

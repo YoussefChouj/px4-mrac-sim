@@ -331,3 +331,111 @@ PARAM_DEFINE_INT32(XYC_LQR_SET, 0);
  * @group MRAC layers
  */
 PARAM_DEFINE_FLOAT(XYC_INT_MAX, 2.0f);
+
+/**
+ * rate layer regressor feature mask (thesis three-block framework).
+ *
+ * Bits: 1 x, 2 r, 4 bias (7 = the original law); block 1 structured: 8 x|x|/xs, 32 baseline command,
+ * 64 gyroscopic w_j*w_k, 128 cross-axis rate; block 1 unstructured: 256 five Gaussian bumps on x/xs; block 3: 16 reference
+ * derivative feedforward; block 2: 512 gated fast copy of every active term. A change restarts adaptation.
+ * @min 0
+ * @max 1023
+ * @group MRAC layers
+ */
+PARAM_DEFINE_INT32(MRL_R_FEAT, 7);
+
+/**
+ * rate layer state scale for the x|x|, Gaussian and gate terms.
+ * @unit rad/s
+ * @min 0.001
+ * @max 50
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_R_XS, 3.0f);
+
+/**
+ * attitude layer regressor feature mask (thesis three-block framework).
+ *
+ * Bits: 1 x, 2 r, 4 bias (7 = the original law); block 1 structured: 8 x|x|/xs, 32 baseline command,
+ * 64 other-axis angle, 128 other-axis setpoint; block 1 unstructured: 256 five Gaussian bumps on x/xs; block 3: 16 reference
+ * derivative feedforward; block 2: 512 gated fast copy of every active term. A change restarts adaptation.
+ * @min 0
+ * @max 1023
+ * @group MRAC layers
+ */
+PARAM_DEFINE_INT32(MRL_A_FEAT, 7);
+
+/**
+ * attitude layer state scale for the x|x|, Gaussian and gate terms.
+ * @unit rad
+ * @min 0.001
+ * @max 50
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_A_XS, 0.3f);
+
+/**
+ * vz layer regressor feature mask (thesis three-block framework).
+ *
+ * Bits: 1 x, 2 r, 4 bias (7 = the original law); block 1 structured: 8 x|x|/xs, 32 baseline command,
+ * 64 1/cos(tilt)-1, 128 vx^2+vy^2; block 1 unstructured: 256 five Gaussian bumps on x/xs; block 3: 16 reference
+ * derivative feedforward; block 2: 512 gated fast copy of every active term. A change restarts adaptation.
+ * @min 0
+ * @max 1023
+ * @group MRAC layers
+ */
+PARAM_DEFINE_INT32(MRL_P_FEAT, 7);
+
+/**
+ * vz layer state scale for the x|x|, Gaussian and gate terms.
+ * @unit m/s
+ * @min 0.001
+ * @max 50
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_P_XS, 1.0f);
+
+/**
+ * xy layer regressor feature mask (thesis three-block framework).
+ *
+ * Bits: 1 x, 2 r, 4 bias (7 = the original law); block 1 structured: 8 x|x|/xs, 32 baseline command,
+ * 64 own-axis velocity v, 128 v|v|; block 1 unstructured: 256 five Gaussian bumps on x/xs; block 3: 16 reference
+ * derivative feedforward; block 2: 512 gated fast copy of every active term. A change restarts adaptation.
+ * @min 0
+ * @max 1023
+ * @group MRAC layers
+ */
+PARAM_DEFINE_INT32(MRL_X_FEAT, 7);
+
+/**
+ * xy layer state scale for the x|x|, Gaussian and gate terms.
+ * @unit m/s^2
+ * @min 0.001
+ * @max 50
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_X_XS, 2.0f);
+
+/**
+ * Gate (block 2) threshold: normalized tracking error |e|/xs where the fast copy is half on.
+ * @min 0.0
+ * @max 5.0
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_G_E0, 0.5f);
+
+/**
+ * Gate (block 2) width of the sigmoid in normalized error.
+ * @min 0.001
+ * @max 2.0
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_G_W, 0.15f);
+
+/**
+ * Gate (block 2) adaptation gain multiplier of the gated copy (the fast time scale).
+ * @min 0.0
+ * @max 50.0
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_G_K, 5.0f);

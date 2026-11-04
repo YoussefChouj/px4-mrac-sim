@@ -564,3 +564,10 @@ README (layer table: rate, att, vz = MRL_EN_POS, xy = MRL_EN_XY), OPEN-ITEMS P5 
 LQR/ADRC/MPC (XyCtrl) leave vehicle_local_position_setpoint.x NaN (1 % finite), so xy_err_rms_m was silently absent.
 arms.py now scores against trajectory_setpoint (marks `xy_ref`). Rescored v3-lqr: xy_err_rms_m adapt 0.066
 [0.061..0.070] vs status-only 0.100 [0.098..0.119]; offset 0.001-0.003 both. Confirms V3 on LQR.
+
+## V9 minimal 3-block instance: regression (2026-11-04 14:05)
+Per-loop masks MRL_{R,A,P,X}_FEAT (default 7 = old law), gate params MRL_G_*, theta_norm/n_phi in the status msg.
+Built rc 0. Same deck as V3 on the new binary, xy adapt, 3 seeds: lqr hold 0.211 [0.148..0.249] (was 0.223
+[0.195..0.243]), pid hold 0.438 [0.367..0.554] (was 0.468), pid xy rms 0.140 (was 0.138), xy theta_end 1.02 (was
+1.02-1.04); 6/6 PASS. Default masks reproduce the old law. The full 3-block v2 design (feature library + NN stack,
+frequency scheduler, physics reference model) waits for the operator's OK: research/notes/three-block-v2.md.

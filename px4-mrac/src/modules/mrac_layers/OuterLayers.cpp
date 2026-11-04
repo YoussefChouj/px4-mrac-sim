@@ -55,6 +55,11 @@ void MracAttLayer::Run()
 	mrac_rate_status_s st{};
 
 	for (int a = 0; a < 2; a++) {
+		// block 1 structured terms of the attitude loop: the other axis angle and setpoint (roll/pitch coupling)
+		_ax[a].cfg(_param_feat.get(), _param_xs.get(), _param_ge0.get(), _param_gw.get(), _param_gk.get());
+		_ax[a].ub = *rate[a];
+		_ax[a].s[0] = x[1 - a];
+		_ax[a].s[1] = _ang_sp[1 - a];
 		const float u = _ax[a].step(x[a], _ang_sp[a], dt, _landed, mode == 1, mode == 1, g);
 		*rate[a] += u;
 		st.xm[a] = _ax[a].xm;
@@ -62,6 +67,9 @@ void MracAttLayer::Run()
 		st.u_ad[a] = u;
 
 		for (int i = 0; i < MracAxis::NPHI; i++) { st.theta[a * MracAxis::NPHI + i] = _ax[a].theta[i]; }
+
+		st.theta_norm[a] = _ax[a].tnorm();
+		st.n_phi = _ax[a].nphi;
 	}
 
 	out.timestamp = hrt_absolute_time();
@@ -121,6 +129,14 @@ void MracPosLayer::Run()
 	// PX4's vz integrator and hover thrust estimate own the constant term; adaptive augmentation of an integral
 	// baseline drops the bias regressor so the two do not share one null direction (arXiv 1604.01882)
 	_z.bias = _param_bias.get() != 0;
+	// block 1 structured terms of the vz loop: thrust lost to tilt (1/cos - 1) and quadratic horizontal speed
+	_z.cfg(_param_feat.get(), _param_xs.get(), _param_ge0.get(), _param_gw.get(), _param_gk.get());
+	_z.ub = base.thrust_body[2];
+	{
+		const float ct = 1.f - 2.f * (base.q_d[1] * base.q_d[1] + base.q_d[2] * base.q_d[2]);
+		_z.s[0] = 1.f / math::max(ct, 0.5f) - 1.f;
+		_z.s[1] = PX4_ISFINITE(lpos.vx) && PX4_ISFINITE(lpos.vy) ? lpos.vx * lpos.vx + lpos.vy * lpos.vy : 0.f;
+	}
 	const float u = _z.step(lpos.vz, _vz_sp, dt, _landed, mode == 1, mode == 1, g);
 	const float dist = _landed ? 0.f : _param_dist_t.get();
 
@@ -140,6 +156,12 @@ void MracPosLayer::Run()
 		if (PX4_ISFINITE(lsp.acceleration[i])) { _acc_sp[i] = lsp.acceleration[i]; }
 
 		_xy[i].bias = _param_xy_bias.get() != 0;
+		// block 1 structured terms of the xy loop: linear and quadratic drag on the own-axis velocity
+		_xy[i].cfg(_param_xy_feat.get(), _param_xy_xs.get(), _param_ge0.get(), _param_gw.get(), _param_gk.get());
+		const float vi = i == 0 ? lpos.vx : lpos.vy;
+		_xy[i].ub = _acc_sp[i];
+		_xy[i].s[0] = PX4_ISFINITE(vi) ? vi : 0.f;
+		_xy[i].s[1] = PX4_ISFINITE(vi) ? vi * fabsf(vi) : 0.f;
 		uxy[i] = PX4_ISFINITE(acc[i]) ? _xy[i].step(acc[i], _acc_sp[i], dt, _landed, xy_mode == 1, xy_mode == 1, gx) : 0.f;
 	}
 
@@ -177,6 +199,9 @@ void MracPosLayer::Run()
 
 	for (int i = 0; i < MracAxis::NPHI; i++) { st.theta[2 * MracAxis::NPHI + i] = _z.theta[i]; }
 
+	st.theta_norm[2] = _z.tnorm();
+	st.n_phi = _z.nphi;
+
 	st.mode = (uint8_t)mode;
 	st.adapting = (mode == 1) && !_landed;
 	_status_pub.publish(st);
@@ -190,6 +215,9 @@ void MracPosLayer::Run()
 		sx.u_ad[i] = uxy[i];
 
 		for (int j = 0; j < MracAxis::NPHI; j++) { sx.theta[i * MracAxis::NPHI + j] = _xy[i].theta[j]; }
+
+		sx.theta_norm[i] = _xy[i].tnorm();
+		sx.n_phi = _xy[i].nphi;
 	}
 
 	sx.mode = (uint8_t)xy_mode;

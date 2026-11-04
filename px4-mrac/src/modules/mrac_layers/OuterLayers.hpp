@@ -60,7 +60,12 @@ private:
 		(ParamFloat<px4::params::MRL_A_GAM>) _param_gamma,
 		(ParamFloat<px4::params::MRL_A_SIG>) _param_sigma,
 		(ParamFloat<px4::params::MRL_A_LIM>) _param_lim,
-		(ParamFloat<px4::params::MRL_A_UMAX>) _param_umax
+		(ParamFloat<px4::params::MRL_A_UMAX>) _param_umax,
+		(ParamInt<px4::params::MRL_A_FEAT>) _param_feat,
+		(ParamFloat<px4::params::MRL_A_XS>) _param_xs,
+		(ParamFloat<px4::params::MRL_G_E0>) _param_ge0,
+		(ParamFloat<px4::params::MRL_G_W>) _param_gw,
+		(ParamFloat<px4::params::MRL_G_K>) _param_gk
 	)
 };
 
@@ -100,12 +105,19 @@ private:
 		(ParamFloat<px4::params::MRL_P_UMAX>) _param_umax,
 		(ParamFloat<px4::params::MRL_DIST_T>) _param_dist_t,
 		(ParamInt<px4::params::MRL_P_BIAS>) _param_bias,
+		(ParamInt<px4::params::MRL_P_FEAT>) _param_feat,
+		(ParamFloat<px4::params::MRL_P_XS>) _param_xs,
 		(ParamInt<px4::params::MRL_EN_XY>) _param_xy_en,
 		(ParamFloat<px4::params::MRL_X_TAU>) _param_xy_tau,
 		(ParamFloat<px4::params::MRL_X_GAM>) _param_xy_gamma,
 		(ParamFloat<px4::params::MRL_X_SIG>) _param_xy_sigma,
 		(ParamFloat<px4::params::MRL_X_LIM>) _param_xy_lim,
 		(ParamFloat<px4::params::MRL_X_UMAX>) _param_xy_umax,
-		(ParamInt<px4::params::MRL_X_BIAS>) _param_xy_bias
+		(ParamInt<px4::params::MRL_X_BIAS>) _param_xy_bias,
+		(ParamInt<px4::params::MRL_X_FEAT>) _param_xy_feat,
+		(ParamFloat<px4::params::MRL_X_XS>) _param_xy_xs,
+		(ParamFloat<px4::params::MRL_G_E0>) _param_ge0,
+		(ParamFloat<px4::params::MRL_G_W>) _param_gw,
+		(ParamFloat<px4::params::MRL_G_K>) _param_gk
 	)
 };
