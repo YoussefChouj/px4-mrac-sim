@@ -707,3 +707,8 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
 - One build. Digest: `research/digests/wave-digest-BI-pooled.md`. 160/160 flights passed.
 - With n = 20 per pair, lqr-plus-mrac again raises att_track_rms (+0.10 to +0.15 deg), rate_rms_rp and motor_sat_frac (+0.036 to +0.045) in all four pairs. It lowers xy_err_rms by 0.005-0.006 m (interval excludes 0) in dist, mass and slow, but not in tmax. Hold and track error: no interval excludes 0; wave I's slow-pair track gain does not survive pooling.
 - Reading: the outer MRAC layer buys a few mm of xy accuracy at the cost of about 4 % more motor saturation. Under SIH with PX4 default inner gains this is a cost/benefit to report, not a win.
+
+## Wave J: which check the delay failures break (2026-11-04)
+- `results/J-delay-check-replay-41809780319` (main 92ddc9b): v5-dly24-g2, v5-dly30-g1 and v5-dly35-g05, seeds 1-3, 0/9 passed, no lost jobs.
+- In all 9 kept logs, scenario.py's checks show exactly two FAIL lines: `must_land: False` and `error: TimeoutError`. Every recorded limit (hold, tilt, track) passed.
+- So past the delay edge, the MRAC rate layer does not break a flight limit: the vehicle never registers as landed, and the run ends in a TimeoutError. The saturated rate oscillation seen in wave H likely keeps the land detector from triggering [S]. Not yet traced: which step raises the TimeoutError (agent/scenario.py).

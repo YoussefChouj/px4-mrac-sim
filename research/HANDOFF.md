@@ -50,11 +50,9 @@ this file (state + next) before every session ends.
   2 flights), so the failing check is must_land or an error (next item 1). Tables: `research/digests/wave-digest-H.md`.
 
 ## Next items (in order)
-1. Name the check the delay failures break. Since 2026-11-04 `ci/publish.py` appends scenario.py's checks (from each
-   job's `metrics.json`) to every kept failing-job log, as `== checks <run folder>` lines. Wave
-   `waves/J-delay-check-replay.txt` (v5-dly35-g05, v5-dly30-g1, v5-dly24-g2: per gain the first wave-H deck that failed in every
-   flight; seeds 1-3) flies with it: read those lines in `results/J-delay-check-replay-*/logs/` and record the failing
-   check in PROGRESS. Since 92ddc9b+1 every all.json record also has `landed` (`agent/arms.py`, from scenario.py's metrics). H vs C run by run: PROGRESS ("Wave H vs wave C, same seeds").
+1. Done 2026-11-04 (wave J, PROGRESS "Wave J"): past the delay edge only `must_land` and a runner TimeoutError fail;
+   every flight limit passes. Next: trace where scenario.py raises the TimeoutError and check the land detector during the
+   rate oscillation (ULog vehicle_land_detected), before calling the delay edge a stability limit.
 2. More seeds where the layer should help but the hold interval crosses 0: B's dist, mass, slow and tmax pairs.
    Pushed 2026-11-04 as `waves/I-b-pair-seeds.txt` (8 decks, runs 10, first 11 = seeds 11-20): digest its
    results folder (`I-b-pair-seeds-*`) with `tools/wave_digest.py`; pool with B's seeds 1-10 only if both
