@@ -1,0 +1,41 @@
+{
+ "run_id": 41795932701,
+ "url": "https://github.com/YoussefChouj/px4-mrac-sim/actions/runs/41795932701",
+ "label": "I-b-pair-seeds",
+ "folder": "I-b-pair-seeds-41795932701",
+ "event": "push",
+ "branch": "main",
+ "sha": "1d27f1556cf00ab292c8f1f662190324cb7233b3",
+ "decks": [
+  "p11-x-dist-lqr-alone",
+  "p11-x-dist-lqr-plus-mrac",
+  "p11-x-mass-lqr-alone",
+  "p11-x-mass-lqr-plus-mrac",
+  "p11-x-slow-lqr-alone",
+  "p11-x-slow-lqr-plus-mrac",
+  "p11-x-tmax-lqr-alone",
+  "p11-x-tmax-lqr-plus-mrac"
+ ],
+ "runs": [
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20
+ ],
+ "jobs": 80,
+ "flights": 80,
+ "pass": 80,
+ "lost": [],
+ "plan": "success",
+ "build": "success",
+ "fly": "success",
+ "error": "",
+ "finished_utc": "2026-11-04T08:00:03Z",
+ "results_url": "https://github.com/YoussefChouj/px4-mrac-sim/tree/results/results/I-b-pair-seeds-41795932701"
+}

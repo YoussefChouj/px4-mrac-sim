@@ -4,6 +4,7 @@ One folder per finished `arms` run: `all.json` (every flight; `run` = seed index
 
 | finished UTC | wave | branch | sha | pass / jobs | lost | plan / build / fly | folder |
 |---|---|---|---|---|---|---|---|
+| 2026-11-04 08:00 | I-b-pair-seeds | main | 1d27f15 | 80 / 80 | 0 | success / success / success | [I-b-pair-seeds-41795932701](I-b-pair-seeds-41795932701/) |
 | 2026-11-04 07:49 | H-delay-edge | main | bb07db0 | 116 / 200 | 0 | success / success / success | [H-delay-edge-41793765790](H-delay-edge-41793765790/) |
 | 2026-11-04 07:12 | smoke-1job | main | d2ccb66 | 1 / 1 | 0 | success / success / success | [smoke-1job-41790538668](smoke-1job-41790538668/) |
 | 2026-11-04 05:59 | G-p11n-mrac-unit | main | 88c63e0 | 95 / 105 | 0 | success / success / success | [G-p11n-mrac-unit-41780622654](G-p11n-mrac-unit-41780622654/) |
