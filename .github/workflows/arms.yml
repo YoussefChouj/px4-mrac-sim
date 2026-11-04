@@ -1,6 +1,14 @@
 name: arms
 # Fly scenario arms on PX4 SIH in parallel: one build, then one runner per (scenario, run), then one table.
+# Start it by pushing a wave file waves/<name>.txt on any branch (format: waves/README.md),
+# or by hand: Actions -> arms -> Run workflow.
+# Every run ends by publishing all.json + meta.json + summary.md to the `results` branch (ci/publish.py),
+# so an agent without a token reads it with `git fetch origin results`.
+run-name: "${{ github.event_name == 'push' && format('wave on {0}', github.ref_name) || format('arms {0} x{1}', inputs.scenarios, inputs.runs) }}"
 on:
+  push:
+    branches: ['**']
+    paths: ['waves/*.txt']
   workflow_dispatch:
     inputs:
       scenarios:
@@ -9,24 +17,33 @@ on:
       runs:
         description: 'runs per scenario'
         default: '2'
+      first:
+        description: 'first run index (= seed); 11 adds new seeds after runs 1-10'
+        default: '1'
 
 jobs:
   plan:
     runs-on: ubuntu-24.04
     outputs:
       matrix: ${{ steps.m.outputs.matrix }}
+      label: ${{ steps.m.outputs.label }}
+      error: ${{ steps.m.outputs.error }}
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - id: m
         env:
           SCEN: ${{ inputs.scenarios }}
           RUNS: ${{ inputs.runs }}
+          FIRST: ${{ inputs.first }}
+        run: python3 ci/plan.py >> "$GITHUB_OUTPUT"
+      - if: steps.m.outputs.error != ''
+        env:
+          ERR: ${{ steps.m.outputs.error }}
         run: |
-          python3 - <<'PY' >> "$GITHUB_OUTPUT"
-          import json, os
-          s = os.environ['SCEN'].split()
-          r = range(1, int(os.environ['RUNS']) + 1)
-          print('matrix=' + json.dumps({'include': [{'scen': a, 'run': i} for a in s for i in r]}))
-          PY
+          echo "::error::$ERR"
+          exit 1
 
   build:
     runs-on: ubuntu-24.04
@@ -40,7 +57,17 @@ jobs:
           path: px4-sih.tar.zst
           key: ${{ steps.key.outputs.k }}
       - if: steps.cache.outputs.cache-hit != 'true'
-        run: bash ci/build.sh "$PWD/px4-sih.tar.zst"
+        run: |
+          set -o pipefail
+          bash ci/build.sh "$PWD/px4-sih.tar.zst" 2>&1 | tee build.log
+      - if: failure()
+        run: tail -c 60000 build.log > build-tail.log || true
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build-tail.log
+          retention-days: 14
       - uses: actions/upload-artifact@v4
         with:
           name: px4-sih
@@ -59,7 +86,15 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: px4-sih
-      - run: bash ci/run.sh "$PWD/px4-sih.tar.zst" "scenarios/${{ matrix.scen }}.json" ${{ matrix.run }} "$PWD/out"
+      - env:
+          SCEN: ${{ matrix.scen }}
+          RUN: ${{ matrix.run }}
+        run: |
+          set -o pipefail
+          mkdir -p out
+          bash ci/run.sh "$PWD/px4-sih.tar.zst" "scenarios/$SCEN.json" "$RUN" "$PWD/out" 2>&1 | tee fly.log
+      - if: always()
+        run: tail -n 150 fly.log > out/fly-tail.log 2>/dev/null || true
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -68,17 +103,42 @@ jobs:
           retention-days: 14
 
   collect:
-    needs: fly
+    needs: [plan, build, fly]
     if: always()
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           pattern: run-*
           path: runs
-      - run: python3 ci/collect.py runs | tee -a "$GITHUB_STEP_SUMMARY"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: build-log
+          path: buildlog
+      - run: |
+          mkdir -p runs
+          python3 ci/collect.py runs | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: publish to the results branch
+        continue-on-error: true
+        env:
+          LABEL: ${{ needs.plan.outputs.label }}
+          ERR: ${{ needs.plan.outputs.error }}
+          MATRIX: ${{ needs.plan.outputs.matrix }}
+          PLAN: ${{ needs.plan.result }}
+          BUILD: ${{ needs.build.result }}
+          FLY: ${{ needs.fly.result }}
+        run: python3 ci/publish.py runs buildlog
+      - if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: all
-          path: runs/all.json
+          path: |
+            runs/all.json
+            runs/meta.json
+            runs/summary.md

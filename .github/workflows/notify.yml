@@ -36,7 +36,7 @@ jobs:
           github-token: ${{ github.token }}
       - run: |
           concl=$(gh api "repos/$GH_REPO/actions/runs/$RUN_ID" -q .conclusion)
-          python3 ci/notify.py all/all.json "$GITHUB_SERVER_URL/$GH_REPO/actions/runs/$RUN_ID" "$concl" > body.md
+          { printf "@YoussefChouj "; python3 ci/notify.py all/all.json "$GITHUB_SERVER_URL/$GH_REPO/actions/runs/$RUN_ID" "$concl"; } > body.md
           n=$(gh issue list --state open --limit 100 --json number,title -q '.[] | select(.title=="Cloud results") | .number' | head -1)
           if [ -z "$n" ]; then
             u=$(gh issue create --title "Cloud results" --body "One bot comment per finished arms run. Unsubscribe here or disable the notify workflow to stop the emails.")

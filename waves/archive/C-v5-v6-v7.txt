@@ -1,0 +1,23 @@
+# Flown 2026-11-04 as arms run 41780422738 (main 88c63e0): 124/190 flights passed.
+# To re-fly: copy to waves/, set first (e.g. first 11 for new seeds) and push.
+runs 10
+first 1
+v5-dly20-alone
+v5-dly20-g05
+v5-dly20-g2
+v5-dly30-alone
+v5-dly30-g05
+v5-dly30-g2
+v5-dly45-alone
+v5-dly45-g05
+v5-dly45-g2
+v6-circmass-lqr-set0
+v6-circmass-lqr-set4
+v6-circmass-pid-default
+v6-circmass-pid-tuned
+v6-wind-lqr-set0
+v6-wind-lqr-set4
+v6-wind-pid-default
+v6-wind-pid-tuned
+v7-dly78-alone
+v7-dly78-g01-tau02

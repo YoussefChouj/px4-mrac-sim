@@ -1,0 +1,27 @@
+# Flown 2026-11-04 as arms run 41780573202 (main 88c63e0): 105/115 flights passed.
+# To re-fly: copy to waves/, set first (e.g. first 6 for new seeds) and push.
+runs 5
+first 1
+adrc-wc-08
+adrc-wc-12
+adrc-wc-15
+adrc-wc-20
+adrc-wc-25
+adrc-wc-30
+lqrfig-set0
+lqrfig-set4
+pg-def
+pg-vi12
+pg-vp25
+pg-vp35
+pg-xp15
+pg-xp15vp35
+pg-xp15vp35vi12
+xyc-adrc
+xyc-adrc-a7
+xyc-adrc-tuned
+xyc-lqr
+xyc-lqr-a7
+xyc-mpc
+xyc-mpc-a7
+xyc-pid

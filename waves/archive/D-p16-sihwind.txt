@@ -1,0 +1,17 @@
+# Flown 2026-11-04 as arms run 41780473246 (main 88c63e0): 129/130 flights passed.
+# To re-fly: copy to waves/, set first (e.g. first 11 for new seeds) and push.
+runs 10
+first 1
+p16-sihwind-calm
+p16-sihwind-lqr-alone
+p16-sihwind-lqr-intwide
+p16-sihwind-lqr-plus-mrac
+p16-sihwind-lqr-set1
+p16-sihwind-lqr-set2
+p16-sihwind-lqr-set3
+p16-sihwind-lqr-set4
+p16-sihwind-mrac-set4
+p16-sihwind-mrac-umax40
+p16-sihwind-mrac-umax40-intwide
+p16-sihwind-pid-alone
+p16-sihwind-pid-tuned

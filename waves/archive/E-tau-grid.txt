@@ -1,0 +1,14 @@
+# Flown 2026-11-04 as arms run 41780523682 (main 88c63e0): 50/50 flights passed.
+# To re-fly: copy to waves/, set first (e.g. first 6 for new seeds) and push.
+runs 5
+first 1
+tau-a015-p050
+tau-a015-p100
+tau-a015-p100-b1
+tau-a015-p200
+tau-a030-p050
+tau-a030-p100
+tau-a030-p200
+tau-a060-p050
+tau-a060-p100
+tau-a060-p200

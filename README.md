@@ -37,3 +37,8 @@ mean [min..max] table to the run summary and `all.json`.
 bash ci/build.sh ~/px4-sih.tar.zst   # clone + patch + build PX4 v1.17.0 into ~/PX4-mrac
 python agent/arms.py 0 ~/PX4-mrac 3 scenarios/mrac-off.json scenarios/mrac-dist-adapt.json
 ```
+
+## Cloud runs
+Push a `waves/<name>.txt` (format: `waves/README.md`) to fly it on GitHub Actions; results land on the
+[`results` branch](https://github.com/YoussefChouj/px4-mrac-sim/tree/results/results) (`results/INDEX.md`).
+Agents start with `CLAUDE.md`.

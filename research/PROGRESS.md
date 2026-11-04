@@ -627,3 +627,14 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
 - The infra retry (rc 3) is kept in the attempt ledger, so the denominator stays 2.
 - Open: tools.dirty is non-null on CI (8beb074618e7b8e6), so the CI checkout differs from its commit. Small; chase it when V8 runs.
 - The W module copy was removed earlier. **V1 DONE.**
+
+## Cloud pipeline: wave files + results branch (2026-11-04, UTC)
+- Waves A-G (7 workflow_dispatch runs from main 88c63e0, one cached build) flew 870 flights in 22.6 min
+  (05:36:48-05:59:23 UTC, arms runs 41780319812-41780622654); median fly job 36 s; 783/870 passed their gates.
+- Failing decks (passed/runs): C v5-dly30-g05 4/10, v5-dly30-g2 0/10, v5-dly45-* 0/10, v7-dly78-* 0/10;
+  D p16-sihwind-lqr-set1 9/10; F adrc-wc-08 and -12 0/5; G heavy-hover-step and motor-out 0/5.
+  Delay: at 20 ms all arms pass 10/10; at 30 ms alone passes 10/10 while both MRAC gain scales fail most runs;
+  at 45 and 78 ms all arms fail.
+- New: pushing `waves/<name>.txt` on any branch starts `arms` (ci/plan.py); every run publishes to the `results`
+  branch (ci/publish.py); A-G backfilled there, deck lists in waves/archive/. Agent guide CLAUDE.md, state
+  research/HANDOFF.md. Not digested yet (paired intervals): HANDOFF next item 1.

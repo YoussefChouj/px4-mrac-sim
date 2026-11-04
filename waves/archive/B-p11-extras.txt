@@ -1,0 +1,25 @@
+# Flown 2026-11-04 as arms run 41780372380 (main 88c63e0): 210/210 flights passed.
+# To re-fly: copy to waves/, set first (e.g. first 11 for new seeds) and push.
+runs 10
+first 1
+p11-x-aggr-lqr-alone
+p11-x-aggr-lqr-plus-mrac
+p11-x-attonly-lqr
+p11-x-dist-lqr-alone
+p11-x-dist-lqr-plus-mrac
+p11-x-dly13-attonly-lqr
+p11-x-dly13-lqr-alone
+p11-x-dly13-lqr-plus-mrac
+p11-x-dly13-posonly-lqr
+p11-x-dly40-lqr-alone
+p11-x-dly40-lqr-plus-mrac
+p11-x-mass-lqr-alone
+p11-x-mass-lqr-plus-mrac
+p11-x-mot1-lqr-alone
+p11-x-mot1-lqr-plus-mrac
+p11-x-posonly-lqr
+p11-x-rateonly-lqr
+p11-x-slow-lqr-alone
+p11-x-slow-lqr-plus-mrac
+p11-x-tmax-lqr-alone
+p11-x-tmax-lqr-plus-mrac

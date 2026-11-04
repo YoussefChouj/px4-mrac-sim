@@ -1,0 +1,11 @@
+# Flown 2026-11-04 as arms run 41780319812 (main 88c63e0): 70/70 flights passed.
+# To re-fly: copy to waves/, set first (e.g. first 11 for new seeds) and push.
+runs 10
+first 1
+p11-adrc-alone
+p11-adrc-plus-mrac
+p11-lqr-alone
+p11-lqr-plus-mrac
+p11-mpc-alone
+p11-mpc-plus-mrac
+p11-pid-alone
