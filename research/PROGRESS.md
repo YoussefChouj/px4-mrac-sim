@@ -697,3 +697,8 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
 | v5-dly30-alone | 1-10 | 10 | 10 | 10/10 | 0.0338 / 0.0972 | 0.0152 / 0.0461 | 0.000896 / 0.00272 |
 | v5-dly30-g05 | 1-10 | 2 | 4 | 6/10 | 0.0232 / 0.0352 | 0.285 / 0.715 | 0.177 / 0.442 |
 | v5-dly30-g2 | 1-10 | 0 | 0 | 10/10 | 0.121 / 0.288 | 0.0176 / 0.0618 | 0.00466 / 0.0113 |
+
+## Wave I: wave B's dist/mass/slow/tmax pairs on seeds 11-20 (2026-11-04)
+- `results/I-b-pair-seeds-41795932701` (main 1d27f15): 80/80 flights passed, no lost jobs. Digest: `research/digests/wave-digest-I.md`.
+- In all four pairs, lqr-plus-mrac has higher att_track_rms (+0.07 to +0.16 deg), rate_rms_rp and motor_sat_frac (about +0.04) than lqr-alone, each interval excluding 0. Hold error shows no difference whose interval excludes 0. The one gain whose interval excludes 0: slow, rms_track_err -0.031 m [-0.050, -0.011]. dist: max_tilt +1.2 deg.
+- On these seeds, then, the outer MRAC layer costs inner-loop effort and buys no hold accuracy. Under SIH (no aero) the lqr-alone arm uses PX4 default gains, so this is not a thesis claim yet; the seeds 1-10 numbers are in wave-digest-A-G.md (wave B).

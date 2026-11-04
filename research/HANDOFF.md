@@ -34,8 +34,8 @@ this file (state + next) before every session ends.
 1. Delay (C): at 30 ms the g2 rate layer drives a saturated rate oscillation (paired vs alone: rate_rms_rp +0.568,
    motor_sat_frac +0.726), yet hold and tilt stay inside their limits in 9 of 10 flights: the failures are
    must_land or a runner error, which the record does not hold. Next item 1 names the check.
-2. ADRC (F): adrc-wc-08/-12 fail the 1.5 m hold limit (1.62-1.94 m), as they did in run 41678708699 (0/3 there too;
-   the earlier "3/3" here was wrong). Too slow, nothing changed.
+2. Done 2026-11-04: wave I digested (`research/digests/wave-digest-I.md`, PROGRESS "Wave I"). Next: pool waves B and I
+   (seeds 1-20) per pair with tools/wave_digest.py on both folders, if it accepts two folders of one deck set.
 3. Stress (G): heavy-hover-step (flycart30 airframe) tilts 51.7-53.9 deg on its 10 m step against a 35 deg limit;
    hover-step tilts 35.7 deg against 45. motor-out (one motor off) flips in 5/5: expected for a quadrotor [S].
 4. D: p16-sihwind-lqr-set1 failed run 6 only, with no hold or tilt value recorded (stopped before the hold step [S]).
