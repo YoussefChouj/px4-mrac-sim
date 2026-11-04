@@ -54,7 +54,7 @@ this file (state + next) before every session ends.
    job's `metrics.json`) to every kept failing-job log, as `== checks <run folder>` lines. Wave
    `waves/J-delay-check-replay.txt` (v5-dly35-g05, v5-dly30-g1, v5-dly24-g2: per gain the first wave-H deck that failed in every
    flight; seeds 1-3) flies with it: read those lines in `results/J-delay-check-replay-*/logs/` and record the failing
-   check in PROGRESS. Not done: `landed` in the all.json record (`ci/collect.py`). H vs C run by run: PROGRESS ("Wave H vs wave C, same seeds").
+   check in PROGRESS. Since 92ddc9b+1 every all.json record also has `landed` (`agent/arms.py`, from scenario.py's metrics). H vs C run by run: PROGRESS ("Wave H vs wave C, same seeds").
 2. More seeds where the layer should help but the hold interval crosses 0: B's dist, mass, slow and tmax pairs.
    Pushed 2026-11-04 as `waves/I-b-pair-seeds.txt` (8 decks, runs 10, first 11 = seeds 11-20): digest its
    results folder (`I-b-pair-seeds-*`) with `tools/wave_digest.py`; pool with B's seeds 1-10 only if both

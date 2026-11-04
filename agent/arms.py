@@ -194,6 +194,7 @@ def main():
             m = ulog_metrics(ulg)
             sm = json.loads((d / 'metrics.json').read_text()) if (d / 'metrics.json').exists() else {}
             m['pass'] = bool(sm.get('pass'))
+            m['landed'] = bool(sm.get('metrics', {}).get('landed', False))  # a bool, so the float tables skip it
             for k in ('max_hold_err_m', 'rms_track_err_m', 'max_tilt_deg'):
                 if k in sm.get('metrics', {}):
                     m[k] = sm['metrics'][k]
