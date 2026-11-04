@@ -32,9 +32,8 @@ for i, seed in enumerate((1, 2, 3)):
     ax[i, 0].set_ylabel(f'seed {seed}\nhold error m')
     ax[i, 1].set_ylabel('tilt deg')
     for a in ax[i]:
-        a.grid(alpha=0.2)
-        a.axvspan(4.0, 5.6, color='#ffffff', alpha=0.07)  # E 5 m/s gust: sim 20..28 s after the wind step
-ax[0, 0].set_title('horizontal hold error (shaded = 5 m/s east gust)')
+        a.grid(alpha=0.2)  # no gust band: holds are sim s, the x axis is wall s and the real-time factor varies per run
+ax[0, 0].set_title('horizontal hold error (the 5 m/s east gust is the tilt step near 5-7 s)')
 ax[0, 1].set_title('tilt')
 ax[0, 0].legend(loc='upper left')
 ax[2, 0].set_xlabel('wall s since wind step (speed 5)')
