@@ -606,8 +606,9 @@ CSV: `research/v7/v7_timescale.csv` [D, model].
 Findings [model]:
 - Configuration rule: the largest safe gam halves per ~10 ms of delay (4 at 0, 2 at 20, 1 at 30). A slower reference model (tau 0.2)
   extends benefit to 45 ms at gam 0.5. Leakage helps only near the edge (30 ms gam 2: sig 0.01 -> 1.29, sig 0.2 -> 1.03).
-- At 60-78 ms no tested cell helps. The rate-layer law with a delay-free reference model cannot help at the real drone's 78 ms;
-  the reference model (block 3) must carry the loop delay, or the rate layer stays off and adaptation lives in slower loops.
+- At 60-78 ms no cell of the main grid (gam >= 0.5) helps. Follow-up (scratchpad v7_small.py, sig 0.05): at 78 ms gam 0.1 helps
+  (tau 0.06: 0.89, tau 0.2: 0.82) and gam 0.25 harms (1.31 / 1.09). The rule extends: gam ~0.1 with a slow reference at the real
+  drone's 78 ms. A reference model that carries the loop delay (block 3) is the route to more gain.
 - Weight memory: frozen-learned matches online (within ~0.1) up to 45 ms. Warm start from t = 0 is worse than online whenever the
   fault is not yet present (30 ms gam 2: 1.64 vs 1.21) -> stored weights must be gated by the detected scenario, not applied blindly.
-- Next: SIH check of the rule rides on V5 (30 ms gam 2 already FAILs to land in run 1); smaller gam (0.1-0.25) at 78 ms is untested.
+- Next: SIH check of the rule rides on V5 (30 ms gam 2 already FAILs to land in run 1); SIH check of gam 0.1 at 78 ms is next (deck v7-dly78-*).
