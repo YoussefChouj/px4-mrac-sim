@@ -219,6 +219,66 @@ PARAM_DEFINE_INT32(MRL_P_BIAS, 0);
 PARAM_DEFINE_FLOAT(MRL_DIST_T, 0.0f);
 
 /**
+ * MRAC XY layer mode: 0 off, 1 adapt, 2 status only (u_ad = 0).
+ *
+ * Runs inside the position layer, so it needs
+ * MRL_EN_POS >= 1 (MRL_EN_POS 2 gives an XY-only arm). x = measured NED acceleration, r = commanded acceleration.
+ * @min 0
+ * @max 2
+ * @group MRAC layers
+ */
+PARAM_DEFINE_INT32(MRL_EN_XY, 0);
+
+/**
+ * XY layer reference model time constant (commanded to measured acceleration through the attitude loop).
+ * @unit s
+ * @min 0.05
+ * @max 2.0
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_X_TAU, 0.3f);
+
+/**
+ * XY layer adaptation gain (normalized gradient).
+ * @min 0.0
+ * @max 20.0
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_X_GAM, 1.0f);
+
+/**
+ * XY layer sigma leakage.
+ * @min 0.0
+ * @max 1.0
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_X_SIG, 0.02f);
+
+/**
+ * XY layer Theta limit per entry.
+ * @min 0.0
+ * @max 5.0
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_X_LIM, 1.0f);
+
+/**
+ * XY layer adaptive acceleration clamp per axis (2 m/s^2 is about 11.5 deg of extra tilt).
+ * @unit m/s^2
+ * @min 0.0
+ * @max 5.0
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_X_UMAX, 2.0f);
+
+/**
+ * XY layer keeps the constant (bias) regressor: on by default, the constant term is the wind drag deficit.
+ * @boolean
+ * @group MRAC layers
+ */
+PARAM_DEFINE_INT32(MRL_X_BIAS, 1);
+
+/**
  * xy baseline controller that replaces the PX4 xy position/velocity PID (mc_pos_control follows its acceleration).
  * @value 0 PX4 PID (off)
  * @value 1 LQR

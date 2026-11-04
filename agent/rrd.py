@@ -15,7 +15,7 @@ import rerun as rr
 
 import report
 
-report.TOPICS += ['mrac_rate_status', 'mrac_att_status', 'mrac_pos_status']
+report.TOPICS += ['mrac_rate_status', 'mrac_att_status', 'mrac_pos_status', 'mrac_xy_status']
 T = 'sim'
 
 
@@ -76,7 +76,7 @@ def one(run):
     if m is not None:
         for i in range(4):
             col(f'plots/motors/m{i}', m['t'], m[f'control[{i}]'])
-    for topic in ('mrac_rate_status', 'mrac_att_status', 'mrac_pos_status'):
+    for topic in ('mrac_rate_status', 'mrac_att_status', 'mrac_pos_status', 'mrac_xy_status'):
         s = d.get(topic)
         if s is not None:
             L = topic.split('_')[1]

@@ -82,8 +82,11 @@ private:
 	uORB::Subscription _land_detected_sub{ORB_ID(vehicle_land_detected)};
 	uORB::Publication<vehicle_attitude_setpoint_s> _att_sp_pub{ORB_ID(vehicle_attitude_setpoint)};
 	uORB::Publication<mrac_rate_status_s> _status_pub{ORB_ID(mrac_pos_status)};
+	uORB::Publication<mrac_rate_status_s> _xy_status_pub{ORB_ID(mrac_xy_status)};
 
 	MracAxis _z;
+	MracAxis _xy[2];
+	float _acc_sp[2] {};
 	float _vz_sp{0.f};
 	bool _landed{true};
 	hrt_abstime _last_t{0};
@@ -96,6 +99,13 @@ private:
 		(ParamFloat<px4::params::MRL_P_LIM>) _param_lim,
 		(ParamFloat<px4::params::MRL_P_UMAX>) _param_umax,
 		(ParamFloat<px4::params::MRL_DIST_T>) _param_dist_t,
-		(ParamInt<px4::params::MRL_P_BIAS>) _param_bias
+		(ParamInt<px4::params::MRL_P_BIAS>) _param_bias,
+		(ParamInt<px4::params::MRL_EN_XY>) _param_xy_en,
+		(ParamFloat<px4::params::MRL_X_TAU>) _param_xy_tau,
+		(ParamFloat<px4::params::MRL_X_GAM>) _param_xy_gamma,
+		(ParamFloat<px4::params::MRL_X_SIG>) _param_xy_sigma,
+		(ParamFloat<px4::params::MRL_X_LIM>) _param_xy_lim,
+		(ParamFloat<px4::params::MRL_X_UMAX>) _param_xy_umax,
+		(ParamInt<px4::params::MRL_X_BIAS>) _param_xy_bias
 	)
 };

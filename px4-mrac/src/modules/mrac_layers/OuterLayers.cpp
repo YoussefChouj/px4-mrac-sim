@@ -126,6 +126,46 @@ void MracPosLayer::Run()
 
 	vehicle_attitude_setpoint_s out = base;
 	out.thrust_body[2] = math::constrain(base.thrust_body[2] + u + dist, -1.f, 0.f);
+
+	// XY layer: x = measured NED acceleration, r = the acceleration mc_pos_control commanded (lsp.acceleration, where
+	// PID, LQR, ADRC and MPC all end), so it is controller-agnostic. u_ad [m/s^2] tilts the thrust vector; the bias
+	// regressor learns a constant acceleration deficit such as wind drag. Needs routing (MRL_EN_POS >= 1).
+	const int xy_mode = _param_xy_en.get();
+	const MracGains gx{_param_xy_tau.get(), _param_xy_gamma.get(), _param_xy_sigma.get(), _param_xy_lim.get(),
+			   _param_xy_umax.get()};
+	const float acc[2] {lpos.ax, lpos.ay};
+	float uxy[2] {};
+
+	for (int i = 0; i < 2; i++) {
+		if (PX4_ISFINITE(lsp.acceleration[i])) { _acc_sp[i] = lsp.acceleration[i]; }
+
+		_xy[i].bias = _param_xy_bias.get() != 0;
+		uxy[i] = PX4_ISFINITE(acc[i]) ? _xy[i].step(acc[i], _acc_sp[i], dt, _landed, xy_mode == 1, xy_mode == 1, gx) : 0.f;
+	}
+
+	if (xy_mode == 1 && !_landed && (fabsf(uxy[0]) > 0.f || fabsf(uxy[1]) > 0.f)) {
+		// normalized thrust vector in NED; thrust per m/s^2 from its vertical part (at hover -F_z / g)
+		const matrix::Quatf qb(base.q_d);
+		matrix::Vector3f F = matrix::Dcmf(qb) * matrix::Vector3f(0.f, 0.f, out.thrust_body[2]);
+
+		if (-F(2) > 0.05f) {
+			const float k = -F(2) / 9.80665f;
+			F(0) += uxy[0] * k;
+			F(1) += uxy[1] * k;
+			// same construction as PX4 ControlMath::bodyzToAttitude: keep the base yaw, body z along -F
+			const float yaw = matrix::Eulerf(qb).psi();
+			const matrix::Vector3f bz = -F.normalized();
+			matrix::Vector3f bx = matrix::Vector3f(-sinf(yaw), cosf(yaw), 0.f) % bz;
+			bx.normalize();
+			const matrix::Vector3f by = bz % bx;
+			matrix::Dcmf Rn;
+
+			for (int j = 0; j < 3; j++) { Rn(j, 0) = bx(j); Rn(j, 1) = by(j); Rn(j, 2) = bz(j); }
+
+			matrix::Quatf(Rn).copyTo(out.q_d);
+			out.thrust_body[2] = math::constrain(-F.norm(), -1.f, 0.f);
+		}
+	}
 	out.timestamp = hrt_absolute_time();
 	_att_sp_pub.publish(out);
 
@@ -140,10 +180,28 @@ void MracPosLayer::Run()
 	st.mode = (uint8_t)mode;
 	st.adapting = (mode == 1) && !_landed;
 	_status_pub.publish(st);
+
+	mrac_rate_status_s sx{};
+	sx.timestamp = out.timestamp;
+
+	for (int i = 0; i < 2; i++) {
+		sx.xm[i] = _xy[i].xm;
+		sx.e[i] = _xy[i].e;
+		sx.u_ad[i] = uxy[i];
+
+		for (int j = 0; j < MracAxis::NPHI; j++) { sx.theta[i * MracAxis::NPHI + j] = _xy[i].theta[j]; }
+	}
+
+	sx.mode = (uint8_t)xy_mode;
+	sx.adapting = (xy_mode == 1) && !_landed;
+	_xy_status_pub.publish(sx);
 }
 
 void MracPosLayer::print()
 {
 	PX4_INFO("pos: mode %d theta z %.4f %.4f %.4f", (int)_param_en.get(),
 		 (double)_z.theta[0], (double)_z.theta[1], (double)_z.theta[2]);
+	PX4_INFO("xy: mode %d theta x %.4f %.4f %.4f y %.4f %.4f %.4f", (int)_param_xy_en.get(),
+		 (double)_xy[0].theta[0], (double)_xy[0].theta[1], (double)_xy[0].theta[2],
+		 (double)_xy[1].theta[0], (double)_xy[1].theta[1], (double)_xy[1].theta[2]);
 }

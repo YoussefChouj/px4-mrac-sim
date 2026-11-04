@@ -1,0 +1,98 @@
+{
+ "sim": "sih",
+ "airframe": "research-drone",
+ "speed": 5,
+ "alt": 3.0,
+ "why": "V3 XY layer A/B in steady SIH wind: pid baseline, MRL_EN_XY 1 (1 adapt, 2 status only), vz routed, u_ad z 0.",
+ "params": {
+  "XYC_MODE": 0,
+  "MRL_EN_RATE": 0,
+  "MRL_EN_ATT": 0,
+  "MRL_EN_POS": 2,
+  "MRL_EN_XY": 1
+ },
+ "steps": [
+  {
+   "do": "takeoff"
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_SEED",
+   "value": "run"
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_SIG",
+   "value": 0.8
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_N",
+   "value": 1.0
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_E",
+   "value": 2.0
+  },
+  {
+   "do": "hold",
+   "s": 20
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_E",
+   "value": 5.0
+  },
+  {
+   "do": "hold",
+   "s": 8
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_E",
+   "value": 2.0
+  },
+  {
+   "do": "hold",
+   "s": 15
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_SIG",
+   "value": 0.0
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_N",
+   "value": 0.0
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_E",
+   "value": 0.0
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "land"
+  }
+ ],
+ "limits": {
+  "max_hold_err_m": 3.0,
+  "max_tilt_deg": 35,
+  "must_land": true
+ },
+ "boot_params": {
+  "SIH_KDV": 0.45,
+  "SIM_GPS_NSCL": 0.1,
+  "EKF2_GPS_P_NOISE": 0.05,
+  "EKF2_GPS_V_NOISE": 0.05
+ }
+}

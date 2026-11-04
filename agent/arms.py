@@ -15,6 +15,7 @@ Every arm flies RUNS times, one sim at a time. Per run the ULog (flight.ulg) giv
   theta_end       |Theta| (all axes) at the end of the log
 Writes ~/.cache/px4-arms/<time>/arms.json and prints a mean [min..max] table per arm.
 """
+import hashlib
 import json
 import math
 import os
@@ -27,6 +28,28 @@ import numpy as np
 from pyulog import ULog
 
 HERE = Path(__file__).resolve().parent
+
+
+def sha(p):
+    p = Path(p)
+    return hashlib.sha256(p.read_bytes()).hexdigest()[:16] if p.is_file() else None
+
+
+def git_id(d):
+    """Commit and a hash of the uncommitted diff, so a dirty tree is never mistaken for its commit."""
+    def g(*a):
+        r = subprocess.run(['git', '-C', str(d), *a], capture_output=True, text=True)
+        return r.stdout if r.returncode == 0 else ''
+    rev = g('rev-parse', 'HEAD').strip()
+    diff = g('diff', 'HEAD') + g('status', '--porcelain')
+    return {'rev': rev or None, 'dirty': hashlib.sha256(diff.encode()).hexdigest()[:16] if diff.strip() else None}
+
+
+def manifest(src, arms):
+    src = Path(src).expanduser()
+    return {'time': time.strftime('%Y-%m-%dT%H:%M:%S'), 'tools': git_id(HERE.parent), 'tree': git_id(src),
+            'px4_bin': sha(src / 'build/px4_sitl_default/bin/px4'),
+            'decks': {Path(x).stem: sha(x) for x in arms}, 'run0': int(os.environ.get('ARMS_RUN0', 0))}
 
 
 def topic(ulog, name):
@@ -77,11 +100,48 @@ def ulog_metrics(path):
         qd = [np.interp(at[w], asp['timestamp'] * 1e-6, asp[f'q_d[{i}]']) for i in range(4)]
         e = np.concatenate([roll(q) - roll(qd), pitch(q) - pitch(qd)])
         m['att_track_rms_deg'] = float(np.degrees(np.sqrt(np.mean(e ** 2)))) if w.any() else float('nan')
-    for name, key in (('mrac_rate_status', ''), ('mrac_att_status', 'att_'), ('mrac_pos_status', 'pos_')):
+    # V4 (review 2026-11-04): metrics on the ULog's own timestamps, not on the runner's async telemetry.
+    req = ('vehicle_attitude', 'vehicle_local_position', 'vehicle_local_position_setpoint', 'actuator_motors')
+    m['missing_topics'] = ','.join(n for n in req if topic(u, n) is None)
+    par = dict(u.initial_parameters)
+    for ts, n, v in u.changed_parameters:
+        par[n] = v  # last value wins; enough for clamp limits that are set once at the start
+    if att is not None:
+        at = att['timestamp'] * 1e-6
+        w = np.interp(at, t, air.astype(float)) > 0.5
+        # tilt of the thrust axis (body z vs world z), not the larger Euler component
+        tilt = np.degrees(np.arccos(np.clip(1 - 2 * (att['q[1]'] ** 2 + att['q[2]'] ** 2), -1, 1)))
+        m['tilt_geo_max_deg'] = float(np.max(tilt[w])) if w.any() else float('nan')
+    if lp is not None and lsp is not None:
+        pt = lp['timestamp'] * 1e-6
+        e = np.stack([lp[k] - np.interp(pt, lsp['timestamp'] * 1e-6, lsp[k]) for k in ('x', 'y')], 1)
+        w = (np.interp(pt, t, air.astype(float)) > 0.5) & np.isfinite(e).all(1)
+        if w.any():
+            # offset = |mean error| (a constant bias), spread = rms about that mean: a drift metric hides the first
+            m['xy_err_rms_m'] = float(np.sqrt(np.mean(np.sum(e[w] ** 2, 1))))
+            m['xy_offset_m'] = float(np.linalg.norm(e[w].mean(0)))
+            m['xy_spread_m'] = float(np.sqrt(np.mean(np.sum((e[w] - e[w].mean(0)) ** 2, 1))))
+    mot = topic(u, 'actuator_motors')
+    if mot is not None:
+        w = np.interp(mot['timestamp'] * 1e-6, t, air.astype(float)) > 0.5
+        c = np.stack([mot[f'control[{i}]'] for i in range(4)], 1)
+        m['motor_sat_frac'] = float(np.mean(np.any((c[w] >= 0.99) | (c[w] <= 0.01), 1))) if w.any() else float('nan')
+    ts_ = topic(u, 'trajectory_setpoint')
+    if ts_ is not None and len(ts_['timestamp']) > 10:
+        d = np.diff(ts_['timestamp'] * 1e-3)
+        m['sp_dt_p99_ms'] = float(np.percentile(d, 99))
+    for name, key in (('mrac_rate_status', ''), ('mrac_att_status', 'att_'), ('mrac_pos_status', 'pos_'), ('mrac_xy_status', 'xy_')):
         s = topic(u, name)
         if s is not None and len(s['timestamp']):
             m[f'{key}uad_max'] = float(max(np.max(np.abs(s[f'u_ad[{a}]'])) for a in range(3)))
             m[f'{key}theta_end'] = float(math.sqrt(sum(float(s[f'theta[{i}]'][-1]) ** 2 for i in range(9))))
+            pre = {'': 'MRL_R', 'att_': 'MRL_A', 'pos_': 'MRL_P', 'xy_': 'MRL_X'}[key]
+            w = np.interp(s['timestamp'] * 1e-6, t, air.astype(float)) > 0.5
+            if w.any() and f'{pre}_UMAX' in par:
+                ua = np.max(np.abs(np.stack([s[f'u_ad[{a}]'][w] for a in range(3)], 1)), 1)
+                m[f'{key}uad_clamp_frac'] = float(np.mean(ua >= 0.99 * par[f'{pre}_UMAX']))
+                th = np.max(np.abs(np.stack([s[f'theta[{i}]'][w] for i in range(9)], 1)), 1)
+                m[f'{key}theta_lim_frac'] = float(np.mean(th >= 0.99 * par[f'{pre}_LIM']))
     return m
 
 
@@ -92,6 +152,9 @@ def main():
         sys.exit(f'instance {inst}: px4ctl runs 0..8 only')
     out = Path(os.environ.get('ARMS_OUT') or Path.home() / '.cache' / 'px4-arms' / time.strftime('%Y%m%dT%H%M%S'))
     out.mkdir(parents=True, exist_ok=True)
+    # CI runs one repetition per job: ARMS_RUN0 offsets the run index (dir NAME-i), which is also the paired seed
+    run0 = int(os.environ.get('ARMS_RUN0', 0))
+    man, attempts = manifest(src, arms), []
     env = dict(os.environ, PX4_SOURCE=str(Path(src).expanduser()), PYTHONUNBUFFERED='1')
     res = {}
     for arm in arms:
@@ -99,7 +162,7 @@ def main():
         res[name] = []
         for i in range(runs):
             for attempt in range(3):
-                d = out / f'{name}-{i + 1}' if not attempt else out / f'{name}-{i + 1}-retry{attempt}'
+                d = out / f'{name}-{run0 + i + 1}' if not attempt else out / f'{name}-{run0 + i + 1}-retry{attempt}'
                 with open(f'{d}.log', 'w') as log:
                     try:
                         rc = subprocess.run([sys.executable, str(HERE / 'scenario.py'), inst, arm, str(d)],
@@ -110,6 +173,7 @@ def main():
                         subprocess.run(['pkill', '-f', f'px4 -i {inst} '])
                         time.sleep(5)
                         rc = 3
+                attempts.append({'arm': name, 'run': run0 + i + 1, 'attempt': attempt, 'rc': rc, 'dir': d.name})
                 if rc != 3:
                     break
             ulg = d / 'flight.ulg'
@@ -134,7 +198,9 @@ def main():
             cells.append(f'{sum(v) / len(v):.4f} [{min(v):.3f}..{max(v):.3f}]' if v else '-')
         print(f'{k:<16}' + ''.join(f'{c:>28}' for c in cells))
     print(f'{"pass":<16}' + ''.join(f'{sum(m["pass"] for m in res[n])}/{runs}'.rjust(28) for n in res))
-    (out / 'arms.json').write_text(json.dumps({'src': src, 'runs': runs, 'arms': arms, 'results': res}, indent=1))
+    # every attempt is kept (rc 3 = infra retry, 2 = no run), so a missing run is visible, never silently dropped
+    (out / 'arms.json').write_text(json.dumps({'src': src, 'runs': runs, 'arms': arms, 'manifest': man,
+                                               'attempts': attempts, 'results': res}, indent=1))
     print(f'-> {out}')
 
 

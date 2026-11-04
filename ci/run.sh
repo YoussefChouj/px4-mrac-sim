@@ -12,5 +12,5 @@ pip install -q -r "$here/ci/requirements.txt"
 # px4ctl reads the tools from its own folder and the tree from PX4_SOURCE
 ln -sfn "$here" ~/px4-tools
 name=$(basename "$2" .json)
-export ARMS_OUT="$4/$name-r$3" ARMS_TIMEOUT=${ARMS_TIMEOUT:-600}
+export ARMS_OUT="$4/$name-r$3" ARMS_TIMEOUT=${ARMS_TIMEOUT:-600} ARMS_RUN0=$(($3 - 1))
 python "$here/agent/arms.py" 0 "$P" 1 "$2"
