@@ -20,7 +20,7 @@ this file (state + next) before every session ends.
 | F-nominal | 41780573202 | 5 | 105/115 | adrc-wc-08 0/5, adrc-wc-12 0/5 |
 | G-p11n-mrac-unit | 41780622654 | 5 | 95/105 | heavy-hover-step 0/5, motor-out 0/5 |
 
-- Not digested yet: no paired differences or intervals computed (next item 1).
+- Digested 2026-11-04 by `tools/wave_digest.py`: tables in `research/digests/wave-digest-A-G.md`, findings in PROGRESS ("Wave digest A-G").
 
 ## Caveats
 - Stock SIH has no aerodynamics or wind. `p16-sihwind-*` use our SIH wind patch; other disturbances are injected
@@ -30,24 +30,30 @@ this file (state + next) before every session ends.
 - `sp_dt_p99_ms` is bounded by the 200 ms logger interval; it is not the controller cadence.
 - Compare inside one wave, paired by `run` (= seed). The 3-block v2 MRAC is not built yet.
 
-## Questions from A-G (answer them in item 1)
-1. Delay (wave C): at 20 ms every arm passed 10/10; at 30 ms `alone` passed 10/10 while `g05` passed 4/10 and `g2`
-   0/10 (g = MRAC gain scale, going by the deck names: check the scenario files); at 45 and 78 ms every arm failed.
-   So the layer lowers the delay margin somewhere between 20 and 30 ms. Which gate fails: oscillation or tilt?
-2. ADRC (wave F): adrc-wc-08 and adrc-wc-12 failed 0/5 here but passed 3/3 each in sweep run 41678708699. A gate or
-   metric change since then (8facffa, V1/V4 edits), or a real difference? Compare the failing gate fields.
-3. Stress decks (wave G): heavy-hover-step and motor-out failed 0/5. Expected limit or a bug? Which gate?
-4. Wave D: which run of p16-sihwind-lqr-set1 failed, and on which gate?
+## A-G answers (digest 2026-11-04)
+1. Delay (C): at 30 ms the g2 rate layer drives a saturated rate oscillation (paired vs alone: rate_rms_rp +0.568,
+   motor_sat_frac +0.726), yet hold and tilt stay inside their limits in 9 of 10 flights: the failures are
+   must_land or a runner error, which the record does not hold. Next item 1 names the check.
+2. ADRC (F): adrc-wc-08/-12 fail the 1.5 m hold limit (1.62-1.94 m), as they did in run 41678708699 (0/3 there too;
+   the earlier "3/3" here was wrong). Too slow, nothing changed.
+3. Stress (G): heavy-hover-step (flycart30 airframe) tilts 51.7-53.9 deg on its 10 m step against a 35 deg limit;
+   hover-step tilts 35.7 deg against 45. motor-out (one motor off) flips in 5/5: expected for a quadrotor [S].
+4. D: p16-sihwind-lqr-set1 failed run 6 only, with no hold or tilt value recorded (stopped before the hold step [S]).
+- Main result: the full stack costs attitude/rate tracking and motor saturation in nominal and most stress decks
+  and helps only with the weak motor (mot1 hold -0.134 [-0.164, -0.103] m); the position layer alone carries the
+  motor-saturation cost. Input for the 3-block v2 design.
 
 ## Next items (in order)
-1. `tools/wave_digest.py <results folder>...`: pass table per wave, failing gate per failing deck, paired differences
-   (plus-mrac minus alone, same `run`) per metric with 95 % bootstrap intervals over runs. Dated PROGRESS entry with
-   the tables and the answers to the 4 questions.
-2. Where an interval includes 0: re-fly that pair (control included) with `first 11`, then `first 21` if needed.
-3. Delay edge (question 1): one wave with delays 20/24/27/30/35 ms x (alone, gain scale 0.5, 1, 2), runs 10.
-4. 3-block v2 MRAC (`research/notes/three-block-v2.md`) in `px4-mrac/`, each block behind its own param so one build
-   flies every combination; CI compiles it (the first run is slow); then leave-one-block-out waves.
-5. The review experiments below, then V4, V6-V8 and P13-P16 (`research/OPEN-ITEMS.md`).
+1. Delay edge: one wave, delays 20/24/27/30/35 ms x (alone, g05, g1, g2), runs 10, scenarios copied from
+   `v5-dly30-*`. Failing-job logs (`logs/<job>.log`) show scenario.py's checks table: record which check fails.
+2. More seeds where the layer should help but the hold interval crosses 0: B's dist, mass, slow and tmax pairs
+   (wave `waves/archive/B-p11-extras.txt` cut to those 8 decks, `first 11`).
+3. 3-block v2 MRAC (`research/notes/three-block-v2.md`) in `px4-mrac/`, each block behind its own param so one build
+   flies every combination; CI compiles it (the first run is slow); then leave-one-block-out waves. Keep the
+   position-layer saturation cost above in view.
+4. The review experiments below, then V4, V6-V8 and P13-P16 (`research/OPEN-ITEMS.md`).
+5. Owner decision: heavy-hover-step's 35 deg tilt limit (PX4's default tilt maximum is 45 deg [S]). Do not change
+   the gate without the owner.
 
 ## Review experiments (own summary of an external critical review; the review itself stays private)
 - E1 delay/noise/frequency: sweep delay (0, 13 ms and up), sensor noise and a chirp. Arms: baseline, a fairly tuned

@@ -638,3 +638,27 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
 - New: pushing `waves/<name>.txt` on any branch starts `arms` (ci/plan.py); every run publishes to the `results`
   branch (ci/publish.py); A-G backfilled there, deck lists in waves/archive/. Agent guide CLAUDE.md, state
   research/HANDOFF.md. Not digested yet (paired intervals): HANDOFF next item 1.
+
+## Wave digest A-G (2026-11-04, tools/wave_digest.py)
+- Full tables: `research/digests/wave-digest-A-G.md` (pass table with the broken limits, paired treatment - control
+  by `run`, mean [95 % bootstrap interval], 10 runs per deck in A-D, 5 in E-G). Source: results folders A-G.
+- Full MRAC stack vs alone (waves A, B, G): att_track_rms_deg, rate_rms_rp and motor_sat_frac rise in every pair
+  except the weak motor (e.g. p11-lqr: att +0.152 [+0.077, +0.25] deg, motor_sat +0.0475 [+0.034, +0.060]).
+  max_hold_err_m does not change within its interval, except adrc +0.011 [+0.002, +0.021] m and dly40
+  +0.144 [+0.104, +0.18] m (worse), and mot1, where the stack lowers it: -0.134 [-0.164, -0.103] m (B) and
+  -0.099 [-0.138, -0.058] m (G).
+- One layer at a time (13 ms delay): the position layer alone raises motor_sat_frac by +0.0474 [+0.035, +0.058],
+  as much as the full stack (+0.0458); the attitude layer alone (+0) and the rate layer alone (+0, G) do not.
+- Delay (C, rate layer gain scale g): at 20 ms, g2 lowers att_track_rms by -0.447 [-0.456, -0.437] deg. At 30 ms,
+  g2 raises rate_rms_rp by +0.568 [+0.566, +0.571] and motor_sat_frac by +0.726 [+0.725, +0.726] (a saturated rate
+  oscillation), while hold and tilt stay inside their limits in 9 of 10 flights: the failures are must_land or a
+  runner error, which the record does not hold. scenario.py prints its checks table to the fly log, so failing-job
+  logs on the results branch will name the check. At 45 ms alone fails too (0/10).
+- ADRC (F): adrc-wc-08 and -12 fail max_hold_err_m (1.62-1.84 and 1.92-1.94 m > 1.5), as in run 41678708699
+  (0/3 each, 1.66 and 1.89 m). HANDOFF's "passed 3/3 there" was wrong; nothing changed.
+- Stress (G): heavy-hover-step flies the flycart30 airframe, 10 m step at MPC_XY_VEL_MAX 5, and tilts 51.7-53.9 deg
+  against its 35 deg limit; hover-step on the default airframe tilts 35.7 deg (median) against 45. motor-out
+  (motor 1 off, CA_FAILURE_MODE 1) flips to 180 deg in 5/5: a quadrotor with a motor off keeps no full attitude
+  authority [S]. Gates unchanged; the heavy-hover-step limit is a question for the owner.
+- D: p16-sihwind-lqr-set1 failed run 6 only; its record has no hold or tilt value, so it stopped before the hold
+  step [S]. A-G fly logs were not kept.
