@@ -445,3 +445,22 @@ Turbulence with a 10 s time constant does not average out in 15 s. Calm-wind run
 
 Next: LQR wind weights or an integral state (LQR has no integral, so steady wind leaves an offset); MRAC pos clamp vs wind
 (raise MRL pos u_ad limit, or let the position layer adapt a bias); cloud A/B runs 5.
+
+## P16 part 4: is the wind hold limited by the MRAC clamp or the LQR integral? (2026-11-04)
+Same SIH wind decks as part 3 (mean N1/E2 m/s, turbulence sigma 0.8, gust E5 m/s 8 s, KDV 0.45), runs 3, local
+instance 2, ~/.cache/px4-arms/sihwind-ab2 (9/9 PASS, 290 s wall for 9 runs) [D].
+
+| Arm | Change | Max hold (m) | pos u_ad max | Tilt (deg) |
+|---|---|---|---|---|
+| lqr-plus-mrac (part 3) | MRL_P_UMAX 0.15 | 0.95 [0.90..1.03] | 0.150 (clamp) | 16.2 |
+| mrac-umax40 | MRL_P_UMAX 0.4 | 0.94 [0.86..1.07] | 0.208 (free) | 15.9 |
+| lqr-alone (part 3) | INT_BAND 1, INT_MAX 2 | 0.90 [0.78..1.02] | - | 15.9 |
+| lqr-intwide | XYC_INT_BAND 3, XYC_INT_MAX 5 | 0.81 [0.69..0.89] | - | 16.5 |
+| mrac-umax40-intwide | both | 0.87 [0.67..1.07] | 0.218 | 16.3 |
+| pid-tuned (part 3) | MPC_XY_P 1.5, VEL_P_ACC 3.5 | **0.31** [0.28..0.33] | - | 16.0 |
+
+Finding [D]: lifting the clamp frees the adaptive term (0.21 < 0.4) but the hold error does not move; the wider integral
+helps LQR by about 0.1 m (ranges overlap). Neither is the bottleneck: the 0.3 vs 0.9 m gap is the baseline xy loop
+bandwidth during the gust transient (tuned PID has stiffer position + velocity gains). Defaults unchanged.
+Next: raise LQR position/velocity weights (stiffer baseline) and re-run; MRAC pos reference model tau 1.0 is slower
+than the gust, so it cannot reject it either (part of the same bandwidth story).

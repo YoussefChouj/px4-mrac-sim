@@ -167,6 +167,33 @@ async def fly(drone):
                         break
                 metrics['max_overshoot_m'] = max(metrics.get('max_overshoot_m', 0), peak - dist)
                 say(f'goto n={n} e={e}: overshoot {peak - dist:.2f} m')
+            elif do == 'plan':
+                # P14: A* over the world's obstacle table (agent/planner.py), then fly the legs: pass-through legs
+                # accept within 0.4 m, the goal settles like goto (0.2 m, 0.1 m/s). The legs go in metrics['plan'].
+                sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+                from planner import plan as plan_path
+                tab = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'worlds',
+                                                  f'{spec.get("world")}.json')))
+                n, e = float(step.get('n', 0)), float(step.get('e', 0))
+                if not offboard:
+                    await drone.offboard.set_position_ned(PositionNedYaw(pos()[1], pos()[2], -(ground + alt), 0))
+                    await drone.offboard.start()
+                    offboard = True
+                wps = plan_path(tab, (pos()[1], pos()[2]), (n, e), float(step.get('margin', 0.6)))
+                metrics.setdefault('plan', []).append(wps)
+                say(f'plan to n={n} e={e}: {len(wps)} legs {wps}')
+                tmove = time.monotonic()
+                for k, (wn, we) in enumerate(wps):
+                    last = k == len(wps) - 1
+                    await drone.offboard.set_position_ned(PositionNedYaw(wn, we, -(ground + alt), 0))
+                    async for p in drone.telemetry.position_velocity_ned():
+                        d = math.hypot(p.position.north_m - wn, p.position.east_m - we)
+                        if (d < 0.2 and math.hypot(p.velocity.north_m_s, p.velocity.east_m_s) < 0.1) if last else d < 0.4:
+                            break
+                        if time.monotonic() - tmove > 90:
+                            say('plan: not at the goal after 90 s')
+                            break
+                say(f'plan reached n={n} e={e}')
             elif do == 'track':
                 # Figure-8 (lemniscate of Gerono) or circle around the current point, flown in offboard
                 # with velocity feedforward. The phase rate ramps up over the first ramp_s and down over

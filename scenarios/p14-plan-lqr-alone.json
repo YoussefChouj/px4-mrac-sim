@@ -1,0 +1,41 @@
+{
+ "sim": "gz",
+ "vehicle": "research_drone",
+ "world": "obstacles",
+ "speed": 1,
+ "alt": 2,
+ "why": "P14 planner deck: A* over worlds/obstacles.json (margin 0.3 m + drone radius) instead of hand waypoints. P13 obstacle course (obst), arm lqr-alone: slalom past three 0.15 m poles, through a 1.2 m gate, stop before the end wall (worlds/obstacles.json), goto steps at 2 m. Calm. Pass = no obstacle intrusion (drone radius 0.21 m [D]) and a landing.",
+ "params": {
+  "MRL_EN_RATE": 0,
+  "MRL_EN_ATT": 0,
+  "MRL_EN_POS": 0,
+  "XYC_MODE": 1
+ },
+ "steps": [
+  {
+   "do": "takeoff"
+  },
+  {
+   "do": "hold",
+   "s": 3
+  },
+  {
+   "do": "plan",
+   "n": 16.0,
+   "e": 0.0,
+   "margin": 0.3
+  },
+  {
+   "do": "hold",
+   "s": 3
+  },
+  {
+   "do": "land"
+  }
+ ],
+ "limits": {
+  "obstacle_intrusion_m": 0,
+  "max_tilt_deg": 50,
+  "must_land": true
+ }
+}
