@@ -62,6 +62,9 @@ def topic(ulog, name):
 def ulog_metrics(path):
     u = ULog(str(path))
     av, sp, land = topic(u, 'vehicle_angular_velocity'), topic(u, 'vehicle_rates_setpoint'), topic(u, 'vehicle_land_detected')
+    if av is None or sp is None:
+        # a run that never flew has no rate topics: report it, do not crash the whole batch
+        return {'missing_topics': 'vehicle_angular_velocity,vehicle_rates_setpoint', 'pass': False}
     t = av['timestamp'] * 1e-6
     air = np.ones_like(t, dtype=bool)
     if land is not None:
