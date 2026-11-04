@@ -4,6 +4,7 @@ One folder per finished `arms` run: `all.json` (every flight; `run` = seed index
 
 | finished UTC | wave | branch | sha | pass / jobs | lost | plan / build / fly | folder |
 |---|---|---|---|---|---|---|---|
+| 2026-11-04 07:12 | smoke-1job | main | d2ccb66 | 1 / 1 | 0 | success / success / success | [smoke-1job-41790538668](smoke-1job-41790538668/) |
 | 2026-11-04 05:59 | G-p11n-mrac-unit | main | 88c63e0 | 95 / 105 | 0 | success / success / success | [G-p11n-mrac-unit-41780622654](G-p11n-mrac-unit-41780622654/) |
 | 2026-11-04 05:57 | C-v5-v6-v7 | main | 88c63e0 | 124 / 190 | 0 | success / success / success | [C-v5-v6-v7-41780422738](C-v5-v6-v7-41780422738/) |
 | 2026-11-04 05:56 | D-p16-sihwind | main | 88c63e0 | 129 / 130 | 0 | success / success / success | [D-p16-sihwind-41780473246](D-p16-sihwind-41780473246/) |

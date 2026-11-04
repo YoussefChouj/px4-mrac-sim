@@ -1,0 +1,25 @@
+{
+ "run_id": 41790538668,
+ "url": "https://github.com/YoussefChouj/px4-mrac-sim/actions/runs/41790538668",
+ "label": "smoke-1job",
+ "folder": "smoke-1job-41790538668",
+ "event": "push",
+ "branch": "main",
+ "sha": "d2ccb66a74f82c96f2537b067126cd5e0dc52a0b",
+ "decks": [
+  "p11-lqr-alone"
+ ],
+ "runs": [
+  1
+ ],
+ "jobs": 1,
+ "flights": 1,
+ "pass": 1,
+ "lost": [],
+ "plan": "success",
+ "build": "success",
+ "fly": "success",
+ "error": "",
+ "finished_utc": "2026-11-04T07:12:30Z",
+ "results_url": "https://github.com/YoussefChouj/px4-mrac-sim/tree/results/results/smoke-1job-41790538668"
+}

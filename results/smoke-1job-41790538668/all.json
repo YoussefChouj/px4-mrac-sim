@@ -1,0 +1,21 @@
+{
+ "p11-lqr-alone": [
+  {
+   "rate_rms_rp": 0.029450471287005155,
+   "att_track_rms_deg": 0.20618847382637248,
+   "missing_topics": "",
+   "tilt_geo_max_deg": 2.818347692489624,
+   "xy_ref": "trajectory_setpoint",
+   "xy_err_rms_m": 0.06303757005210874,
+   "xy_offset_m": 0.01383107268194361,
+   "xy_spread_m": 0.06150151759543264,
+   "motor_sat_frac": 0.0,
+   "sp_dt_p99_ms": 236.0,
+   "pass": true,
+   "max_hold_err_m": 0.17421034973418115,
+   "rms_track_err_m": 0.0714131640020916,
+   "max_tilt_deg": 2.7553861141204834,
+   "run": 1
+  }
+ ]
+}
