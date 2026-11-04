@@ -256,6 +256,14 @@ PARAM_DEFINE_FLOAT(XYC_WC, 1.5f);
 PARAM_DEFINE_FLOAT(XYC_INT_BAND, 1.0f);
 
 /**
+ * LQR gain row (xyc_gains.h XYC_LQR_SETS): 0 generated default, 1-4 stiffer (slow pole 1.78/1.88/2.31/2.67 rad/s).
+ * @min 0
+ * @max 4
+ * @group MRAC layers
+ */
+PARAM_DEFINE_INT32(XYC_LQR_SET, 0);
+
+/**
  * LQR/MPC integral state clamp.
  * @unit m
  * @min 0

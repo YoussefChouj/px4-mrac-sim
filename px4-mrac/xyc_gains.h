@@ -5,6 +5,16 @@
 #define XYC_DRAG 0.885604f
 #define XYC_DELAY 9
 static const float XYC_LQR_K[4] = {2.783114f, 1.895801f, 0.081379f, 0.681942f};
+/* P16 part 5: stiffer rows on the same model (scratchpad lqrk.py), picked by XYC_LQR_SET; row 0 = XYC_LQR_K.
+ *   set      Q diag (p, v, a, z)    R      K (p, v, a, z)                          slow pole wn rad/s */
+#define XYC_LQR_SET_ROW(qp, qv, qz, r, k0, k1, k2, k3) {k0, k1, k2, k3}
+static const float XYC_LQR_SETS[5][4] = {
+	XYC_LQR_SET_ROW(  4, 1, 0.5, 1.00, 2.783114f, 1.895801f, 0.081379f, 0.681942f), /* 1.32 default */
+	XYC_LQR_SET_ROW(  4, 1, 0.5, 0.25, 4.886f,    3.019f,    0.171f,    1.283f),    /* 1.78 */
+	XYC_LQR_SET_ROW( 16, 2, 2.0, 1.00, 5.032f,    2.846f,    0.109f,    1.353f),    /* 1.88 ~ pid-tuned Kp */
+	XYC_LQR_SET_ROW( 36, 4, 4.0, 1.00, 7.128f,    3.683f,    0.134f,    1.899f),    /* 2.31 */
+	XYC_LQR_SET_ROW( 64, 6, 6.0, 1.00, 9.095f,    4.373f,    0.154f,    2.312f),    /* 2.67 */
+};
 #define XYC_ADRC_WC 1.5f
 #define XYC_ADRC_B0 1.0f
 #define XYC_ADRC_B1 18.0000f

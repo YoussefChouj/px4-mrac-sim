@@ -62,6 +62,7 @@ private:
 		(ParamFloat<px4::params::XYC_AMAX>) _param_amax,
 		(ParamFloat<px4::params::XYC_WC>) _param_wc,
 		(ParamFloat<px4::params::XYC_INT_BAND>) _param_int_band,
-		(ParamFloat<px4::params::XYC_INT_MAX>) _param_int_max
+		(ParamFloat<px4::params::XYC_INT_MAX>) _param_int_max,
+		(ParamInt<px4::params::XYC_LQR_SET>) _param_lqr_set
 	)
 };

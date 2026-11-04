@@ -395,6 +395,12 @@ Question (user): our hold errors are 0.5-1.5 m; published results are cm-level. 
   (total about 0.45 1/s). Next: rerun P13b + windy obstacles with c 0.2, check the implied drag, then position-loop
   gains for the 1 kg drone and an LQR integral state; GPS-level estimate error (0.12 m) bounds what any controller can show.
 
+P13b rerun with c 0.2 (~/.cache/px4-arms/p13b-c02, 9/9 pass, scratchpad p16c02.py) [D]:
+- Implied linear drag 0.21-0.25 1/s (pid 0.21/0.25/0.22, lqr 0.22/0.24/0.25). So drag scales with c alone
+  (c 1.0 -> 1.27, c 0.2 -> 0.23): the motor model adds no rotor drag, and the assumed 0.25 1/s rotor share is wrong.
+- Max hold error: pid-alone 0.24 / 0.25 / 0.44 m, lqr-alone 0.34 / 0.34 / 0.52, lqr-plus-mrac 0.28 / 1.63 / 0.43.
+- Fix 2: c 0.2 -> 0.36 (target 0.455 1/s) in gusty, obstacles and baylands_wind.sdf. Check queued: p13b-c036 pid x2.
+
 ## P16 part 2: PID position-gain sweep, research drone SIH (2026-11-04)
 
 scenarios/pg-*.json (XYC_MODE 0, aggressive fig8 1.0 m / 6 s x2 laps, runs 2, SIH instance 2 in parallel to gz),
@@ -445,6 +451,25 @@ Turbulence with a 10 s time constant does not average out in 15 s. Calm-wind run
 
 Next: LQR wind weights or an integral state (LQR has no integral, so steady wind leaves an offset); MRAC pos clamp vs wind
 (raise MRL pos u_ad limit, or let the position layer adapt a bias); cloud A/B runs 5.
+
+## P16 part 5: stiffer LQR rows, SIH wind (2026-11-04)
+
+New int param XYC_LQR_SET picks a K row in xyc_gains.h (row 0 = the generated K, default, unchanged). Rows 1-4 are
+designed on the same fitted model (research/lqrk.py). The LQR position gain was 2.78 vs the tuned PID's equivalent
+5.25 (MPC_XY_P 1.5 x VEL_P 3.5). Run: p16-sihwind-lqr-set{1..4}, runs 3, ~/.cache/px4-arms/p16set, 12/12 pass [D].
+
+| set | Q (p, v, z), R | K (p, v, a, z) | slow pole rad/s | max hold m (seeds 1/2/3) | max tilt deg |
+|---|---|---|---|---|---|
+| 0 (part 4) | 4, 1, 0.5; 1 | 2.78 1.90 0.08 0.68 | 1.32 | 0.90 | - |
+| 1 | 4, 1, 0.5; 0.25 | 4.89 3.02 0.17 1.28 | 1.78 | 0.47 / 0.63 / 0.52 | 16.2-16.7 |
+| 2 | 16, 2, 2; 1 | 5.03 2.85 0.11 1.35 | 1.88 | 0.45 / 0.63 / 0.55 | 15.9-17.7 |
+| 3 | 36, 4, 4; 1 | 7.13 3.68 0.13 1.90 | 2.31 | 0.33 / 0.50 / 0.40 | 16.6-17.0 |
+| 4 | 64, 6, 6; 1 | 9.10 4.37 0.15 2.31 | 2.67 | 0.26 / 0.44 / 0.34 | 16.5-16.8 |
+| pid-tuned (part 4) | - | - | - | 0.31 | - |
+
+Hold error falls steadily with the slow-pole frequency. Set 4 reaches the tuned PID's level, and tilt does not grow.
+This confirms part 4: the wind gap came from baseline bandwidth. The default stays 0 until fig8 tracking and the
+plus-mrac arm are checked with set 4.
 
 ## P16 part 4: is the wind hold limited by the MRAC clamp or the LQR integral? (2026-11-04)
 Same SIH wind decks as part 3 (mean N1/E2 m/s, turbulence sigma 0.8, gust E5 m/s 8 s, KDV 0.45), runs 3, local

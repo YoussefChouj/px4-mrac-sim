@@ -75,7 +75,9 @@ float XyCtrlLayer::step(XyAxis &s, int kind, float des, float pos, float vel, fl
 	if (kind == 1) {
 		float u = aff;
 
-		for (int i = 0; i < 4; i++) { u -= XYC_LQR_K[i] * x[i]; }
+		const float *k = XYC_LQR_SETS[math::constrain(_param_lqr_set.get(), (int32_t)0, (int32_t)4)];
+
+		for (int i = 0; i < 4; i++) { u -= k[i] * x[i]; }
 
 		return math::constrain(u, -amax, amax);
 	}
