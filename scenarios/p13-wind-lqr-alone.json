@@ -1,0 +1,60 @@
+{
+ "sim": "gz",
+ "vehicle": "research_drone",
+ "world": "gusty",
+ "speed": 1,
+ "alt": 3,
+ "why": "P13 turbulence A/B, arm lqr-alone: hold at 3 m in gz WindEffects wind (agent/gz_wind.py), mean 2.2 m/s (2 E, 1 N), Dryden-form Gauss-Markov sigma 0.8 m/s L 23 m (MIL-F-8785C low altitude [A]), 1-cosine gusts +3 m/s east at t=20 s (2 s) and +3 m/s north at t=40 s (3 s). Seed = run index, so run i of every arm sees the same wind. Drag c = 1.0 1/s [A, SIH_KDV default].",
+ "params": {
+  "MRL_EN_RATE": 0,
+  "MRL_EN_ATT": 0,
+  "MRL_EN_POS": 0,
+  "XYC_MODE": 1
+ },
+ "steps": [
+  {
+   "do": "takeoff"
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "wind",
+   "mean": [
+    2,
+    1
+   ],
+   "sigma": 0.8,
+   "L_m": 23,
+   "dur_s": 60,
+   "seed": "run",
+   "gusts": [
+    {
+     "t": 20,
+     "amp": 3,
+     "dur": 2,
+     "dir_deg": 0
+    },
+    {
+     "t": 40,
+     "amp": 3,
+     "dur": 3,
+     "dir_deg": 90
+    }
+   ]
+  },
+  {
+   "do": "hold",
+   "s": 62
+  },
+  {
+   "do": "land"
+  }
+ ],
+ "limits": {
+  "max_hold_err_m": 3,
+  "max_tilt_deg": 50,
+  "must_land": true
+ }
+}

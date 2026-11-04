@@ -32,6 +32,7 @@ import json
 import logging
 import math
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -242,6 +243,17 @@ async def fly(drone):
                     await asyncio.sleep(0.01)
                 await drone.offboard.set_position_ned(PositionNedYaw(pos()[1], pos()[2], -(ground + alt), 0))
                 say(f'excite {axis} multisine {f0}-{f1} Hz {amp} deg {dur} s done (hover thrust {hov:.2f})')
+            elif do == 'wind':
+                # gz world with WindEffects (worlds/gusty.sdf) only: start agent/gz_wind.py (system python, gz
+                # bindings) in the background with this step as its profile; it ends itself after dur_s.
+                prof = {k: v for k, v in step.items() if k != 'do'}
+                if prof.get('seed') == 'run':  # paired A/B: run i of every arm (arms.py dir NAME-i) gets seed i
+                    m = re.search(r'-(\d+)(-retry\d+)?$', os.path.basename(os.path.normpath(out)))
+                    prof['seed'] = int(m.group(1)) if m else 1
+                wind_proc = subprocess.Popen(['/usr/bin/python3', os.path.join(os.path.dirname(__file__), 'gz_wind.py'),
+                                              spec.get('world', 'default'), out, json.dumps(prof)],
+                                             env=dict(os.environ, GZ_IP='127.0.0.1', GZ_PARTITION=f'px4-{inst}'))
+                say(f'wind {prof}')
             elif do == 'param':
                 old = await set_param(drone, step['name'], step['value'])
                 restore.setdefault(step['name'], old)

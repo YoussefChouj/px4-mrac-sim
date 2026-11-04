@@ -45,6 +45,7 @@ def main(base_sdf, out_dir):
     inert.find('mass').text = str(MASS)
     for k, v in (('ixx', IXX), ('iyy', IYY), ('izz', IZZ)):
         inert.find(f'inertia/{k}').text = str(v)
+    ET.SubElement(base, 'enable_wind').text = 'true'  # felt only in a world with WindEffects (worlds/gusty.sdf)
     for el in base.iter():  # frame visuals/collisions/sensors move in with the arms
         if el.tag == 'pose':
             scale_pose(el, S)

@@ -320,3 +320,23 @@ the constant, which is the property the thesis claims (no layer fights the basel
 | sim pitch | 1.1 Hz | 1.3 Hz | +0.7 dB | 0.99 | 268 ms | 78 ms | 135 ms |
 
 - Bandwidth and lag match within ~10-20 %. Differences: real has a larger resonance peak (less damped, consistent with the real rate loop PM 42.8 deg from the same flight's autotune) and low-frequency gain 0.8 (the real position loop adds to the same setpoint channel; in sim the offboard attitude path has no outer loop). Sim is not faster than the real drone, so attitude-loop results do not flatter the sim. Pitch sign in the real log is inverted (k -0.82, sign convention); magnitude shown.
+
+## P13a gz wind: worlds/gusty.sdf + agent/gz_wind.py (2026-11-04)
+
+gz-sim WindEffects (F = m c (v_wind - v_link), c = 1.0 1/s = SIH_KDV / SIH_MASS [A]) on the research drone
+(`<enable_wind>` on base_link). agent/gz_wind.py publishes mean + Dryden-form Gauss-Markov turbulence + 1-cosine
+gusts on /world/W/wind, ticking on the sim clock (gz runs at about 0.8x real time here). Scenario step `{"do": "wind"}`;
+`"seed": "run"` gives run i of every arm the same wind (paired A/B).
+Check flight p13-wind-check.json (PX4 default gains, MRL off): 3 m/s east from the step, +4 m/s 1-cosine gust 2 s at +25 s.
+
+| check | predicted | measured | note |
+|---|---|---|---|
+| wind reaches the drone | subscriber found | found, "timing on sim clock" | |
+| steady tilt at 3 m/s | 17 deg (body drag only) | 19.8 deg median (1 s bins) | + rotor drag in MulticopterMotorModel [S: 4 x 8.06e-5 x 600 rad/s x 3 m/s = 0.58 N -> atan(3.55/9.7) = 20 deg] |
+| gust peak (7 m/s) | about 35 deg | 37.0 deg at +25.8 s | |
+| wind duration (sim) | 40 s | 38 s tilted | |
+| position after the wind step | settles | rings: period 8.2 s, amplitude 1.0 m, damping about 0.05 | FINDING: PX4 default position loop barely damped in a wind step |
+
+Bugs found on the way: (1) a world `<plugin>` makes gz skip server.config, so gusty.sdf carries PX4's server.config systems;
+(2) scenario.py alone uses px4ctl's default stock tree, so export PX4_SOURCE=~/PX4-mrac (arms.py does it);
+(3) gz_wind must run in the sim's GZ_PARTITION, else the wind does nothing and the flight still PASSes.

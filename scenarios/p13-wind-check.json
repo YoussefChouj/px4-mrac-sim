@@ -1,0 +1,13 @@
+{
+ "sim": "gz", "vehicle": "research_drone", "world": "gusty", "speed": 1, "alt": 3,
+ "why": "P13 wiring check of the gz wind (worlds/gusty.sdf + agent/gz_wind.py): steady 3 m/s east wind from t=0 of the wind step, then one 1-cosine gust +4 m/s, 2 s long, at t=25 s. Force law F = m c (v_wind - v), c = 1.0 1/s, predicts a steady tilt of atan(c 3 / g) = 17 deg into the wind and a peak near atan(7 / g) = 35 deg. PX4 default gains, MRL off.",
+ "params": {"MRL_EN_RATE": 0, "MRL_EN_ATT": 0, "MRL_EN_POS": 0},
+ "steps": [
+  {"do": "takeoff"},
+  {"do": "hold", "s": 5},
+  {"do": "wind", "mean": [3, 0], "sigma": 0, "dur_s": 40, "gusts": [{"t": 25, "amp": 4, "dur": 2, "dir_deg": 0}]},
+  {"do": "hold", "s": 42},
+  {"do": "land"}
+ ],
+ "limits": {"max_hold_err_m": 3, "max_tilt_deg": 50, "must_land": true}
+}
