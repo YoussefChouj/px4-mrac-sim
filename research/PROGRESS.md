@@ -662,3 +662,25 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
   authority [S]. Gates unchanged; the heavy-hover-step limit is a question for the owner.
 - D: p16-sihwind-lqr-set1 failed run 6 only; its record has no hold or tilt value, so it stopped before the hold
   step [S]. A-G fly logs were not kept.
+
+## Delay edge (wave H, 2026-11-04, run 41793765790)
+- 200 flights, 116 pass, no lost jobs. Full tables: `research/digests/wave-digest-H.md`. Pass per deck (10 runs each):
+
+| delay ms | alone | g05 | g1 | g2 |
+|---|---|---|---|---|
+| 20 | 10/10 | 10/10 | 10/10 | 10/10 |
+| 24 | 10/10 | 10/10 | 10/10 | 0/10 |
+| 27 | 10/10 | 10/10 | 4/10 | 0/10 |
+| 30 | 10/10 | 2/10 | 0/10 | 0/10 |
+| 35 | 10/10 | 0/10 | 0/10 | 0/10 |
+
+- Delay edge per rate-layer gain scale: g2 between 20 and 24 ms, g1 between 24 and 27 ms, g05 between 27 and 30 ms.
+  A larger gain leaves less delay margin. The alone arm passes up to 35 ms.
+- Below its edge every arm lowers att_track_rms_deg (-0.25 to -0.45 deg) and rate_rms_rp (-0.008 to -0.014);
+  motor_sat_frac stays +0 and max_hold_err_m does not change (every interval crosses 0). In the 0/10 decks:
+  rate_rms_rp +0.43 to +0.66 and motor_sat_frac +0.65 to +0.75, a saturated rate oscillation (the mixed decks
+  dly27-g1 and dly30-g05 lie between). Hold stays inside 0.5 m except v5-dly35-g2 (2 flights, 0.619-0.63 m).
+- Failing check: those flights break no recorded limit, so must_land or a runner error. Correction to the A-G entry:
+  the kept logs are each job's fly-tail.log (the arms.py summary), not scenario.py's checks table, so they do not
+  name the check. The checks are in each job artifact's metrics.json (14-day retention). HANDOFF next item 1.
+- Not done: H's dly20/dly30 decks against wave C run by run.

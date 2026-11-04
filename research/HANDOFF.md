@@ -43,9 +43,18 @@ this file (state + next) before every session ends.
   and helps only with the weak motor (mot1 hold -0.134 [-0.164, -0.103] m); the position layer alone carries the
   motor-saturation cost. Input for the 3-block v2 design.
 
+## Wave H answer (delay edge, 2026-11-04, run 41793765790)
+- 116/200 pass. The alone arm passes 10/10 at 20-35 ms. Delay edge of the V5 rate layer per gain scale: g2 between
+  20 and 24 ms, g1 between 24 and 27 ms (4/10 at 27), g05 between 27 and 30 ms (2/10 at 30). Past the edge comes a
+  saturated rate oscillation (motor_sat_frac +0.65 to +0.75) that breaks no recorded limit (except v5-dly35-g2 hold,
+  2 flights), so the failing check is must_land or an error (next item 1). Tables: `research/digests/wave-digest-H.md`.
+
 ## Next items (in order)
-1. Delay edge: one wave, delays 20/24/27/30/35 ms x (alone, g05, g1, g2), runs 10, scenarios copied from
-   `v5-dly30-*`. Failing-job logs (`logs/<job>.log`) show scenario.py's checks table: record which check fails.
+1. Name the check the delay failures break. The kept logs (`logs/<job>.log` = the job's `fly-tail.log`, the
+   arms.py summary) do not hold scenario.py's checks; each job artifact's `metrics.json` does (`checks`,
+   14-day retention). Make `ci/publish.py` append the failing checks to each failing job's log and
+   `ci/collect.py` add `landed` to the record, then replay v5-dly24-g2 and v5-dly30-g05 (runs 3). Also
+   compare H's dly20/dly30 decks with wave C run by run (same seeds).
 2. More seeds where the layer should help but the hold interval crosses 0: B's dist, mass, slow and tmax pairs
    (wave `waves/archive/B-p11-extras.txt` cut to those 8 decks, `first 11`).
 3. 3-block v2 MRAC (`research/notes/three-block-v2.md`) in `px4-mrac/`, each block behind its own param so one build
