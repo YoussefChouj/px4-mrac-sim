@@ -559,3 +559,8 @@ Gap: xy_err_rms_m missing on the lqr arms (setpoint topic check) -> follow up in
 Errata table above (P5/P10 "position layer", P16 delay/noise, P8 twin, set 4, cloud seeds). Naming fixed in the sim repo
 README (layer table: rate, att, vz = MRL_EN_POS, xy = MRL_EN_XY), OPEN-ITEMS P5 and P11-campaign.md. Code identifiers
 (MracPosLayer, MRL_P_*, mrac_pos_status) keep their names; docs say "vz layer".
+
+## V4 gap closed: xy error in XyCtrl modes (2026-11-04 13:45)
+LQR/ADRC/MPC (XyCtrl) leave vehicle_local_position_setpoint.x NaN (1 % finite), so xy_err_rms_m was silently absent.
+arms.py now scores against trajectory_setpoint (marks `xy_ref`). Rescored v3-lqr: xy_err_rms_m adapt 0.066
+[0.061..0.070] vs status-only 0.100 [0.098..0.119]; offset 0.001-0.003 both. Confirms V3 on LQR.

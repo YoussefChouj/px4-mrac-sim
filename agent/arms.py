@@ -117,7 +117,14 @@ def ulog_metrics(path):
         m['tilt_geo_max_deg'] = float(np.max(tilt[w])) if w.any() else float('nan')
     if lp is not None and lsp is not None:
         pt = lp['timestamp'] * 1e-6
-        e = np.stack([lp[k] - np.interp(pt, lsp['timestamp'] * 1e-6, lsp[k]) for k in ('x', 'y')], 1)
+        # XyCtrl modes (LQR/ADRC/MPC) leave the position setpoint NaN: score against the commanded trajectory_setpoint
+        ref = {k: (lsp['timestamp'] * 1e-6, lsp[k]) for k in ('x', 'y')}
+        tsp = topic(u, 'trajectory_setpoint')
+        if np.isfinite(lsp['x']).mean() < 0.5 and tsp is not None:
+            ok = np.isfinite(tsp['position[0]']) & np.isfinite(tsp['position[1]'])
+            ref = {k: (tsp['timestamp'][ok] * 1e-6, tsp[f'position[{i}]'][ok]) for i, k in enumerate(('x', 'y'))}
+            m['xy_ref'] = 'trajectory_setpoint'
+        e = np.stack([lp[k] - np.interp(pt, *ref[k]) for k in ('x', 'y')], 1)
         w = (np.interp(pt, t, air.astype(float)) > 0.5) & np.isfinite(e).all(1)
         if w.any():
             # offset = |mean error| (a constant bias), spread = rms about that mean: a drift metric hides the first
