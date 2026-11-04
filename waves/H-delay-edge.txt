@@ -1,0 +1,9 @@
+# H: delay edge of the V5 rate layer between 20 and 35 ms (research/HANDOFF.md next item 1, 2026-11-04).
+# first 1 = the seeds of wave C, so the dly20/dly30 decks also replicate C run by run.
+runs 10
+first 1
+v5-dly20-alone v5-dly20-g05 v5-dly20-g1 v5-dly20-g2
+v5-dly24-alone v5-dly24-g05 v5-dly24-g1 v5-dly24-g2
+v5-dly27-alone v5-dly27-g05 v5-dly27-g1 v5-dly27-g2
+v5-dly30-alone v5-dly30-g05 v5-dly30-g1 v5-dly30-g2
+v5-dly35-alone v5-dly35-g05 v5-dly35-g1 v5-dly35-g2
