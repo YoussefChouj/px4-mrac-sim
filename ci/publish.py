@@ -2,7 +2,7 @@
 """CI (arms collect job): publish one finished arms run to the `results` branch.
 
 Writes RUNS/meta.json and RUNS/summary.md, then commits results/<label>-<run id>/ (all.json, meta.json, summary.md,
-logs/ = output tail of each job that did not pass, build-tail.log when the build failed) and a regenerated
+logs/ = output tail and scenario.py checks of each job that did not pass, build-tail.log when the build failed) and a regenerated
 results/INDEX.md to the orphan branch `results`, retrying on push races. Readers need no token:
 `git fetch origin results && git show origin/results:results/INDEX.md`.
 
@@ -47,6 +47,14 @@ def meta(runs, env):
             'results_url': f'{server}/{repo}/tree/results/results/{folder}'}
 
 
+def scenario_checks(f):
+    """scenario.py's checks table from one metrics.json; never raises, so a bad file cannot stop the results commit."""
+    try:
+        return [str(c) for c in json.loads(f.read_text()).get('checks', [])]
+    except Exception as e:
+        return [f'unreadable metrics.json: {e}']
+
+
 def fill(dst, runs, buildlog):
     dst.mkdir(parents=True)
     for n in ('all.json', 'meta.json', 'summary.md'):
@@ -55,7 +63,11 @@ def fill(dst, runs, buildlog):
     bad = [p for p in sorted(runs.glob('run-*')) if passed(p) is not True and (p / 'fly-tail.log').exists()]
     for p in bad[:MAX_LOGS]:
         (dst / 'logs').mkdir(exist_ok=True)
-        shutil.copy(p / 'fly-tail.log', dst / 'logs' / f'{p.name}.log')
+        log = dst / 'logs' / f'{p.name}.log'
+        shutil.copy(p / 'fly-tail.log', log)
+        with open(log, 'a') as f:  # fly-tail.log is the arms.py summary only; the checks name the failure
+            f.write(''.join(f'\n== checks {m.parent.name}\n' + '\n'.join(scenario_checks(m)) + '\n'
+                            for m in sorted(p.rglob('metrics.json'))) or '\n== checks: no metrics.json\n')
     for t in (sorted(buildlog.glob('*.log')) if buildlog and buildlog.is_dir() else []):
         shutil.copy(t, dst / 'build-tail.log')
 
@@ -70,7 +82,7 @@ def index(res):
     rows.sort(key=lambda m: m.get('finished_utc') or '', reverse=True)
     out = ['# Cloud results (newest first)', '',
            'One folder per finished `arms` run: `all.json` (every flight; `run` = seed index), `meta.json` (status, '
-           'lost jobs, error), `summary.md` (per-deck medians), `logs/` (output tail of jobs that did not pass), '
+           'lost jobs, error), `summary.md` (per-deck medians), `logs/` (output tail and scenario.py checks of jobs that did not pass), '
            '`build-tail.log` (failed build). Written by `ci/publish.py`; do not edit by hand.', '',
            '| finished UTC | wave | branch | sha | pass / jobs | lost | plan / build / fly | folder |',
            '|---|---|---|---|---|---|---|---|']

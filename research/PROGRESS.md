@@ -684,3 +684,16 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
   the kept logs are each job's fly-tail.log (the arms.py summary), not scenario.py's checks table, so they do not
   name the check. The checks are in each job artifact's metrics.json (14-day retention). HANDOFF next item 1.
 - Not done: H's dly20/dly30 decks against wave C run by run.
+
+## Wave H vs wave C, same seeds (2026-11-04)
+- H (`H-delay-edge-41793765790`, main bb07db0) and C (`C-v5-v6-v7-41780422738`, main 88c63e0) flew on the same PX4 build (px4-mrac/ and ci/build.sh unchanged). Decks flown in both, runs paired by seed, |H - C| per run as mean / max.
+- Paired by seed, hold differs by up to 0.288 m, att_track_rms by up to 0.715 deg and rate_rms_rp by up to 0.442; 56 of 60 verdicts agree. One build, so this is the replay noise of a seed; the paired intervals of a wave already include it.
+
+| deck | runs | pass H | pass C | same verdict | hold m | att_track_rms deg | rate_rms_rp |
+|---|---|---|---|---|---|---|---|
+| v5-dly20-alone | 1-10 | 10 | 10 | 10/10 | 0.0302 / 0.063 | 0.0187 / 0.0341 | 0.000933 / 0.00196 |
+| v5-dly20-g05 | 1-10 | 10 | 10 | 10/10 | 0.0196 / 0.0418 | 0.0155 / 0.0365 | 0.000531 / 0.00187 |
+| v5-dly20-g2 | 1-10 | 10 | 10 | 10/10 | 0.0206 / 0.0424 | 0.013 / 0.0356 | 0.00104 / 0.00281 |
+| v5-dly30-alone | 1-10 | 10 | 10 | 10/10 | 0.0338 / 0.0972 | 0.0152 / 0.0461 | 0.000896 / 0.00272 |
+| v5-dly30-g05 | 1-10 | 2 | 4 | 6/10 | 0.0232 / 0.0352 | 0.285 / 0.715 | 0.177 / 0.442 |
+| v5-dly30-g2 | 1-10 | 0 | 0 | 10/10 | 0.121 / 0.288 | 0.0176 / 0.0618 | 0.00466 / 0.0113 |

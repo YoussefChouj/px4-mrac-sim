@@ -50,11 +50,11 @@ this file (state + next) before every session ends.
   2 flights), so the failing check is must_land or an error (next item 1). Tables: `research/digests/wave-digest-H.md`.
 
 ## Next items (in order)
-1. Name the check the delay failures break. The kept logs (`logs/<job>.log` = the job's `fly-tail.log`, the
-   arms.py summary) do not hold scenario.py's checks; each job artifact's `metrics.json` does (`checks`,
-   14-day retention). Make `ci/publish.py` append the failing checks to each failing job's log and
-   `ci/collect.py` add `landed` to the record, then replay v5-dly24-g2 and v5-dly30-g05 (runs 3). Also
-   compare H's dly20/dly30 decks with wave C run by run (same seeds).
+1. Name the check the delay failures break. Since 2026-11-04 `ci/publish.py` appends scenario.py's checks (from each
+   job's `metrics.json`) to every kept failing-job log, as `== checks <run folder>` lines. Wave
+   `waves/J-delay-check-replay.txt` (v5-dly35-g05, v5-dly30-g1, v5-dly24-g2: per gain the first wave-H deck that failed in every
+   flight; seeds 1-3) flies with it: read those lines in `results/J-delay-check-replay-*/logs/` and record the failing
+   check in PROGRESS. Not done: `landed` in the all.json record (`ci/collect.py`). H vs C run by run: PROGRESS ("Wave H vs wave C, same seeds").
 2. More seeds where the layer should help but the hold interval crosses 0: B's dist, mass, slow and tmax pairs.
    Pushed 2026-11-04 as `waves/I-b-pair-seeds.txt` (8 decks, runs 10, first 11 = seeds 11-20): digest its
    results folder (`I-b-pair-seeds-*`) with `tools/wave_digest.py`; pool with B's seeds 1-10 only if both
