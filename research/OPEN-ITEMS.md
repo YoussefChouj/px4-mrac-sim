@@ -29,7 +29,7 @@ the gz drag point c 0.6 finish, then those items park. The operator may veto.
 
 | V | Item | Done when |
 |---|---|---|
-| V1 | Provenance: distinct cloud seeds (ARMS_RUN0), attempt ledger, manifest (tools/tree commit + dirty hash, px4 binary hash, deck hashes) in every arms.json; collect.py denominator = intended runs; ONE source checkout for the module (W `px4-mrac/` is stale vs the sim repo) | a 2-rep cloud wind batch shows seeds 1 and 2 in the run params and the manifest; W/R module diff empty or W copy removed |
+| V1 (DONE) | Provenance: distinct cloud seeds (ARMS_RUN0), attempt ledger, manifest (tools/tree commit + dirty hash, px4 binary hash, deck hashes) in every arms.json; collect.py denominator = intended runs; ONE source checkout for the module (W `px4-mrac/` is stale vs the sim repo) | a 2-rep cloud wind batch shows seeds 1 and 2 in the run params and the manifest; W/R module diff empty or W copy removed |
 | V2 (DONE) | Claim scope + errata: the "position" layer adapts vz/thrust only; PROGRESS errata for P:139, P:307, P:322, P:452 | errata section in PROGRESS; docs call it the vz layer |
 | V3 (DONE 13:15) | XY adaptation gap: decide an XY MRAC layer (on the XyCtrl accel/tilt output) or narrow the claim to rate/att/vz | decision in PROGRESS; if built, wind A/B shows the XY layer moving |
 | V4 | Metrics from ULog timestamps: geometric tilt, absolute hold offset vs drift, clamp/saturation occupancy, cadence; refuse incomplete topics | reproduces 3 existing numbers, detects an injected constant offset |

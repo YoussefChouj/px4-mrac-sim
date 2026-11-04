@@ -612,3 +612,18 @@ Findings [model]:
 - Weight memory: frozen-learned matches online (within ~0.1) up to 45 ms. Warm start from t = 0 is worse than online whenever the
   fault is not yet present (30 ms gam 2: 1.64 vs 1.21) -> stored weights must be gated by the detected scenario, not applied blindly.
 - Next: SIH check of the rule rides on V5 (30 ms gam 2 already FAILs to land in run 1); SIH check of gam 0.1 at 78 ms is next (deck v7-dly78-*).
+
+## V1 provenance: cloud seed proof (2026-11-04 17:05)
+
+Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from the per-run artifacts, not the summary.
+
+| job | manifest run0 | run dir | attempts (run, attempt, rc) | SIH_WIND_SEED set in flight (ULog) | max_hold_err_m |
+|---|---|---|---|---|---|
+| 1 | 0 | v6-wind-lqr-set4-1 | (1, 0, 0) | 1 | 0.250 |
+| 2 | 1 | v6-wind-lqr-set4-2-retry1 | (2, 0, 3), (2, 1, 0) | 2 (retry keeps the seed) | 0.314 |
+
+- Both manifests carry tools rev 56a7dca, px4_bin 22a2ea8e95f30bc9 and the deck hash b21b4ffa57a8cd41.
+- The ULog lists the seed's restore to 1 after landing. That is the deck's restore step, not a reseed.
+- The infra retry (rc 3) is kept in the attempt ledger, so the denominator stays 2.
+- Open: tools.dirty is non-null on CI (8beb074618e7b8e6), so the CI checkout differs from its commit. Small; chase it when V8 runs.
+- The W module copy was removed earlier. **V1 DONE.**
