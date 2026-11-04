@@ -34,8 +34,8 @@ this file (state + next) before every session ends.
 1. Delay (C): at 30 ms the g2 rate layer drives a saturated rate oscillation (paired vs alone: rate_rms_rp +0.568,
    motor_sat_frac +0.726), yet hold and tilt stay inside their limits in 9 of 10 flights: the failures are
    must_land or a runner error, which the record does not hold. Next item 1 names the check.
-2. Done 2026-11-04: wave I digested (`research/digests/wave-digest-I.md`, PROGRESS "Wave I"). Next: pool waves B and I
-   (seeds 1-20) per pair with tools/wave_digest.py on both folders, if it accepts two folders of one deck set.
+2. Done 2026-11-04: wave I digested (`research/digests/wave-digest-I.md`, PROGRESS "Wave I"). Pooled B + I (seeds 1-20):
+   PROGRESS "Waves B + I pooled".
 3. Stress (G): heavy-hover-step (flycart30 airframe) tilts 51.7-53.9 deg on its 10 m step against a 35 deg limit;
    hover-step tilts 35.7 deg against 45. motor-out (one motor off) flips in 5/5: expected for a quadrotor [S].
 4. D: p16-sihwind-lqr-set1 failed run 6 only, with no hold or tilt value recorded (stopped before the hold step [S]).

@@ -702,3 +702,8 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
 - `results/I-b-pair-seeds-41795932701` (main 1d27f15): 80/80 flights passed, no lost jobs. Digest: `research/digests/wave-digest-I.md`.
 - In all four pairs, lqr-plus-mrac has higher att_track_rms (+0.07 to +0.16 deg), rate_rms_rp and motor_sat_frac (about +0.04) than lqr-alone, each interval excluding 0. Hold error shows no difference whose interval excludes 0. Gains whose interval excludes 0 are all in slow: rms_track_err -0.031 m [-0.050, -0.011] and xy_err_rms -0.013 m [-0.019, -0.007]. dist: max_tilt +1.2 deg.
 - On these seeds, then, the outer MRAC layer costs inner-loop effort and buys no hold accuracy. Under SIH (no aero) the lqr-alone arm uses PX4 default gains, so this is not a thesis claim yet; the seeds 1-10 numbers are in wave-digest-A-G.md (wave B).
+
+## Waves B + I pooled, seeds 1-20 (2026-11-04)
+- One build. Digest: `research/digests/wave-digest-BI-pooled.md`. 160/160 flights passed.
+- With n = 20 per pair, lqr-plus-mrac again raises att_track_rms (+0.10 to +0.15 deg), rate_rms_rp and motor_sat_frac (+0.036 to +0.045) in all four pairs. It lowers xy_err_rms by 0.005-0.006 m (interval excludes 0) in dist, mass and slow, but not in tmax. Hold and track error: no interval excludes 0; wave I's slow-pair track gain does not survive pooling.
+- Reading: the outer MRAC layer buys a few mm of xy accuracy at the cost of about 4 % more motor saturation. Under SIH with PX4 default inner gains this is a cost/benefit to report, not a win.
