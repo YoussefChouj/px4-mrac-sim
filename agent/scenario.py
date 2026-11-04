@@ -32,7 +32,7 @@ import json
 import logging
 import math
 import os
-import re
+import re as regex  # the fig8 step uses a local `re` (east reference)
 import shutil
 import subprocess
 import sys
@@ -248,7 +248,7 @@ async def fly(drone):
                 # bindings) in the background with this step as its profile; it ends itself after dur_s.
                 prof = {k: v for k, v in step.items() if k != 'do'}
                 if prof.get('seed') == 'run':  # paired A/B: run i of every arm (arms.py dir NAME-i) gets seed i
-                    m = re.search(r'-(\d+)(-retry\d+)?$', os.path.basename(os.path.normpath(out)))
+                    m = regex.search(r'-(\d+)(-retry\d+)?$', os.path.basename(os.path.normpath(out)))
                     prof['seed'] = int(m.group(1)) if m else 1
                 wind_proc = subprocess.Popen(['/usr/bin/python3', os.path.join(os.path.dirname(__file__), 'gz_wind.py'),
                                               spec.get('world', 'default'), out, json.dumps(prof)],
@@ -292,6 +292,33 @@ async def set_param(drone, k, v, quiet=False):
     if not quiet:
         say(f'param {k}: {old} -> {v}')
     return old
+
+
+def obstacle_clearance():
+    """gz world with an obstacle table (worlds/NAME.json, e.g. obstacles.json): smallest horizontal distance from
+    the drone centre to an obstacle surface over the in-air samples below the obstacle top. Intrusion = drone
+    radius - clearance (0 = never touched); gz physics also collides, so a hit shows in tilt and track too."""
+    f = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'worlds', f'{spec.get("world")}.json')
+    if spec.get('sim') != 'gz' or not os.path.exists(f):
+        return
+    tab = json.load(open(f))
+    best, near = math.inf, ''
+    for r in rows:
+        if r[3] < 0.3:  # on the ground
+            continue
+        for o in tab['obstacles']:
+            if r[3] > o['h']:
+                continue
+            dn, de = r[1] - o['n'], r[2] - o['e']
+            if o['kind'] == 'pole':
+                d = math.hypot(dn, de) - o['r']
+            else:
+                d = math.hypot(max(abs(dn) - o['dn'] / 2, 0), max(abs(de) - o['de'] / 2, 0))
+            if d < best:
+                best, near = d, o['name']
+    metrics['min_clearance_m'] = best
+    metrics['closest_obstacle'] = near
+    metrics['obstacle_intrusion_m'] = max(0.0, tab['drone_radius_m'] - best)
 
 
 def verdict():
@@ -425,6 +452,7 @@ async def main():
         if airborne and 'No valid data from' in line:
             metrics['sim_fault'] = line.strip()
             break
+    obstacle_clearance()
     ok, table = verdict()
     if 'sim_fault' in metrics:
         table.append(f'SIM-FAULT {metrics["sim_fault"]}')

@@ -1,0 +1,60 @@
+{
+ "sim": "gz",
+ "vehicle": "research_drone",
+ "world": "obstacles",
+ "speed": 1,
+ "alt": 2,
+ "why": "P13 obstacle course (obst), arm pid-alone: slalom past three 0.15 m poles, through a 1.2 m gate, stop before the end wall (worlds/obstacles.json), goto steps at 2 m. Calm. Pass = no obstacle intrusion (drone radius 0.21 m [D]) and a landing.",
+ "params": {
+  "MRL_EN_RATE": 0,
+  "MRL_EN_ATT": 0,
+  "MRL_EN_POS": 0,
+  "XYC_MODE": 0
+ },
+ "steps": [
+  {
+   "do": "takeoff"
+  },
+  {
+   "do": "hold",
+   "s": 3
+  },
+  {
+   "do": "goto",
+   "n": 4.0,
+   "e": -0.8
+  },
+  {
+   "do": "goto",
+   "n": 7.0,
+   "e": 0.8
+  },
+  {
+   "do": "goto",
+   "n": 10.0,
+   "e": -0.8
+  },
+  {
+   "do": "goto",
+   "n": 13.0,
+   "e": 0.0
+  },
+  {
+   "do": "goto",
+   "n": 16.0,
+   "e": 0.0
+  },
+  {
+   "do": "hold",
+   "s": 3
+  },
+  {
+   "do": "land"
+  }
+ ],
+ "limits": {
+  "obstacle_intrusion_m": 0,
+  "max_tilt_deg": 50,
+  "must_land": true
+ }
+}

@@ -340,3 +340,25 @@ Check flight p13-wind-check.json (PX4 default gains, MRL off): 3 m/s east from t
 Bugs found on the way: (1) a world `<plugin>` makes gz skip server.config, so gusty.sdf carries PX4's server.config systems;
 (2) scenario.py alone uses px4ctl's default stock tree, so export PX4_SOURCE=~/PX4-mrac (arms.py does it);
 (3) gz_wind must run in the sim's GZ_PARTITION, else the wind does nothing and the flight still PASSes.
+
+## P13b turbulence A/B in gz wind, 3 arms x 3 paired seeds (2026-11-04)
+
+scenarios/p13-wind-{pid-alone,lqr-alone,lqr-plus-mrac}.json: hold at 3 m, gz WindEffects wind for 60 s, mean 2.2 m/s
+(2 E, 1 N) + Gauss-Markov sigma 0.8 m/s L 23 m + 1-cosine gusts (+3 m/s E at 20 s, +3 m/s N at 40 s); seed = run index,
+so run i of every arm sees the same wind. Local gz, arms.py runs 3, ~/.cache/px4-arms/p13b. All 9 runs: gz_wind
+"subscriber found", "timing on sim clock". Hold error = horizontal distance to trajectory_setpoint while above 2.5 m.
+
+| arm | hold rms m (per seed 1/2/3) | mean rms | mean max m | tilt rms deg | rate_rms_rp | pass |
+|---|---|---|---|---|---|---|
+| pid-alone | 0.67 / 0.52 / 0.54 | 0.57 | 1.41 | 13.7 | 0.042 | 3/3 |
+| lqr-alone | 0.88 / 0.78 / 1.52 | 1.06 | 2.75 | 13.6 | 0.035 | 2/3 (seed 3 max 4.75 > 3) |
+| lqr-plus-mrac | 0.83 / 0.77 / 1.30 | 0.97 | 2.58 | 13.5 | 0.032 | 2/3 (seed 3 max 4.21 > 3) |
+
+Paired rms difference, lqr-plus-mrac - lqr-alone: -0.05 / -0.00 / -0.23 m (MRAC better or equal on every seed).
+pid-alone - lqr-alone: -0.21 / -0.26 / -0.98 m.
+FINDING: in wind the XYC LQR position loop holds worse than PX4's default PID (about 2x rms; the PID has an
+integrator on velocity, the LQR gains were tuned in calm SIH). MRAC on top recovers a small part. Seed 3 is the
+hard wind for both LQR arms. Open: wind-tuned LQR (integral state or higher position weight) before the P11 campaign.
+Bugs on the way: scenario.py's fig8 step assigned a local `re` (east reference), shadowing the regex module, so the
+first A/B crashed at the wind step in every run (fixed: `import re as regex`); vehicle_local_position_setpoint x/y
+are NaN under XYC_MODE > 0, so digests use trajectory_setpoint.

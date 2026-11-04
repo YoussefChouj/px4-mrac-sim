@@ -1,0 +1,15 @@
+{
+ "about": "P13 obstacle course, one table for the world (gen_obstacles.py -> obstacles.sdf) and the clearance check (scenario.py). Coordinates are PX4 local NED from the spawn point: n north, e east, metres; h is the height above ground. pole: cylinder radius r. box: axis-aligned, size dn (north) x de (east).",
+ "drone_radius_m": 0.21,
+ "drone_radius_note": "[D] rotor at (0.1, 0.1) m -> 0.141 m from the centre + 5-inch prop radius 0.064 m (vehicles/research_drone/gen_model.py)",
+ "obstacles": [
+  {"name": "pole_a", "kind": "pole", "n": 4.0, "e": 0.0, "r": 0.15, "h": 4.0},
+  {"name": "pole_b", "kind": "pole", "n": 7.0, "e": 0.0, "r": 0.15, "h": 4.0},
+  {"name": "pole_c", "kind": "pole", "n": 10.0, "e": 0.0, "r": 0.15, "h": 4.0},
+  {"name": "gate_w", "kind": "box", "n": 13.0, "e": -1.6, "dn": 0.2, "de": 2.0, "h": 4.0},
+  {"name": "gate_e", "kind": "box", "n": 13.0, "e": 1.6, "dn": 0.2, "de": 2.0, "h": 4.0},
+  {"name": "wall_end", "kind": "box", "n": 19.0, "e": 0.0, "dn": 0.2, "de": 6.0, "h": 4.0}
+ ],
+ "route": [[4.0, -0.8], [7.0, 0.8], [10.0, -0.8], [13.0, 0.0], [16.0, 0.0]],
+ "route_note": "slalom left/right of the three poles (straight-line clearance to a pole 0.56 m from its surface), through the 1.2 m gate, stop 2.9 m before the end wall"
+}
