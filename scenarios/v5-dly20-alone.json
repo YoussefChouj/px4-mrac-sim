@@ -32,6 +32,11 @@
    "s": 3
   },
   {
+   "do": "param",
+   "name": "MRL_DIST_R",
+   "value": 0.0
+  },
+  {
    "do": "land"
   }
  ],
