@@ -1,0 +1,3 @@
+# Smoke test of the wave trigger and the results branch: one flight.
+runs 1
+p11-lqr-alone
