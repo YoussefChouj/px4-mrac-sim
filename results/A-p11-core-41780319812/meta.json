@@ -1,0 +1,42 @@
+{
+ "run_id": 41780319812,
+ "url": "https://github.com/YoussefChouj/px4-mrac-sim/actions/runs/41780319812",
+ "label": "A-p11-core",
+ "folder": "A-p11-core-41780319812",
+ "event": "workflow_dispatch",
+ "branch": "main",
+ "sha": "88c63e05608ed33d055db74b2f53ffeff7b97b41",
+ "decks": [
+  "p11-adrc-alone",
+  "p11-adrc-plus-mrac",
+  "p11-lqr-alone",
+  "p11-lqr-plus-mrac",
+  "p11-mpc-alone",
+  "p11-mpc-plus-mrac",
+  "p11-pid-alone"
+ ],
+ "runs": [
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10
+ ],
+ "jobs": 70,
+ "flights": 70,
+ "pass": 70,
+ "lost": [],
+ "plan": "success",
+ "build": "success",
+ "fly": "success",
+ "error": "",
+ "finished_utc": "2026-11-04T05:48:39Z",
+ "results_url": "https://github.com/YoussefChouj/px4-mrac-sim/tree/results/results/A-p11-core-41780319812",
+ "started_utc": "2026-11-04T05:36:48Z",
+ "note": "backfilled 2026-11-04 from the run artifact \"all\"; run index rebuilt from collect.py path order; fly logs not kept"
+}

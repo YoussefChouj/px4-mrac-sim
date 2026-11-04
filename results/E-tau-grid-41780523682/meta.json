@@ -1,0 +1,40 @@
+{
+ "run_id": 41780523682,
+ "url": "https://github.com/YoussefChouj/px4-mrac-sim/actions/runs/41780523682",
+ "label": "E-tau-grid",
+ "folder": "E-tau-grid-41780523682",
+ "event": "workflow_dispatch",
+ "branch": "main",
+ "sha": "88c63e05608ed33d055db74b2f53ffeff7b97b41",
+ "decks": [
+  "tau-a015-p050",
+  "tau-a015-p100",
+  "tau-a015-p100-b1",
+  "tau-a015-p200",
+  "tau-a030-p050",
+  "tau-a030-p100",
+  "tau-a030-p200",
+  "tau-a060-p050",
+  "tau-a060-p100",
+  "tau-a060-p200"
+ ],
+ "runs": [
+  1,
+  2,
+  3,
+  4,
+  5
+ ],
+ "jobs": 50,
+ "flights": 50,
+ "pass": 50,
+ "lost": [],
+ "plan": "success",
+ "build": "success",
+ "fly": "success",
+ "error": "",
+ "finished_utc": "2026-11-04T05:56:27Z",
+ "results_url": "https://github.com/YoussefChouj/px4-mrac-sim/tree/results/results/E-tau-grid-41780523682",
+ "started_utc": "2026-11-04T05:38:51Z",
+ "note": "backfilled 2026-11-04 from the run artifact \"all\"; run index rebuilt from collect.py path order; fly logs not kept"
+}
