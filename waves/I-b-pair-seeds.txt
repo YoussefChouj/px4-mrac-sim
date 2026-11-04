@@ -1,0 +1,7 @@
+# I: seeds 11-20 for wave B's pairs whose hold interval crosses 0 (research/HANDOFF.md next item 2, 2026-11-04).
+runs 10
+first 11
+p11-x-dist-lqr-plus-mrac p11-x-dist-lqr-alone
+p11-x-mass-lqr-plus-mrac p11-x-mass-lqr-alone
+p11-x-slow-lqr-plus-mrac p11-x-slow-lqr-alone
+p11-x-tmax-lqr-plus-mrac p11-x-tmax-lqr-alone

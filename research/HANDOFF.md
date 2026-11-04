@@ -55,8 +55,10 @@ this file (state + next) before every session ends.
    14-day retention). Make `ci/publish.py` append the failing checks to each failing job's log and
    `ci/collect.py` add `landed` to the record, then replay v5-dly24-g2 and v5-dly30-g05 (runs 3). Also
    compare H's dly20/dly30 decks with wave C run by run (same seeds).
-2. More seeds where the layer should help but the hold interval crosses 0: B's dist, mass, slow and tmax pairs
-   (wave `waves/archive/B-p11-extras.txt` cut to those 8 decks, `first 11`).
+2. More seeds where the layer should help but the hold interval crosses 0: B's dist, mass, slow and tmax pairs.
+   Pushed 2026-11-04 as `waves/I-b-pair-seeds.txt` (8 decks, runs 10, first 11 = seeds 11-20): digest its
+   results folder (`I-b-pair-seeds-*`) with `tools/wave_digest.py`; pool with B's seeds 1-10 only if both
+   flew the same build.
 3. 3-block v2 MRAC (`research/notes/three-block-v2.md`) in `px4-mrac/`, each block behind its own param so one build
    flies every combination; CI compiles it (the first run is slow); then leave-one-block-out waves. Keep the
    position-layer saturation cost above in view.
