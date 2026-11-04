@@ -1,0 +1,45 @@
+name: notify
+# One comment on the "Cloud results" issue (= one email to the repo owner) per finished arms run.
+# Stop it: Actions tab -> notify -> Disable workflow, or Unsubscribe on the issue.
+on:
+  workflow_run:
+    workflows: [arms]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'arms run id to summarise (backfill)'
+        required: true
+permissions:
+  actions: read
+  contents: read
+  issues: write
+concurrency:
+  group: notify
+  cancel-in-progress: false
+jobs:
+  post:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      RUN_ID: ${{ github.event.workflow_run.id || inputs.run_id }}
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: all
+          path: all
+          run-id: ${{ env.RUN_ID }}
+          github-token: ${{ github.token }}
+      - run: |
+          concl=$(gh api "repos/$GH_REPO/actions/runs/$RUN_ID" -q .conclusion)
+          python3 ci/notify.py all/all.json "$GITHUB_SERVER_URL/$GH_REPO/actions/runs/$RUN_ID" "$concl" > body.md
+          n=$(gh issue list --state open --limit 100 --json number,title -q '.[] | select(.title=="Cloud results") | .number' | head -1)
+          if [ -z "$n" ]; then
+            u=$(gh issue create --title "Cloud results" --body "One bot comment per finished arms run. Unsubscribe here or disable the notify workflow to stop the emails.")
+            n=${u##*/}
+          fi
+          gh issue comment "$n" --body-file body.md
