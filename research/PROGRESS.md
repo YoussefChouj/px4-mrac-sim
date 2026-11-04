@@ -394,3 +394,23 @@ Question (user): our hold errors are 0.5-1.5 m; published results are cm-level. 
   worse than the Neural-Fly baseline in 12 m/s. Fix 1 (done): gusty.sdf force_approximation_scaling_factor 1.0 -> 0.2
   (total about 0.45 1/s). Next: rerun P13b + windy obstacles with c 0.2, check the implied drag, then position-loop
   gains for the 1 kg drone and an LQR integral state; GPS-level estimate error (0.12 m) bounds what any controller can show.
+
+## P16 part 2: PID position-gain sweep, research drone SIH (2026-11-04)
+
+scenarios/pg-*.json (XYC_MODE 0, aggressive fig8 1.0 m / 6 s x2 laps, runs 2, SIH instance 2 in parallel to gz),
+~/.cache/px4-arms/pgsweep, 14/14 PASS. Defaults MPC_XY_P 0.95, MPC_XY_VEL_P_ACC 1.8, MPC_XY_VEL_I_ACC 0.4.
+
+| variant | rms_track m | max_hold m | max_tilt deg | rate_rms_rp | att_track deg |
+|---|---|---|---|---|---|
+| default | 0.70 | 0.24 | 12.0 | 0.034 | 1.95 |
+| VEL_P 2.5 | 0.56 | 0.11 | 14.9 | 0.037 | 2.33 |
+| VEL_P 3.5 | 0.45 | 0.07 | 16.0 | 0.042 | 2.61 |
+| XY_P 1.5 | 0.71 | 0.19 | 16.0 | 0.037 | 2.49 |
+| VEL_I 1.2 | 0.77 | 0.26 | 14.6 | 0.036 | 2.42 |
+| XY_P 1.5 + VEL_P 3.5 | 0.42 | 0.08 | 18.9 | 0.046 | 3.08 |
+| + VEL_I 1.2 | 0.45 | 0.13 | 20.6 | 0.047 | 3.43 |
+
+FINDING: the velocity-loop P gain is the lever (VEL_P 1.8 -> 3.5: track -37%, hold max -70%); position P alone and
+velocity I alone do not help. Cost: tilt +4..7 deg, rate activity +23..35%. PX4 defaults are tuned for a larger,
+slower airframe; the 1 kg research drone has headroom. Next: confirm in wind (SIH wind build, P16 part 3) before
+changing the P11 PID baseline; ceiling check VEL_P 5 + VEL_D.

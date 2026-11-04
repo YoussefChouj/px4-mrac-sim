@@ -255,7 +255,11 @@ async def fly(drone):
                                              env=dict(os.environ, GZ_IP='127.0.0.1', GZ_PARTITION=f'px4-{inst}'))
                 say(f'wind {prof}')
             elif do == 'param':
-                old = await set_param(drone, step['name'], step['value'])
+                v = step['value']
+                if v == 'run':  # paired A/B seed (e.g. SIH_WIND_SEED): run i of every arm gets i, as in the wind step
+                    m = regex.search(r'-(\d+)(-retry\d+)?$', os.path.basename(os.path.normpath(out)))
+                    v = int(m.group(1)) if m else 1
+                old = await set_param(drone, step['name'], v)
                 restore.setdefault(step['name'], old)
             elif do == 'failure':
                 await drone.failure.inject(getattr(FailureUnit, step['unit']),

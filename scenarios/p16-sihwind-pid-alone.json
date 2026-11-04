@@ -1,0 +1,97 @@
+{
+ "sim": "sih",
+ "airframe": "research-drone",
+ "speed": 5,
+ "alt": 3.0,
+ "why": "P16 SIH wind A/B (pid-alone): SIH drag -KDV (v - w) with KDV 0.45 [A]; mean 2.2 m/s + GM turbulence sigma 0.8 tau 10 s (seed = run index, paired) + step gust +3 m/s E 8 s. Cloud-runnable twin of p13-wind (gz).",
+ "params": {
+  "XYC_MODE": 0,
+  "MRL_EN_RATE": 0,
+  "MRL_EN_ATT": 0,
+  "MRL_EN_POS": 0
+ },
+ "steps": [
+  {
+   "do": "takeoff"
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_SEED",
+   "value": "run"
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_SIG",
+   "value": 0.8
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_N",
+   "value": 1.0
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_E",
+   "value": 2.0
+  },
+  {
+   "do": "hold",
+   "s": 20
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_E",
+   "value": 5.0
+  },
+  {
+   "do": "hold",
+   "s": 8
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_E",
+   "value": 2.0
+  },
+  {
+   "do": "hold",
+   "s": 15
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_SIG",
+   "value": 0.0
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_N",
+   "value": 0.0
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_E",
+   "value": 0.0
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "land"
+  }
+ ],
+ "limits": {
+  "max_hold_err_m": 3.0,
+  "max_tilt_deg": 35,
+  "must_land": true
+ },
+ "boot_params": {
+  "SIH_KDV": 0.45,
+  "SIM_GPS_NSCL": 0.1,
+  "EKF2_GPS_P_NOISE": 0.05,
+  "EKF2_GPS_V_NOISE": 0.05
+ }
+}
