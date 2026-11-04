@@ -414,3 +414,34 @@ FINDING: the velocity-loop P gain is the lever (VEL_P 1.8 -> 3.5: track -37%, ho
 velocity I alone do not help. Cost: tilt +4..7 deg, rate activity +23..35%. PX4 defaults are tuned for a larger,
 slower airframe; the 1 kg research drone has headroom. Next: confirm in wind (SIH wind build, P16 part 3) before
 changing the P11 PID baseline; ceiling check VEL_P 5 + VEL_D.
+
+## P16 part 3: SIH wind A/B (2026-11-04)
+
+SIH now has horizontal wind (patch `px4-mrac/patch_sih_wind.py`): the quad drag term becomes `-SIH_KDV (v - w)`, where w is a mean
+wind (SIH_WIND_N/E) plus Gauss-Markov turbulence (SIH_WIND_SIG, SIH_WIND_TAU 10 s). SIH_WIND_SEED reseeds the turbulence, and the deck sets
+it to the run index (param value "run"), so run i of every arm sees the same wind. Decks `p16-sihwind-*.json`: research drone,
+SIH_KDV 0.45 (drag 0.455 1/s [A, P16 part 1 literature]), camera-grade position noise, speed 5. The wind steps are:
+hold, then N 1 / E 2 m/s with sigma 0.8 for 20 s, then E 5 (gust) for 8 s, then E 2 for 15 s, then wind off.
+Runs: 3 per arm, in `~/.cache/px4-arms/sihwind-ab`.
+
+| Arm | Max hold error (m) | Max tilt (deg) | Rate rms | Pass |
+|---|---|---|---|---|
+| pid-alone (PX4 default gains) | 0.80 [0.60..0.94] | 15.0 | 0.029 | 3/3* |
+| pid-tuned (MPC_XY_P 1.5, VEL_P_ACC 3.5) | **0.31** [0.28..0.33] | 16.0 | 0.032 | 3/3 |
+| lqr-alone | 0.90 [0.78..1.02] | 15.9 | 0.029 | 3/3 |
+| lqr-plus-mrac | 0.95 [0.90..1.03] | 16.2 | 0.036 | 3/3 |
+
+\*first pass: run 3 failed before flight (arm COMMAND_DENIED, infrastructure fault); the row is the 3-run rerun in `~/.cache/px4-arms/sihwind-pid3`.
+
+FINDING [D]: in the same wind, the tuned PID holds 2.7x tighter than PX4 default PID or LQR. The MRAC position layer does not help:
+its output sits on the 0.15 clamp (pos_uad_max 0.150 in all 3 runs), so the adaptive term saturates against a steady wind.
+The 0.3 m tuned-PID hold is on the scale of the Neural-Fly baselines (12-24 cm, P16 part 1) but still above them.
+
+Drag check (implied c = g tan(mean tilt) / |w| over the 15 s mean-wind hold): the per-run values were 0.39-0.72 1/s.
+Turbulence with a 10 s time constant does not average out in 15 s. Calm-wind run (SIG 0, deck p16-sihwind-calm.json): mean tilt
+5.97 deg -> c **0.459 1/s vs 0.455 expected [D]**, so the SIH wind force is right.
+
+![P16 SIH wind A/B](figs/p16-sihwind-ab.png)
+
+Next: LQR wind weights or an integral state (LQR has no integral, so steady wind leaves an offset); MRAC pos clamp vs wind
+(raise MRL pos u_ad limit, or let the position layer adapt a bias); cloud A/B runs 5.
