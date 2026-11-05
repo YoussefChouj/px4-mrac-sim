@@ -1,0 +1,63 @@
+mc-alone-27 FAIL rate_rms_rp=0.1389 att_track_rms_deg=1.8309 tilt_geo_max_deg=38.6333 xy_err_rms_m=3.3059 xy_offset_m=0.7357 xy_spread_m=3.2230 motor_sat_frac=0.0000 sp_dt_p99_ms=240.0000 uad_max=0.0000 theta_end=0.0000 uad_clamp_frac=0.0000 theta_lim_frac=0.0000 sched_cut_mean=0.0000 sched_cut_p95=0.0000 att_uad_max=0.0000 att_theta_end=0.0000 att_uad_clamp_frac=0.0000 att_theta_lim_frac=0.0000 pos_uad_max=0.0000 pos_theta_end=0.0000 pos_uad_clamp_frac=0.0000 pos_theta_lim_frac=0.0000 xy_uad_max=0.0000 xy_theta_end=0.0000 xy_uad_clamp_frac=0.0000 xy_theta_lim_frac=0.0000 max_hold_err_m=0.9172 rms_track_err_m=0.7552 max_tilt_deg=38.5426 d_SIH_MASS=1.0260 d_SIH_IXX=0.0135 d_SIH_IYY=0.0174 d_SIH_IZZ=0.0109 d_SIH_T_MAX=6.2437 d_SIH_Q_MAX=0.0856 d_SIH_L_ROLL=0.1394 d_SIH_L_PITCH=0.1425 d_SIH_T_TAU=0.0640 d_SIH_KDV=0.3080 d_SIH_KDW=0.0216 d_SIH_MOT1_EFF=0.9757 d_SIH_ACT_DLY=33.0000 d_SIH_ACT_DJIT=1.8546 d_SIH_GYR_STD=0.0368 d_SIH_ACC_STD=0.2022 d_SIM_GPS_NSCL=1.7343 d_SIH_WIND_TAU=5.7550 d_SIH_WIND_SIG=1.4005 d_SIH_WIND_N=0.4141 d_SIH_WIND_E=0.6899 d_SIH_MASS_payload=1.3269 d_SIH_T_MAX_sag=5.4046
+
+metric                              mc-alone
+att_theta_end          0.0000 [0.000..0.000]
+att_theta_lim_frac       0.0000 [0.000..0.000]
+att_track_rms_deg       1.8309 [1.831..1.831]
+att_uad_clamp_frac       0.0000 [0.000..0.000]
+att_uad_max            0.0000 [0.000..0.000]
+d_SIH_ACC_STD          0.2022 [0.202..0.202]
+d_SIH_ACT_DJIT         1.8546 [1.855..1.855]
+d_SIH_ACT_DLY       33.0000 [33.000..33.000]
+d_SIH_GYR_STD          0.0368 [0.037..0.037]
+d_SIH_IXX              0.0135 [0.014..0.014]
+d_SIH_IYY              0.0174 [0.017..0.017]
+d_SIH_IZZ              0.0109 [0.011..0.011]
+d_SIH_KDV              0.3080 [0.308..0.308]
+d_SIH_KDW              0.0216 [0.022..0.022]
+d_SIH_L_PITCH          0.1425 [0.143..0.143]
+d_SIH_L_ROLL           0.1394 [0.139..0.139]
+d_SIH_MASS             1.0260 [1.026..1.026]
+d_SIH_MASS_payload       1.3269 [1.327..1.327]
+d_SIH_MOT1_EFF         0.9757 [0.976..0.976]
+d_SIH_Q_MAX            0.0856 [0.086..0.086]
+d_SIH_T_MAX            6.2437 [6.244..6.244]
+d_SIH_T_MAX_sag        5.4046 [5.405..5.405]
+d_SIH_T_TAU            0.0640 [0.064..0.064]
+d_SIH_WIND_E           0.6899 [0.690..0.690]
+d_SIH_WIND_N           0.4141 [0.414..0.414]
+d_SIH_WIND_SIG         1.4005 [1.400..1.400]
+d_SIH_WIND_TAU         5.7550 [5.755..5.755]
+d_SIM_GPS_NSCL         1.7343 [1.734..1.734]
+max_hold_err_m         0.9172 [0.917..0.917]
+max_tilt_deg        38.5426 [38.543..38.543]
+motor_sat_frac         0.0000 [0.000..0.000]
+pos_theta_end          0.0000 [0.000..0.000]
+pos_theta_lim_frac       0.0000 [0.000..0.000]
+pos_uad_clamp_frac       0.0000 [0.000..0.000]
+pos_uad_max            0.0000 [0.000..0.000]
+rate_rms_rp            0.1389 [0.139..0.139]
+rms_track_err_m        0.7552 [0.755..0.755]
+sched_cut_mean         0.0000 [0.000..0.000]
+sched_cut_p95          0.0000 [0.000..0.000]
+sp_dt_p99_ms     240.0000 [240.000..240.000]
+theta_end              0.0000 [0.000..0.000]
+theta_lim_frac         0.0000 [0.000..0.000]
+tilt_geo_max_deg    38.6333 [38.633..38.633]
+uad_clamp_frac         0.0000 [0.000..0.000]
+uad_max                0.0000 [0.000..0.000]
+xy_err_rms_m           3.3059 [3.306..3.306]
+xy_offset_m            0.7357 [0.736..0.736]
+xy_spread_m            3.2230 [3.223..3.223]
+xy_theta_end           0.0000 [0.000..0.000]
+xy_theta_lim_frac       0.0000 [0.000..0.000]
+xy_uad_clamp_frac       0.0000 [0.000..0.000]
+xy_uad_max             0.0000 [0.000..0.000]
+pass                                     0/1
+-> /home/runner/work/px4-mrac-sim/px4-mrac-sim/out/mc-alone-r27
+
+== checks mc-alone-27
+PASS max_hold_err_m: 0.917 (limit 3.0)
+PASS max_tilt_deg: 38.543 (limit 45)
+FAIL must_land: False (limit True)
+FAIL error: TypeError 'float' object is not callable
