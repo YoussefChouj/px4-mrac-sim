@@ -18,11 +18,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pyulog import ULog
 
-COL = ['#2a78d6', '#eb6834', '#1baf7a']          # categorical slots 1-3, validated (light surface #fcfcfb)
+COL = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100']  # categorical slots 1-4, validated (light surface #fcfcfb)
+# colour follows the arm, as in mc_figs.py; a label starting with the key picks it, else the slot order
+ARM_COL = {'PX4': COL[0], 'old MRAC': COL[1], 'L1 roles': COL[2], 'L1 +': COL[3]}
 DASH = ['-', (0, (5, 2)), (0, (1.5, 1.5))]
 INK, INK2, GRID, SURF = '#0b0b0b', '#52514e', '#e4e3df', '#fcfcfb'
 TOPICS = ['vehicle_local_position', 'trajectory_setpoint', 'vehicle_attitude', 'actuator_motors', 'vehicle_land_detected',
           'vehicle_status']
+
+
+TO_END = '--to-end' in sys.argv  # plot past the land command (to show behaviour on the ground)
 
 
 def load(path):
@@ -65,11 +70,15 @@ def load(path):
             ev.append((tt, 'battery sag'))
     st = t['vehicle_status']
     tl = st['timestamp'][st['nav_state'] == 18] * 1e-6 - t0          # AUTO_LAND
-    t_end = tl[tl > 5][0] if np.any(tl > 5) else ts[-1]
+    has_land = bool(np.any(tl > 5))
+    t_land = tl[tl > 5][0] if has_land else ts[-1]
+    t_end = min(ts[-1], t_land + 60.0) if TO_END else t_land   # 60 s on the ground is enough to see it
+    if TO_END:
+        ev.append((t_land, 'land command'))
     keep = (ts >= -1) & (ts <= t_end)
     first = {}
     for a, b in sorted(ev):                                           # one mark per event, inside the flight
-        if 0 < a < t_end - 1 and b not in first:
+        if 0 < a < t_end + 1 and b not in first:
             first[b] = a
     # goto transits: the setpoint jumps to a far target; that error is distance to go, not tracking error
     t_, ex, ey = ts[keep], (lp['x'] - spx)[keep], (lp['y'] - spy)[keep]
@@ -81,7 +90,8 @@ def load(path):
         while k < len(t_) and (eh[k] > 0.5 or t_[k] - t_[j] < 1.0) and t_[k] - t_[j] < 20:
             k += 1
         transit[j:k] = True
-    return dict(t=t_, x=lp['x'][keep], y=lp['y'][keep], z=lp['z'][keep], spx=spx[keep], spy=spy[keep],
+    transit = transit | (t_ > t_land)   # after the land command the setpoint descends into the ground: not tracking
+    return dict(has_land=has_land, t_land=t_land, t=t_, x=lp['x'][keep], y=lp['y'][keep], z=lp['z'][keep], spx=spx[keep], spy=spy[keep],
                 spz=spz[keep], tt=at['timestamp'] * 1e-6 - t0, tilt=tilt, tm=am['timestamp'] * 1e-6 - t0, mot=mot,
                 ev=sorted((a, b) for b, a in first.items()), t_end=t_end, transit=transit)
 
@@ -114,12 +124,14 @@ def main():
         style(ax)
     d0 = data[0][1]
     axp.plot(d0['spy'], d0['spx'], color=INK2, lw=1.0, ls=(0, (1, 2)), label='setpoint path')
-    t_end = max(d['t_end'] for _, d in data)
+    # the axis follows the first (control) arm; an arm that lasts much longer is cut and says so in the legend
+    t_end = data[0][1]['t_end']
     for i, (lab, d) in enumerate(data):
-        c, ls = COL[i], DASH[i]
+        c, ls = next((v for k, v in ARM_COL.items() if lab.startswith(k)), COL[i]), DASH[i]
         eh = np.where(d['transit'], np.nan, np.hypot(d['x'] - d['spx'], d['y'] - d['spy']))
+        note = '' if d['t_end'] <= t_end + 10 else f' (cut: its flight ran to {d["t_end"]:.0f} s)'
         axp.plot(d['y'], d['x'], color=c, lw=1.6, ls=ls,
-                 label=f'{lab}: error rms {np.sqrt(np.nanmean(eh ** 2)):.2f} m, peak {np.nanmax(eh):.2f} m')
+                 label=f'{lab}: error rms {np.sqrt(np.nanmean(eh ** 2)):.2f} m, peak {np.nanmax(eh):.2f} m{note}')
         ez = np.where(d['transit'], np.nan, -(d['z'] - d['spz']))
         axs[0].plot(d['t'], eh, color=c, lw=1.4, ls=ls)
         axs[1].plot(d['t'], ez, color=c, lw=1.4, ls=ls)
@@ -158,7 +170,7 @@ def main():
     axs[-1].set_xlabel('time since takeoff [s, sim]')
     fig.text(0.01, -0.03, 'Same seed for every arm (same wind, vehicle and events). Grey bands: goto transits, where the '
              'error is the distance still to fly, not tracking error; they are left out of (b) and (c). Vertical lines: '
-             'mission events as applied in the sim. The plot ends at the land command.', fontsize=7.5, color=INK2)
+             'mission events as applied in the sim. ' + ('The plot runs to the end of the log.' if TO_END else 'The plot ends at the land command.'), fontsize=7.5, color=INK2)
     fig.suptitle(title, x=0.01, ha='left', fontsize=12, color=INK, weight='bold')
     fig.savefig(out, dpi=300, bbox_inches='tight', facecolor=SURF)
     fig.savefig(out.with_suffix('.pdf'), bbox_inches='tight', facecolor=SURF)

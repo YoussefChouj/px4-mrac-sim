@@ -892,3 +892,24 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
   motor at lower voltage spins slower and draws less. Fixed: power from the thrust the rotors delivered last step.
   ci/test_sih_fidelity.cpp gains the failure case (that pack at full throttle: thrust/weight 1.60, 13.75 V; 20 checks
   pass). The arm comparison of this run is not used: takeoff failures were a model artefact. Wave P re-flown.
+
+## Wave O: Monte Carlo mission, 30 random drones and scenes (2026-11-06, run 42107461595)
+- `results/O-montecarlo-42107461595` (3db9725): decks mc (payload + gradual battery sag) and mcf (+ motor 1 at 65-85 %),
+  every vehicle/sensor/scene param drawn per seed (mass, inertia, thrust/torque, arm, motor lag, drag, motor spread,
+  delay 15-35 ms + 0-6 ms jitter, IMU/GPS noise, wind mean/turbulence/gust, payload 10-30 %, sag 5-15 %, fault
+  severity); controller keeps nominal values (delay 25 ms, drag 0.455). 198/240 passed. Tables:
+  `research/digests/wave-digest-O.md`; figures `research/figs/O-*.png` (tools/mc_figs.py, tools/key_flight_plots.py).
+- Pass: PX4 PID 29/30 and 30/30; L1 roles 2+3 27/30, 28/30; L1 + tilt budget 29/30, 29/30; old MRAC 11/30, 15/30
+  (19 and 15 flights past the 45 deg tilt gate, up to 178 deg).
+- Paired vs PX4 PID, mean [95 %], mc / mcf: L1 + tilt budget max_hold_err_m -0.549 [-0.699, -0.395] /
+  -0.580 [-0.707, -0.460], rms_track_err_m -0.145 / -0.078 (both exclude 0), max_tilt_deg +0.57 (crosses 0) /
+  +0.87 [+0.21, +1.52]. Better hold in 27/30 and 29/30 seeds. Without the budget: tilt +3.1 deg; the budget removes
+  2.3-2.5 deg at no hold cost. Old MRAC holds better too (-0.63 / -0.73 m) but adds +20 / +9 deg tilt and fails half.
+- Sensitivity of the L1 + budget gain (Spearman over seeds): east wind mean rho +0.52 / +0.73 (stronger mean wind
+  from the east, smaller gain), the others under the 5 % level except mass (-0.46, mcf: heavier, larger gain).
+- L1 failure, seed 8 (all four L1 decks never land; PX4 PID lands): true delay 32 ms vs 25 assumed, motor lag 65 ms,
+  low roll inertia, high gyro noise: rate_rms_rp 0.51-0.52 vs 0.15 for PX4 PID, motors chattering in flight, and on
+  the ground after the land command (`research/figs/O-key-l1fail-seed8.png`). The delay margin of the role-3 delay
+  model ends near +7 ms of model error with slow motors [S: one seed].
+- Key flights (motor-fault deck): seed 25 median case (hold rms 0.46 -> 0.36 m), seed 19 PX4's worst (old MRAC falls
+  3 m at the motor fault; L1 rms 0.45 vs 0.68 m), seed 8 L1's failure.

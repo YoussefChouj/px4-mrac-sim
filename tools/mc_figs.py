@@ -15,9 +15,12 @@ from pathlib import Path
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import matplotlib.ticker
 import numpy as np
 
 COL = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100']
+# colour follows the arm (same in key_flight_plots.py): control blue, old MRAC orange, L1 aqua, L1 + tilt budget yellow
+ARM_COL = {'alone': COL[0], 'mrac': COL[1], 'l1r6': COL[2], 'l1r6t': COL[3]}
 INK, INK2, GRID, SURF = '#0b0b0b', '#52514e', '#e4e3df', '#fcfcfb'
 
 
@@ -63,21 +66,25 @@ def main():
             if not len(diff):
                 continue
             x = i + rng.uniform(-0.18, 0.18, len(diff))
-            ax.plot(x, diff, 'o', ms=4, mfc=COL[i + 1], mec=SURF, mew=0.6, alpha=0.9)
+            ax.plot(x, diff, 'o', ms=4, mfc=ARM_COL.get(arm, COL[(i + 1) % 4]), mec=SURF, mew=0.6, alpha=0.9)
             med = np.median(diff)
             boots = np.median(rng.choice(diff, (4000, len(diff))), 1)
             lo, hi = np.percentile(boots, [2.5, 97.5])
             ax.plot([i - 0.3, i + 0.3], [med, med], color=INK, lw=1.8)
             ax.plot([i, i], [lo, hi], color=INK, lw=1.0)
             better = int(np.sum(diff < 0))
-            ax.text(i + 0.33, med, f'median {med:+.2f}\n[{lo:+.2f}, {hi:+.2f}]\nbetter {better}/{len(diff)}',
-                    fontsize=7, color=INK, va='center')
-        ax.set_yscale('symlog', linthresh=1.0)
+            npass = sum(bool(x.get('pass')) for x in t.values())
+            ax.text(i, 1.02, f'median {med:+.2f} m\n[{lo:+.2f}, {hi:+.2f}]\nbetter in {better}/{len(diff)}'
+                    f'\npasses gates {npass}/{len(t)}',
+                    fontsize=7, color=INK, va='bottom', ha='center', transform=ax.get_xaxis_transform())
+        ax.set_yscale('symlog', linthresh=1.0, linscale=1.5)
+        ax.yaxis.set_major_locator(matplotlib.ticker.FixedLocator([-2, -1, -0.5, 0, 0.5, 1, 2, 5, 10, 50, 100]))
+        ax.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f'{v:g}'))
         ax.set_xticks(range(len(arms)))
         ax.set_xticklabels([lab.get(a, a) for a in arms])
         ax.set_xlim(-0.5, len(arms) - 0.1)
         ax.set_ylabel(f'{metric} minus {lab.get(ctl, ctl)}\n(same seed; < 0 = better)', fontsize=8)
-        ax.set_title(f'({chr(97 + 2 * r)}) {deck}: paired change per seed', loc='left', fontsize=10, color=INK)
+        ax.set_title(f'({chr(97 + 2 * r)}) {deck}: paired change per seed', loc='left', fontsize=10, color=INK, pad=44)
         # sensitivity of the target arm's paired change to the drawn parameters
         ax2 = fig.add_subplot(gs[r, 1])
         ax2.set_facecolor(SURF)
@@ -94,7 +101,7 @@ def main():
                 rho.append((spearman(v, diff), k[2:]))
         rho = sorted(rho, key=lambda z: -abs(z[0]))[:10][::-1]
         y = np.arange(len(rho))
-        ax2.barh(y, [z[0] for z in rho], color=COL[arms.index(tgt) + 1] if tgt in arms else COL[0], height=0.6)
+        ax2.barh(y, [z[0] for z in rho], color=ARM_COL.get(tgt, COL[0]), height=0.6)
         ax2.set_yticks(y)
         ax2.set_yticklabels([z[1] for z in rho], fontsize=7.5)
         lim = 1.96 / np.sqrt(max(len(runs) - 1, 1))
