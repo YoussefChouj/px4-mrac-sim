@@ -1,0 +1,139 @@
+name: gz
+# Fly scenario arms on PX4 + Gazebo Harmonic (headless, software rendering): one gz build, one runner per
+# (scenario, run), then one table on the `results` branch, like arms.yml does for SIH.
+# Start it by pushing a wave file waves-gz/<name>.txt (same format as waves/, waves/README.md) whose decks set
+# "sim": "gz"; decks with "video" upload gazebo-CAM.mp4 in their run artifact. Gazebo runs near real time, so keep
+# gz waves small (a validation subset, not a Monte Carlo campaign).
+run-name: "${{ github.event_name == 'push' && format('gz wave on {0}', github.ref_name) || format('gz {0} x{1}', inputs.scenarios, inputs.runs) }}"
+on:
+  push:
+    branches: ['**']
+    paths: ['waves-gz/*.txt']
+  workflow_dispatch:
+    inputs:
+      scenarios:
+        description: 'gz scenario files under scenarios/, space separated, without .json'
+        default: 'rd-gz-hover'
+      runs:
+        description: 'runs per scenario'
+        default: '1'
+      first:
+        description: 'first run index (= seed)'
+        default: '1'
+
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.m.outputs.matrix }}
+      label: ${{ steps.m.outputs.label }}
+      error: ${{ steps.m.outputs.error }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: m
+        env:
+          WAVES_DIR: waves-gz
+          SCEN: ${{ inputs.scenarios }}
+          RUNS: ${{ inputs.runs }}
+          FIRST: ${{ inputs.first }}
+        run: python3 ci/plan.py >> "$GITHUB_OUTPUT"
+      - if: steps.m.outputs.error != ''
+        env:
+          ERR: ${{ steps.m.outputs.error }}
+        run: |
+          echo "::error::$ERR"
+          exit 1
+
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+      - id: key
+        run: echo "k=px4-gz-v1.17.0-${{ hashFiles('px4-mrac/**', 'ci/build_gz.sh') }}" >> "$GITHUB_OUTPUT"
+      - id: cache
+        uses: actions/cache@v4
+        with:
+          path: px4-gz.tar.zst
+          key: ${{ steps.key.outputs.k }}
+      - if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          set -o pipefail
+          bash ci/build_gz.sh "$PWD/px4-gz.tar.zst" 2>&1 | tee build.log
+      - if: failure()
+        run: tail -c 60000 build.log > build-tail.log || true
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build-tail.log
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        with:
+          name: px4-gz
+          path: px4-gz.tar.zst
+          retention-days: 3
+
+  fly:
+    needs: [plan, build]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: px4-gz
+      - env:
+          SCEN: ${{ matrix.scen }}
+          RUN: ${{ matrix.run }}
+        run: |
+          set -o pipefail
+          mkdir -p out
+          bash ci/run_gz.sh "$PWD/px4-gz.tar.zst" "scenarios/$SCEN.json" "$RUN" "$PWD/out" 2>&1 | tee fly.log
+      - if: always()
+        run: tail -n 150 fly.log > out/fly-tail.log 2>/dev/null || true
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: run-${{ matrix.scen }}-${{ matrix.run }}
+          path: out
+          retention-days: 14
+
+  collect:
+    needs: [plan, build, fly]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: run-*
+          path: runs
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: build-log
+          path: buildlog
+      - run: |
+          mkdir -p runs
+          python3 ci/collect.py runs | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: publish to the results branch
+        continue-on-error: true
+        env:
+          LABEL: ${{ needs.plan.outputs.label }}
+          ERR: ${{ needs.plan.outputs.error }}
+          MATRIX: ${{ needs.plan.outputs.matrix }}
+          PLAN: ${{ needs.plan.result }}
+          BUILD: ${{ needs.build.result }}
+          FLY: ${{ needs.fly.result }}
+        run: python3 ci/publish.py runs buildlog
