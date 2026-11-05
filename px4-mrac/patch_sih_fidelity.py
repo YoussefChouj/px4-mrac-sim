@@ -173,7 +173,7 @@ P = [  # name, type, default, unit, min, max, short description
 ]
 for n, t, dflt, unit, lo, hi, doc in P:
     assert len(n) <= 16, n
-    if n in p:
+    if f'PARAM_DEFINE_{t}({n},' in p:  # the definition itself (a name can appear in another param's text)
         continue
     val = f'{int(dflt)}' if t == 'INT32' else f'{float(dflt)}f'
     p += f'''
@@ -186,5 +186,7 @@ for n, t, dflt, unit, lo, hi, doc in P:
  */
 PARAM_DEFINE_{t}({n}, {val});
 '''
+missing = [n for n, *_ in P if f'({n},' not in p]
+assert not missing, f'params not defined: {missing}'
 fp.write_text(p)
 print('SIH fidelity patched')

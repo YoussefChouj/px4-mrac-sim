@@ -1,4 +1,4 @@
-# P: high-fidelity Monte Carlo mission (owner 2026-11-06: raise fidelity): SIH with sih_fidelity.hpp physics, every
+# P (re-fly 2026-11-06: SIH_AIR_T was not defined in the first build, every flight timed out before takeoff): high-fidelity Monte Carlo mission (owner 2026-11-06: raise fidelity): SIH with sih_fidelity.hpp physics, every
 # vehicle/sensor/scene/battery/aero param drawn per seed. hf = healthy, hff = motor 1 fault. 4 arms x 2 decks x 30 = 240.
 runs 30
 first 1
