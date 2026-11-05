@@ -65,13 +65,16 @@ this file (state + next) before every session ends.
    The scheduler beats a constant low gain at 0/20/30 ms. Best delay margin: gain scheduling without floor (b2g);
    best nominal: floored output scaling (f2o), which keeps a small oscillation at 30 ms. Outer layers untouched.
    Owner approved 2026-11-05: L1 in every loop with the three roles, flown on a real-world mission.
-3b. In progress 2026-11-05: L1 law (`px4-mrac/.../L1Axis.hpp`, MRL_*_LAW 1, roles MRL_*_L1R bits 1 memory,
-   2 scheduler, 4 physics; per-loop b/a_s/w_c/lag params) in rate, attitude, vz and xy. Wave M
-   (`waves/M-l1-realworld.txt`, pushed 1d3cb86, 252 jobs): decks rw-* (battery sag) and rwf-* (motor 1 at 75 %),
-   real IMU noise, stock GPS, drag, 25 ms delay, PX4 PID, gusty wind, payload; arms alone, mrac, L1 roles
-   0/1/2/4/7, leave-one-role-out 6/5/3, L1 per loop. Digest `results/M-l1-realworld-*`.
+3b. Done 2026-11-05 (PROGRESS "Wave M"): L1 law in all four loops (L1Axis.hpp; MRL_*_LAW 1, roles MRL_*_L1R bits
+   1 memory, 2 bandwidth scheduler, 4 known physics; per-loop MRL_*_L1B/A/W/T, MRL_X_L1D drag, MRL_L1_EF/KF/LK).
+   Realistic mission decks rw-* / rwf-*. Result: plain L1 and old MRAC are unstable at 25 ms; L1 with roles 2+3 holds
+   position ~40 % better than PX4 PID, +3 deg peak tilt; role 1 (memory) hurts as built. Next inside item 3:
+   (a) role 1 v2: fit the memory to the C(s)-filtered estimate and feed it through C(s); (b) a tilt budget on the xy
+   L1 output (feasibility-aware, review E3); (c) more seeds (first 10) for r6 vs alone; (d) L1 vs MRAC at 0/20/30 ms
+   on the V5 decks for the delay-margin curve.
 4. The review experiments below, then V4, V6-V8 and P13-P16 (`research/OPEN-ITEMS.md`).
-5. Owner decision: heavy-hover-step's 35 deg tilt limit (PX4's default tilt maximum is 45 deg [S]). Do not change
+5. Owner decision: the 35 deg tilt gate on the real-world mission decks (rw-*, rwf-*: PX4 PID itself peaks 35.3-36.7 deg
+   in 7 of 18 flights) and heavy-hover-step's 35 deg tilt limit (PX4's default tilt maximum is 45 deg [S]). Do not change
    the gate without the owner.
 
 ## Review experiments (own summary of an external critical review; the review itself stays private)

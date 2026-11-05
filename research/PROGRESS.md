@@ -803,3 +803,36 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
 - Reading: the delay robustness comes from adapting fast only on low-frequency error, not from less authority overall.
   b2g is in effect a frequency-selective adaptation gain [S: interpretation of the scheduler law]; the floored output
   channel trades delay margin for nominal accuracy. Blocks 1 and 3 add nothing at the delay edge (wave K).
+
+## Wave M: L1 in every loop, three roles, real-world mission (2026-11-05, run 42013772172)
+- `results/M-l1-realworld-42013772172` (claude/collect-landed, 1d3cb86, new build with L1Axis): 14 arms x 2 decks x seeds
+  1-9; 41/252 passed, no lost jobs. Tables: `research/digests/wave-digest-M.md`. Decks: research drone (real IMU noise),
+  stock GPS noise and EKF settings, drag SIH_KDV 0.45, SIH_ACT_DLY 25 ms (real loop delay 78 ms vs 53 ms in the twin,
+  PROGRESS P8), PX4 PID xy baseline (XYC_MODE 0), 3 m altitude, wind 3.4 m/s mean + 1 m/s turbulence (tau 3 s),
+  20 m legs at MPC_XY_VEL_MAX 5, fig-8 4 m / 16 s, +20 % mass, then battery sag T_MAX -10 % (rw) or motor 1 at 75 %
+  (rwf), return leg, a 7 m/s gust, landing. Gates as p16 wind decks: hold 3.0 m, tilt 35 deg, must land.
+- The 35 deg tilt gate fails the baseline too: alone passes 3/9 (rw) and 8/9 (rwf); every alone failure is
+  max_tilt 35.3-36.7 deg (PX4's default tilt limit is 45 deg [S]). No gate changed; owner question (HANDOFF next 5).
+- Stable or not: old MRAC in all loops oscillates (rate_rms_rp median 1.57 vs alone 0.10, motor_sat_frac 0.61-0.80)
+  and flips in rwf seeds 5 and 6 (max tilt 159 and 177 deg). Plain L1 (roles 0) and L1 + memory only (roles 1) never
+  land in 18/18 flights each (tilt 40-52 deg, motor_sat 0.40-0.53): without a delay model or a bandwidth scheduler the
+  25 ms delay destabilises L1, as the model stage predicted. Every L1 arm with role 2 or role 3 lands 9/9.
+- Paired vs alone (mean [95 % interval], 9 seeds), rw / rwf:
+
+| arm | max_hold_err_m | rms_track_err_m | max_tilt_deg |
+|---|---|---|---|
+| L1 roles 2+3 (r6) | -0.431 [-0.553, -0.294] / -0.353 [-0.456, -0.233] | -0.079 [-0.14, -0.011] / -0.093 [-0.173, +0.012] | +3.09 / +2.73 (both exclude 0) |
+| L1 roles 1+2+3 (r7) | -0.259 / -0.034 (rwf crosses 0) | -0.098 / -0.070 (rwf crosses 0) | +3.59 / +2.74 |
+| L1 role 2 only (r2) | -0.382 / -0.298 | crosses 0 | +2.68 / +3.39 |
+| L1 role 3 only (r4) | -0.374 / -0.270 | crosses 0 | +4.27 / +4.96 |
+| L1 xy loop only | -0.219 / -0.094 | -0.099 / crosses 0 | +0.96 (crosses 0) / +1.26 |
+| L1 rate / att / vz loop only | crosses 0 (att rwf +0.107) | crosses 0 | rate +2.59 / +1.77; att, vz cross 0 |
+
+- Roles, leave one out from r7 (rw / rwf): without role 1 the hold is better by 0.172 / 0.320 m (memory hurts); without
+  role 2 the peak tilt is higher by 2.09 / 2.43 deg; without role 3 the tilt is higher by 1.47 / 1.18 deg and (rw) the
+  track error by 0.085 m. Median worst hold: alone 1.025 / 0.908 m, r6 0.562 / 0.577 m (-45 % / -36 %).
+- Reading: in a realistic mission with real delay, only a delay-aware L1 (known delay in the predictor, or a bandwidth
+  that drops when the estimate oscillates) is safe; it then holds position about 40 % better than stock PX4 under
+  gusts, payload and battery or motor faults, paying about 3 deg more peak tilt (stronger gust rejection). The xy loop
+  carries most of the single-loop gain; all four loops together beat any one. Role 1 as built (unfiltered feature map
+  fed forward) adds error; it needs a slower, filtered target before it can act as memory.
