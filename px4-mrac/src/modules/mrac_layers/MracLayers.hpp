@@ -87,6 +87,7 @@ private:
 		(ParamFloat<px4::params::MRL_R_KDLY>) _param_kdly,
 		(ParamFloat<px4::params::MRL_S_FC>) _param_s_fc,
 		(ParamFloat<px4::params::MRL_S_K>) _param_s_k,
-		(ParamFloat<px4::params::MRL_S_TAV>) _param_s_tav
+		(ParamFloat<px4::params::MRL_S_TAV>) _param_s_tav,
+		(ParamFloat<px4::params::MRL_S_EF>) _param_s_ef
 	)
 };

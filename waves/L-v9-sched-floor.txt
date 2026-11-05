@@ -1,0 +1,8 @@
+# V9 wave L: amplitude-gated scheduler vs constant low gain (negative control), HANDOFF next item 3.
+# alone, v1 (old law gam 2), c014/c05 (constant gam 0.14 / 0.5), b2g (wave K scheduler, no floor),
+# f2g/f2o/f2 (scheduler with noise floor 0.1 rad/s: gain / output / both). 8 arms x 3 delays x 10 seeds = 240 jobs.
+runs 10
+first 1
+v9-dly0-alone v9-dly0-v1 v9-dly0-c014 v9-dly0-c05 v9-dly0-b2g v9-dly0-f2g v9-dly0-f2o v9-dly0-f2
+v9-dly20-alone v9-dly20-v1 v9-dly20-c014 v9-dly20-c05 v9-dly20-b2g v9-dly20-f2g v9-dly20-f2o v9-dly20-f2
+v9-dly30-alone v9-dly30-v1 v9-dly30-c014 v9-dly30-c05 v9-dly30-b2g v9-dly30-f2g v9-dly30-f2o v9-dly30-f2

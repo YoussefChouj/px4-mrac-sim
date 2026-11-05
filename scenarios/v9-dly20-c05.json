@@ -1,0 +1,56 @@
+{
+ "sim": "sih",
+ "airframe": "research-drone",
+ "speed": 5,
+ "alt": 0.5,
+ "why": "V9 wave L at delay 20 ms: negative control, constant rate-layer gain gam 0.5, no scheduler. Script copied from v5-dly30-g2.",
+ "params": {
+  "MRL_EN_RATE": 1,
+  "MRL_EN_ATT": 0,
+  "MRL_EN_POS": 0,
+  "XYC_MODE": 1,
+  "SIH_ACT_DLY": 20,
+  "MRL_DIST_R": 0.08,
+  "MRL_R_GAM": 0.5,
+  "MRL_R_V2": 0,
+  "MRL_R_KDLY": 20.0
+ },
+ "steps": [
+  {
+   "do": "takeoff"
+  },
+  {
+   "do": "hold",
+   "s": 3
+  },
+  {
+   "do": "track",
+   "shape": "fig8",
+   "size": 0.3,
+   "period": 18,
+   "laps": 1
+  },
+  {
+   "do": "hold",
+   "s": 3
+  },
+  {
+   "do": "param",
+   "name": "MRL_DIST_R",
+   "value": 0.0
+  },
+  {
+   "do": "land"
+  }
+ ],
+ "limits": {
+  "max_hold_err_m": 0.5,
+  "max_tilt_deg": 35,
+  "must_land": true
+ },
+ "boot_params": {
+  "SIM_GPS_NSCL": 0.1,
+  "EKF2_GPS_P_NOISE": 0.05,
+  "EKF2_GPS_V_NOISE": 0.05
+ }
+}

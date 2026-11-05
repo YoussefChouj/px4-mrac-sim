@@ -489,3 +489,15 @@ PARAM_DEFINE_FLOAT(MRL_S_K, 20.0f);
  * @group MRAC layers
  */
 PARAM_DEFINE_FLOAT(MRL_S_TAV, 0.5f);
+
+/**
+ * v2 block 2 scheduler: noise floor of the tracking error (amplitude gate); rho = P_hf / (P_e + MRL_S_EF^2).
+ *
+ * 0 = the pure high-band share (wave K). Set it between the nominal error rms and the oscillation to be caught
+ * (rate layer, 2026-11-05 SIH: nominal e rms 0.028 rad/s, delay limit cycle 0.38 rad/s).
+ * @unit rad/s
+ * @min 0
+ * @max 10
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_S_EF, 0.0f);

@@ -16,8 +16,10 @@
  * v2 blocks (research/notes/three-block-v2.md), each off by default so the default stays the original law:
  *   block 1, MRF_ULAG: known-delay command lag ub(t) - ub(t - d), the part of the baseline command the plant has
  *            not received yet under a known transport delay d (a physics term of the delayed plant);
- *   block 2, scheduler (MracSched): s = 1 / (1 + k rho^2), rho = high-band share of the power of e (first-order
- *            high-pass at fc, powers averaged over tav). s scales the adaptation gain (bit 1) and/or u_ad (bit 2).
+ *   block 2, scheduler (MracSched): s = 1 / (1 + k rho^2), rho = P_hf / (P_e + ef^2): the high-band power of e
+ *            (first-order high-pass at fc, powers averaged over tav) over the total plus a noise floor ef^2, so
+ *            small noise-like error (rms << ef) leaves s ~ 1 and only a large high-band error cuts (amplitude gate;
+ *            ef = 0 is the pure share of wave K). s scales the adaptation gain (bit 1) and/or u_ad (bit 2).
  *            s is a known function of measured e in [1/(1+k), 1]; projection and the umax clamp keep Theta and u_ad
  *            bounded whatever s does, so the scheduler can only lower the adaptive authority;
  *   block 3, known-physics reference: xm follows r delayed by the known delay d, so e no longer asks the
@@ -45,7 +47,7 @@ enum MracFeat : int {
 // v2 block 2 scheduler: mode bits 1 = scale the adaptation gain, 2 = scale u_ad; 0 = off (s = 1)
 struct MracSched {
 	int mode{0};
-	float fc{1.5f}, k{20.f}, tav{0.5f};
+	float fc{1.5f}, k{20.f}, tav{0.5f}, ef{0.f};
 };
 
 struct MracAxis {
@@ -154,7 +156,7 @@ struct MracAxis {
 			const float b = math::min(dt / math::max(sch.tav, 0.01f), 1.f);
 			phf += (ehp * ehp - phf) * b;
 			ptot += (e * e - ptot) * b;
-			const float rho = math::constrain(phf / (ptot + 1e-6f), 0.f, 1.f);
+			const float rho = math::constrain(phf / (ptot + sch.ef * sch.ef + 1e-6f), 0.f, 1.f);
 			sc = 1.f / (1.f + math::max(sch.k, 0.f) * rho * rho);
 
 		} else {

@@ -101,7 +101,8 @@ void MracLayers::Run()
 			   _param_gk.get());
 		_ax[a].kdly = math::max(_param_kdly.get(), 0.f) * 1e-3f;
 		_ax[a].ref_dly = (v2 & 8) != 0;
-		_ax[a].sch = MracSched{(v2 >> 1) & 3, _param_s_fc.get(), _param_s_k.get(), _param_s_tav.get()};
+		_ax[a].sch = MracSched{(v2 >> 1) & 3, _param_s_fc.get(), _param_s_k.get(), _param_s_tav.get(),
+				       math::max(_param_s_ef.get(), 0.f)};
 		_ax[a].ub = base.xyz[a];
 		_ax[a].s[0] = av.xyz[(a + 1) % 3] * av.xyz[(a + 2) % 3];
 		_ax[a].s[1] = av.xyz[a == 0 ? 1 : 0];
