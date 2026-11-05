@@ -1,0 +1,43 @@
+{
+ "run_id": 42106084872,
+ "url": "https://github.com/YoussefChouj/px4-mrac-sim/actions/runs/42106084872",
+ "label": "Q-gz-crosscheck+Q-gz-video",
+ "folder": "Q-gz-crosscheck+Q-gz-video-42106084872",
+ "event": "push",
+ "branch": "claude/collect-landed",
+ "sha": "95acc7167e4aa969bb33ac20f67ff68b4676707f",
+ "decks": [
+  "gz-rw-alone",
+  "gz-rw-l1r6t",
+  "gz-rw-mrac",
+  "gzv-rw-alone",
+  "gzv-rw-l1r6t"
+ ],
+ "runs": [
+  1,
+  2,
+  3
+ ],
+ "jobs": 11,
+ "flights": 0,
+ "pass": 0,
+ "lost": [
+  "gz-rw-alone-1",
+  "gz-rw-alone-2",
+  "gz-rw-alone-3",
+  "gz-rw-mrac-1",
+  "gz-rw-mrac-2",
+  "gz-rw-mrac-3",
+  "gz-rw-l1r6t-1",
+  "gz-rw-l1r6t-2",
+  "gz-rw-l1r6t-3",
+  "gzv-rw-alone-1",
+  "gzv-rw-l1r6t-1"
+ ],
+ "plan": "success",
+ "build": "success",
+ "fly": "cancelled",
+ "error": "",
+ "finished_utc": "2026-11-05T22:43:15Z",
+ "results_url": "https://github.com/YoussefChouj/px4-mrac-sim/tree/results/results/Q-gz-crosscheck+Q-gz-video-42106084872"
+}
