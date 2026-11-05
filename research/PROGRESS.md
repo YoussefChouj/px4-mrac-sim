@@ -712,3 +712,12 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
 - `results/J-delay-check-replay-41809780319` (main 92ddc9b): v5-dly24-g2, v5-dly30-g1 and v5-dly35-g05, seeds 1-3, 0/9 passed, no lost jobs.
 - In all 9 kept logs, scenario.py's checks show exactly two FAIL lines: `must_land: False` and `error: TimeoutError`. Every recorded limit (hold, tilt, track) passed.
 - So past the delay edge, the MRAC rate layer does not break a flight limit: the vehicle never registers as landed, and the run ends in a TimeoutError. The saturated rate oscillation seen in wave H likely keeps the land detector from triggering [S]. Not yet traced: which step raises the TimeoutError (agent/scenario.py).
+
+## all.json records carry `landed` (2026-11-05)
+- Rechecked wave J's 9 kept logs (`results/J-delay-check-replay-41809780319/logs/`): each `== checks` block has the
+  same two FAIL lines, `must_land: False` and `error: TimeoutError`; hold and tilt pass. The Wave J entry stands.
+- `ci/collect.py` now gives every all.json record `landed` (scenario.py's metrics.landed; `null` when the flight's
+  metrics.json is missing or unreadable). It finds the flight folder through the attempt ledger (an infra retry uses
+  the retry's folder) and never raises, so the publish step after collect still runs. Tested on a fake runs folder
+  (8 cases, including corrupt and missing metrics.json and an empty folder). From the next run on, a must_land failure
+  shows in all.json without the logs. Older folders on the results branch stay as they are.

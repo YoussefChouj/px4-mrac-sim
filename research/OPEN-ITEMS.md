@@ -43,6 +43,8 @@ instance 8 (headless SIH may run 2 in parallel if CPU allows); no paid compute (
 
 ## Status (2026-11-04)
 
+2026-11-05: all.json records carry `landed` (ci/collect.py); the delay-failure trace (HANDOFF next item 1) is open.
+
 Checks live in PROGRESS.md. Done: P1-P7, P9, P10, P12 (pipeline), P8 M2 (actuator delay). P11 done except wind
 gusts (SIH has no wind; moved to P13). Open: P8 gyro noise + attitude step vs lab_d_sysid_angle, P13-P15.
 Seeds: every sim noise source draws from one libc rand() seeded 1234 (sih.cpp, SensorBaroSim.cpp); at speed 5 the
