@@ -771,3 +771,35 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
   arm], which V7's model rule also predicts to be safe at 30 ms. Not yet shown: that the scheduler beats a constant
   low gain (the review's negative control). Next: an amplitude floor on the scheduler (cut only when high-band e is
   above noise) against constant gam 0.14 and 0.5, 10 seeds.
+
+## Wave L: amplitude-gated scheduler vs constant low gain (2026-11-05, run 42006145266)
+- `results/L-v9-sched-floor-42006145266` (claude/collect-landed, 7eb0a6d, new build with MRL_S_EF): 8 rate-layer arms x
+  delay {0, 20, 30} ms x seeds 1-10, torque disturbance 0.08; 211/240 passed, no lost jobs. Tables:
+  `research/digests/wave-digest-L.md`. Arms: alone; v1 (old law, gam 2); c014 / c05 (constant gam 0.14 / 0.5, the
+  negative control); b2g (wave K scheduler on the gain, no floor); f2g / f2o / f2 (scheduler with noise floor
+  MRL_S_EF 0.1 rad/s on gain / output / both, gam 2).
+- att_track_rms_deg vs alone, paired, mean (all intervals exclude 0), with pass at 30 ms:
+
+| arm | 0 ms | 20 ms | 30 ms | pass 30 ms |
+|---|---|---|---|---|
+| v1 old law | -0.462 | -0.449 | +0.819 | 0/10 |
+| c014 constant | -0.111 | -0.107 | -0.108 | 10/10 |
+| c05 constant | -0.266 | -0.264 | +0.331 | 2/10 |
+| b2g sched gain, no floor | -0.302 | -0.261 | -0.218 | 10/10 |
+| f2g sched gain, floor | -0.361 | -0.314 | +0.481 | 0/10 |
+| f2o sched output, floor | -0.395 | -0.330 | -0.096 | 10/10 |
+| f2 sched both, floor | -0.319 | -0.258 | -0.146 | 10/10 (20 ms 9/10, see below) |
+
+- Negative control passed: b2g beats the constant gam 0.14 at every delay (b2g - c014 att -0.191 / -0.154 / -0.109 deg,
+  intervals exclude 0); f2o and f2 beat it at 0 and 20 ms. A constant gain must be 0.14 to survive 30 ms and then keeps
+  only 24 % of the old law's nominal gain; the schedulers keep 65 % (b2g) to 86 % (f2o).
+- The floor raises nominal gain (f2o -0.395 vs b2g -0.302 at 0 ms) but costs delay margin: at 30 ms f2o passes with a
+  residual oscillation (rate_rms_rp +0.024, hold +0.046 m vs alone, intervals exclude 0; mean cut 0.43), f2 is in
+  between, b2g is cleanest (hold vs alone crosses 0). Floored gain-only (f2g) fails 30 ms 0/10, like v1: once Theta
+  has grown, slowing its learning does not remove the feedback it already applies; only cutting the output does.
+- One startup failure: v9-dly20-f2 seed 3 timed out in the pre-flight health wait (home set in sim.log, no airborne
+  sample, deck params not yet applied); counted as a fail, and its NaN metrics are now skipped by wave_digest (they
+  had made every interval of that arm NaN).
+- Reading: the delay robustness comes from adapting fast only on low-frequency error, not from less authority overall.
+  b2g is in effect a frequency-selective adaptation gain [S: interpretation of the scheduler law]; the floored output
+  channel trades delay margin for nominal accuracy. Blocks 1 and 3 add nothing at the delay edge (wave K).

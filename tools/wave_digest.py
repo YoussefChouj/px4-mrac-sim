@@ -16,6 +16,7 @@ Usage: python3 tools/wave_digest.py [--pair T=C ...] [--metrics a,b,...] FOLDER.
 """
 import argparse
 import json
+import math
 import random
 import re
 import statistics
@@ -30,7 +31,7 @@ NB = 10000
 
 
 def num(x):
-    return isinstance(x, (int, float)) and not isinstance(x, bool)
+    return isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x)  # nan = no airborne data
 
 
 def limits(sha, deck):

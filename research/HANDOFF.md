@@ -59,12 +59,12 @@ this file (state + next) before every session ends.
    Pushed 2026-11-04 as `waves/I-b-pair-seeds.txt` (8 decks, runs 10, first 11 = seeds 11-20): digest its
    results folder (`I-b-pair-seeds-*`) with `tools/wave_digest.py`; pool with B's seeds 1-10 only if both
    flew the same build.
-3. In progress 2026-11-05 (branch claude/collect-landed): 3-block v2 rate law built behind MRL_R_V2 (bits 1 command-lag
-   feature, 2/4 scheduler on gain/output, 8 delayed reference; MRL_R_KDLY known delay; MRL_S_FC/K/TAV/EF scheduler).
-   Wave K (PROGRESS "Wave K"): only block 2 moves the delay edge (30 ms: 5/5 vs old law 0/5), but without a noise floor
-   it cuts ~92 % everywhere. Wave L (`waves/L-v9-sched-floor.txt`, pushed 7eb0a6d) flies the floored scheduler
-   (MRL_S_EF 0.1) against constant gam 0.14 / 0.5 at 0/20/30 ms, 10 seeds: digest it (`results/L-v9-sched-floor-*`),
-   then decide whether block 2 beats a constant low gain. Blocks 1 and 3 did not move the edge.
+3. Done 2026-11-05 (PROGRESS "Wave K", "Wave L"; branch claude/collect-landed): 3-block v2 rate law behind MRL_R_V2
+   (bits 1 command-lag feature, 2/4 scheduler on gain/output, 8 delayed reference; MRL_R_KDLY known delay;
+   MRL_S_FC/K/TAV/EF scheduler). Only block 2 (scheduler) moves the delay edge; blocks 1 and 3 add nothing there.
+   The scheduler beats a constant low gain at 0/20/30 ms. Best delay margin: gain scheduling without floor (b2g);
+   best nominal: floored output scaling (f2o), which keeps a small oscillation at 30 ms. Outer layers untouched.
+   Owner question: an L1-style low-pass on u_ad (bounded delay margin by design) as the next arm.
 4. The review experiments below, then V4, V6-V8 and P13-P16 (`research/OPEN-ITEMS.md`).
 5. Owner decision: heavy-hover-step's 35 deg tilt limit (PX4's default tilt maximum is 45 deg [S]). Do not change
    the gate without the owner.
