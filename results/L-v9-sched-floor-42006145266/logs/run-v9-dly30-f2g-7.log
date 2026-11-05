@@ -1,0 +1,38 @@
+v9-dly30-f2g-7-retry1 FAIL rate_rms_rp=0.5166 dist_rate_rms=0.2554 dist_peak_rp=0.9614 dist_roll_peak_deg=5.0294 att_track_rms_deg=1.2609 tilt_geo_max_deg=10.8671 xy_err_rms_m=0.3240 xy_offset_m=0.3129 xy_spread_m=0.0842 motor_sat_frac=0.6754 sp_dt_p99_ms=224.0000 uad_max=0.3000 theta_end=0.1955 uad_clamp_frac=0.0022 theta_lim_frac=0.0000 sched_cut_mean=0.6518 sched_cut_p95=0.9339 max_hold_err_m=0.1075 rms_track_err_m=0.0685 max_tilt_deg=10.8379
+
+metric                          v9-dly30-f2g
+att_track_rms_deg       1.2609 [1.261..1.261]
+dist_peak_rp           0.9614 [0.961..0.961]
+dist_rate_rms          0.2554 [0.255..0.255]
+dist_roll_peak_deg       5.0294 [5.029..5.029]
+max_hold_err_m         0.1075 [0.108..0.108]
+max_tilt_deg        10.8379 [10.838..10.838]
+motor_sat_frac         0.6754 [0.675..0.675]
+rate_rms_rp            0.5166 [0.517..0.517]
+rms_track_err_m        0.0685 [0.068..0.068]
+sched_cut_mean         0.6518 [0.652..0.652]
+sched_cut_p95          0.9339 [0.934..0.934]
+sp_dt_p99_ms     224.0000 [224.000..224.000]
+theta_end              0.1955 [0.195..0.195]
+theta_lim_frac         0.0000 [0.000..0.000]
+tilt_geo_max_deg    10.8671 [10.867..10.867]
+uad_clamp_frac         0.0022 [0.002..0.002]
+uad_max                0.3000 [0.300..0.300]
+xy_err_rms_m           0.3240 [0.324..0.324]
+xy_offset_m            0.3129 [0.313..0.313]
+xy_spread_m            0.0842 [0.084..0.084]
+pass                                     0/1
+-> /home/runner/work/px4-mrac-sim/px4-mrac-sim/out/v9-dly30-f2g-r7
+
+== checks v9-dly30-f2g-7
+FAIL max_hold_err_m: 8.625 (limit 0.5)
+PASS max_tilt_deg: 22.161 (limit 35)
+FAIL must_land: False (limit True)
+FAIL error: TimeoutError 
+SIM-FAULT WARN  [health_and_arming_checks] Preflight Fail: No valid data from Baro 0
+
+== checks v9-dly30-f2g-7-retry1
+PASS max_hold_err_m: 0.108 (limit 0.5)
+PASS max_tilt_deg: 10.838 (limit 35)
+FAIL must_land: False (limit True)
+FAIL error: TimeoutError 

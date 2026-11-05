@@ -1,0 +1,20 @@
+/home/runner/.venvs/px4/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:3862: RuntimeWarning: Mean of empty slice
+  return _methods._mean(a, axis=axis, dtype=dtype,
+/home/runner/.venvs/px4/lib/python3.12/site-packages/numpy/_core/_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+v9-dly20-f2-3 FAIL rate_rms_rp=nan att_track_rms_deg=nan tilt_geo_max_deg=nan motor_sat_frac=nan sp_dt_p99_ms=200.0000
+
+metric                           v9-dly20-f2
+att_track_rms_deg              nan [nan..nan]
+motor_sat_frac                nan [nan..nan]
+rate_rms_rp                   nan [nan..nan]
+sp_dt_p99_ms     200.0000 [200.000..200.000]
+tilt_geo_max_deg              nan [nan..nan]
+pass                                     0/1
+-> /home/runner/work/px4-mrac-sim/px4-mrac-sim/out/v9-dly20-f2-r3
+
+== checks v9-dly20-f2-3
+FAIL max_hold_err_m: None (limit 0.5)
+FAIL max_tilt_deg: None (limit 35)
+FAIL must_land: False (limit True)
+FAIL error: TimeoutError 

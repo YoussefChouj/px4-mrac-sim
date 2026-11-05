@@ -1,0 +1,31 @@
+v9-dly30-v1-1 FAIL rate_rms_rp=0.6455 dist_rate_rms=0.7968 dist_peak_rp=2.3543 dist_roll_peak_deg=5.4528 att_track_rms_deg=1.5913 tilt_geo_max_deg=11.3046 xy_err_rms_m=0.2018 xy_offset_m=0.1937 xy_spread_m=0.0564 motor_sat_frac=0.7269 sp_dt_p99_ms=216.0000 uad_max=0.3000 theta_end=0.2089 uad_clamp_frac=0.0537 theta_lim_frac=0.0000 sched_cut_mean=0.0000 sched_cut_p95=0.0000 max_hold_err_m=0.2393 rms_track_err_m=0.1120 max_tilt_deg=9.7893
+
+metric                           v9-dly30-v1
+att_track_rms_deg       1.5913 [1.591..1.591]
+dist_peak_rp           2.3543 [2.354..2.354]
+dist_rate_rms          0.7968 [0.797..0.797]
+dist_roll_peak_deg       5.4528 [5.453..5.453]
+max_hold_err_m         0.2393 [0.239..0.239]
+max_tilt_deg           9.7893 [9.789..9.789]
+motor_sat_frac         0.7269 [0.727..0.727]
+rate_rms_rp            0.6455 [0.646..0.646]
+rms_track_err_m        0.1120 [0.112..0.112]
+sched_cut_mean         0.0000 [0.000..0.000]
+sched_cut_p95          0.0000 [0.000..0.000]
+sp_dt_p99_ms     216.0000 [216.000..216.000]
+theta_end              0.2089 [0.209..0.209]
+theta_lim_frac         0.0000 [0.000..0.000]
+tilt_geo_max_deg    11.3046 [11.305..11.305]
+uad_clamp_frac         0.0537 [0.054..0.054]
+uad_max                0.3000 [0.300..0.300]
+xy_err_rms_m           0.2018 [0.202..0.202]
+xy_offset_m            0.1937 [0.194..0.194]
+xy_spread_m            0.0564 [0.056..0.056]
+pass                                     0/1
+-> /home/runner/work/px4-mrac-sim/px4-mrac-sim/out/v9-dly30-v1-r1
+
+== checks v9-dly30-v1-1
+PASS max_hold_err_m: 0.239 (limit 0.5)
+PASS max_tilt_deg: 9.789 (limit 35)
+FAIL must_land: False (limit True)
+FAIL error: TimeoutError 
