@@ -749,8 +749,10 @@ PARAM_DEFINE_FLOAT(MRL_L1_KF, 0.5f);
 PARAM_DEFINE_FLOAT(MRL_L1_LK, 0.02f);
 
 /**
- * L1 role 1 memory version: 0 v1 (fit raw sigma_hat, unfiltered features), 1 v2 (features low-passed at 2 w_c, fitted to
- * the low-frequency estimate already applied).
+ * L1 role 1 memory version.
+ *
+ * 0 v1: fit the raw sigma_hat with unfiltered features. 1 v2: features low-passed at 2 w_c, fitted to the
+ * low-frequency estimate already applied.
  * @value 0 v1
  * @value 1 v2
  * @group MRAC layers
@@ -758,8 +760,10 @@ PARAM_DEFINE_FLOAT(MRL_L1_LK, 0.02f);
 PARAM_DEFINE_INT32(MRL_L1_MV, 0);
 
 /**
- * xy L1 tilt budget: the adaptive acceleration may not raise the horizontal acceleration past g tan(budget) nor past the
- * baseline's own command (feasibility-aware augmentation). 0 = off.
+ * xy L1 tilt budget (0 = off).
+ *
+ * The adaptive acceleration may not raise the horizontal acceleration past g tan(budget) nor past the baseline's
+ * own command (feasibility-aware augmentation).
  * @unit deg
  * @min 0
  * @max 80

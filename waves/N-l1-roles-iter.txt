@@ -1,4 +1,4 @@
-# N: iterate the L1 roles on the real-world mission (owner 2026-11-05): memory v2 and a 30 deg xy tilt budget,
+# N (re-fly after the param-doc build fix): iterate the L1 roles on the real-world mission (owner 2026-11-05): memory v2 and a 30 deg xy tilt budget,
 # against alone and L1 roles 2+3 (wave M best). 5 arms x 2 decks x 18 seeds = 180 jobs (seeds 1-9 replicate M).
 runs 18
 first 1
