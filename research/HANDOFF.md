@@ -71,6 +71,11 @@ this file (state + next) before every session ends.
    Recommended configuration: L1 roles 2+3 (L1R 6) in all loops + MRL_X_TILT 30 (decks rw-l1r6t / rwf-l1r6t):
    hold -0.34 / -0.38 m, track -0.13 m vs PX4 PID, +1.5-1.9 deg peak tilt (18 seeds). Plain L1 and old MRAC unsafe at
    25 ms delay. Memory (role 1, v1 and v2) costs hold in a single mission: test it episodically in E4.
+   2026-11-06: owner set the mission tilt gate to 45 deg (M and N re-scored, PROGRESS). Monte Carlo missions: param
+   values in a deck can be {uniform|normal|scale} draws per seed (scenario.py draw, paired across arms, recorded as
+   d_<NAME> in all.json), param steps can ramp (ramp_s); SIH_ACT_DJIT adds per-sample delay jitter. Wave O
+   (`waves/O-montecarlo.txt`, pushed 6f72ef9, 240 jobs): mc-*/mcf-* draw all vehicle, sensor and scene params; arms
+   alone, mrac, l1r6, l1r6t; digest it, then regress the paired gain on the d_ draws (sensitivity).
    Open inside 3b: the inner-loop share of the extra tilt (rate L1 bandwidth or a rate-loop budget); L1 vs MRAC at
    0/20/30 ms on the V5 decks (delay-margin curve).
 4. The review experiments below, then V4, V6-V8 and P13-P16 (`research/OPEN-ITEMS.md`).
