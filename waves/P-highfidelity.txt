@@ -1,0 +1,6 @@
+# P: high-fidelity Monte Carlo mission (owner 2026-11-06: raise fidelity): SIH with sih_fidelity.hpp physics, every
+# vehicle/sensor/scene/battery/aero param drawn per seed. hf = healthy, hff = motor 1 fault. 4 arms x 2 decks x 30 = 240.
+runs 30
+first 1
+hf-alone hf-mrac hf-l1r6 hf-l1r6t
+hff-alone hff-mrac hff-l1r6 hff-l1r6t

@@ -483,6 +483,7 @@ async def main():
     boot = {'MIS_TAKEOFF_ALT': float(spec.get('alt', 5)),
             'SDLOG_PROFILE': 131 if spec.get('log') == 'default' else 155,
             **af.get('params', {}), **spec.get('boot_params', {})}
+    boot = {k: draw(k, v) for k, v in boot.items()}  # dispersion draws work for boot params too (e.g. SIH_LOC_H0)
     env = dict(os.environ, PX4_SIM_SPEED_FACTOR=str(spec.get('speed', 1)),
                **{f'PX4_PARAM_{k}': str(v) for k, v in boot.items()})
     start = ['run', str(inst), spec.get('vehicle', af.get('base', 'quadx'))] if spec.get('sim', 'sih') == 'sih' else \
