@@ -869,3 +869,10 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
   single-loop arms pass 9/9 in both decks; plain L1 (r0) and L1 + memory (r1) 0/9 (never landed); old MRAC 6/9 (rw) and
   3/9 (rwf, two flips to 159 / 177 deg). Wave N (run 42016856210): all 10 decks 18/18. The paired effect sizes in the
   Wave M / N entries do not depend on the gate.
+
+## Wave P first try: no flight data (2026-11-06, run 42104503167)
+- `results/P-highfidelity-42104503167` (c6c54d8): 0/240, every flight stopped before takeoff with `ParamError TIMEOUT`
+  reading SIH_AIR_T. Cause: patch_sih_fidelity.py skipped a param whose name already appeared anywhere in
+  sih_params.c, and "SIH_AIR_T" appears in SIH_RHO_EN's description, so SIH_AIR_T was never defined (28 of 29 in the
+  ULog parameter table). Fixed in dfc9321 (checks the PARAM_DEFINE itself, asserts all 29); wave P re-flown. This run
+  holds no result.
