@@ -74,6 +74,58 @@ def say(msg):
     print(line, flush=True)
 
 
+def run_index():
+    """Seed index i of this flight (arms.py dir NAME-i[-retryK]); 1 when flown by hand."""
+    m = regex.search(r'-(\d+)(-retry\d+)?$', os.path.basename(os.path.normpath(out)))
+    return int(m.group(1)) if m else 1
+
+
+def draw(name, v, cur=None):
+    """Dispersion (Monte Carlo) values for params and param steps; a plain value is returned unchanged.
+
+    {"uniform": [lo, hi]}, {"normal": [mu, sd], "clip": [lo, hi]}, or {"scale": [lo, hi]} (a factor drawn in
+    [lo, hi] times the param's current value `cur`, e.g. +10..30 % payload on whatever mass was drawn). The draw
+    depends only on (seed index, param name, step tag), so run i of every arm flies the same vehicle and scene
+    (paired A/B) and different seeds fly different ones. An int-valued range ([15, 35]) gives an int. Each drawn
+    value is kept as metric d_<NAME> (first draw of a name) for sensitivity analysis."""
+    if not isinstance(v, dict):
+        return v
+    import random
+    import zlib
+    tag = v.get('tag', '')
+    rng = random.Random(zlib.crc32(f'{run_index()}:{name}:{tag}'.encode()))
+    if 'uniform' in v:
+        lo, hi = v['uniform']
+        x = rng.uniform(lo, hi)
+        isint = isinstance(lo, int) and isinstance(hi, int) and not isinstance(lo, bool)
+    elif 'normal' in v:
+        mu, sd = v['normal']
+        x = rng.gauss(mu, sd)
+        if 'clip' in v:
+            x = min(max(x, v['clip'][0]), v['clip'][1])
+        isint = False
+    elif 'scale' in v:
+        lo, hi = v['scale']
+        x = float(cur) * rng.uniform(lo, hi)
+        isint = isinstance(cur, int) and not isinstance(cur, bool)
+    else:
+        raise ValueError(f'{name}: unknown dispersion {v}')
+    x = int(round(x)) if isint else round(x, 5)
+    metrics.setdefault(f'd_{name}' + (f'_{tag}' if tag else ''), float(x))
+    return x
+
+
+async def ramp(drone, k, v0, v1, dur):
+    """Move param k linearly from v0 to v1 over dur sim seconds (gradual change in flight, e.g. battery sag), in
+    steps of 0.5 sim s, in the background."""
+    n = max(int(dur / 0.5), 1)
+    us0 = simt['us']
+    for i in range(1, n + 1):
+        while simt['us'] < us0 + dur * 1e6 * i / n:
+            await asyncio.sleep(0.01)
+        await set_param(drone, k, v0 + (v1 - v0) * i / n, quiet=i < n)
+
+
 SLOW = 1           # wall-clock timeouts scale by this; a recorded gz run is ~10x slower than real time
 on_ready = None    # called once position is ok (starts the gz recording, so boot is not filmed)
 
@@ -113,7 +165,7 @@ async def fly(drone):
         on_ready()
     restore = {}
     for k, v in spec.get('params', {}).items():
-        restore[k] = await set_param(drone, k, v)
+        restore[k] = await set_param(drone, k, draw(k, v, None))
     await drone.telemetry.set_rate_position_velocity_ned(50)
     await drone.telemetry.set_rate_attitude_euler(50)
     await drone.telemetry.set_rate_imu(50)
@@ -284,10 +336,26 @@ async def fly(drone):
             elif do == 'param':
                 v = step['value']
                 if v == 'run':  # paired A/B seed (e.g. SIH_WIND_SEED): run i of every arm gets i, as in the wind step
-                    m = regex.search(r'-(\d+)(-retry\d+)?$', os.path.basename(os.path.normpath(out)))
-                    v = int(m.group(1)) if m else 1
-                old = await set_param(drone, step['name'], v)
-                restore.setdefault(step['name'], old)
+                    v = run_index()
+                elif isinstance(v, dict):
+                    cur = None
+                    if 'scale' in v:
+                        try:
+                            cur = await drone.param.get_param_float(step['name'])
+                        except Exception:
+                            cur = await drone.param.get_param_int(step['name'])
+                    v = draw(step['name'], v, cur)
+                if step.get('ramp_s'):  # gradual: from the current value to v over ramp_s s, in the background
+                    try:
+                        v0 = await drone.param.get_param_float(step['name'])
+                    except Exception:
+                        v0 = await drone.param.get_param_int(step['name'])
+                    restore.setdefault(step['name'], v0)
+                    say(f'param {step["name"]}: {v0} -> {v} over {step["ramp_s"]} s')
+                    asyncio.ensure_future(ramp(drone, step['name'], v0, v, float(step['ramp_s'])))
+                else:
+                    old = await set_param(drone, step['name'], v)
+                    restore.setdefault(step['name'], old)
             elif do == 'failure':
                 await drone.failure.inject(getattr(FailureUnit, step['unit']),
                                            getattr(FailureType, step['type']),

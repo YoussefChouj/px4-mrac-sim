@@ -8,10 +8,10 @@
  },
  "limits": {
   "max_hold_err_m": 3.0,
-  "max_tilt_deg": 35,
+  "max_tilt_deg": 45,
   "must_land": true
  },
- "why": "Real-world mission (motor 1 at 75 % mid-flight): research drone (real IMU noise), stock GPS noise, drag SIH_KDV 0.45, actuator delay 25 ms (real 78 ms loop delay vs 53 ms in the sim twin), PX4 PID baseline, gusty wind 3.4 m/s mean + 1 m/s turbulence + a 7 m/s gust, 20 m legs at 5 m/s, fig-8, +20 % payload. Arm l1r5: L1 full minus role 2, all loops.",
+ "why": "Real-world mission (motor 1 at 75 % mid-flight): research drone (real IMU noise), stock GPS noise, drag SIH_KDV 0.45, actuator delay 25 ms (real 78 ms loop delay vs 53 ms in the sim twin), PX4 PID baseline, gusty wind 3.4 m/s mean + 1 m/s turbulence + a 7 m/s gust, 20 m legs at 5 m/s, fig-8, +20 % payload. Arm l1r5: L1 full minus role 2, all loops. Tilt gate 45 deg (PX4 default limit; owner decision 2026-11-06, was 35).",
  "params": {
   "XYC_MODE": 0,
   "SIH_ACT_DLY": 25,

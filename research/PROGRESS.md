@@ -860,3 +860,12 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
   L1 estimate already covers every uncertainty and nothing repeats; its test is the episodic one (review E4: A->B->A->C,
   repeated payload or relaunch). The remaining extra tilt comes from the inner loops [S: in wave M the rate-loop-only
   L1 added +2.59 deg, the xy-only L1 +0.96 deg].
+
+## Owner decision: 45 deg tilt gate on the mission decks; waves M and N re-scored (2026-11-06)
+- Owner decision 2026-11-06: the real-world mission decks (rw-*, rwf-*, and the new mc-*, mcf-*) gate max tilt at 45 deg
+  (PX4's default tilt limit), was 35. The other gates (hold 3 m, must land) are unchanged.
+- Re-scored from the recorded metrics (all.json: landed, max_hold_err_m, max_tilt_deg; the error field is not in the
+  record, a landed flight is taken as error-free): wave M (run 42013772172) every L1 arm with role 2 or 3, alone and the
+  single-loop arms pass 9/9 in both decks; plain L1 (r0) and L1 + memory (r1) 0/9 (never landed); old MRAC 6/9 (rw) and
+  3/9 (rwf, two flips to 159 / 177 deg). Wave N (run 42016856210): all 10 decks 18/18. The paired effect sizes in the
+  Wave M / N entries do not depend on the gate.

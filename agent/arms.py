@@ -203,6 +203,9 @@ def main():
             for k in ('max_hold_err_m', 'rms_track_err_m', 'max_tilt_deg'):
                 if k in sm.get('metrics', {}):
                     m[k] = sm['metrics'][k]
+            for k, v in sm.get('metrics', {}).items():  # dispersion draws (scenario.py draw), for sensitivity analysis
+                if k.startswith('d_') and isinstance(v, (int, float)):
+                    m[k] = float(v)
             res[name].append(m)
             print(f'{d.name} {"PASS" if m["pass"] else "FAIL"} ' +
                   ' '.join(f'{k}={v:.4f}' for k, v in m.items() if isinstance(v, float)), flush=True)

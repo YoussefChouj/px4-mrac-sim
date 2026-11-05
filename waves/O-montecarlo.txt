@@ -1,0 +1,6 @@
+# O: Monte Carlo real-world mission (owner 2026-11-06): all vehicle, sensor and scene parameters drawn per seed.
+# mc = healthy + battery sag, mcf = + motor 1 fault. 4 arms x 2 decks x 30 seeds = 240 jobs. Tilt gate 45 deg.
+runs 30
+first 1
+mc-alone mc-mrac mc-l1r6 mc-l1r6t
+mcf-alone mcf-mrac mcf-l1r6 mcf-l1r6t

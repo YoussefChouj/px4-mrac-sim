@@ -40,6 +40,7 @@ python3 "$SRC/patch_pos_xyc.py" src/modules
 python3 "$SRC/patch_gz_delay.py" .
 python3 "$SRC/patch_gps_noise.py" .
 python3 "$SRC/patch_sih_delay.py" .
+python3 "$SRC/patch_sih_jitter.py" .
 python3 "$SRC/patch_sih_imu_noise.py" .
 python3 "$SRC/patch_sih_wind.py" .
 # xy baseline gains come from xyc_design.py (fitted from a flown ULog); refuse to build without them
