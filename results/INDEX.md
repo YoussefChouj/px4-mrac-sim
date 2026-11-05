@@ -4,6 +4,7 @@ One folder per finished `arms` run: `all.json` (every flight; `run` = seed index
 
 | finished UTC | wave | branch | sha | pass / jobs | lost | plan / build / fly | folder |
 |---|---|---|---|---|---|---|---|
+| 2026-11-05 09:50 | K-v9-blocks | claude/collect-landed | cee2cca | 145 / 220 | 0 | success / success / success | [K-v9-blocks-42003800394](K-v9-blocks-42003800394/) |
 | 2026-11-04 09:49 | J-delay-check-replay | main | 92ddc9b | 0 / 9 | 0 | success / success / success | [J-delay-check-replay-41809780319](J-delay-check-replay-41809780319/) |
 | 2026-11-04 08:00 | I-b-pair-seeds | main | 1d27f15 | 80 / 80 | 0 | success / success / success | [I-b-pair-seeds-41795932701](I-b-pair-seeds-41795932701/) |
 | 2026-11-04 07:49 | H-delay-edge | main | bb07db0 | 116 / 200 | 0 | success / success / success | [H-delay-edge-41793765790](H-delay-edge-41793765790/) |
