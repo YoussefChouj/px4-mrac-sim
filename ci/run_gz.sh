@@ -25,6 +25,6 @@ mkdir -p "$M"
 python3 "$here/vehicles/research_drone/gen_model.py" "$P/Tools/simulation/gz/models/x500_base/model.sdf" "$M"
 for v in x500_chase research_drone_chase; do rm -rf "${M:?}/$v"; cp -r "$here/vehicles/$v/model" "$M/$v"; done
 name=$(basename "$2" .json)
-export ARMS_OUT="$4/$name-r$3" ARMS_TIMEOUT=${ARMS_TIMEOUT:-2400} ARMS_RUN0=$(($3 - 1))
+export ARMS_OUT="$4/$name-r$3" ARMS_TIMEOUT=${ARMS_TIMEOUT:-1500} ARMS_RUN0=$(($3 - 1))
 export LIBGL_ALWAYS_SOFTWARE=1
 xvfb-run -a -s "-screen 0 1280x720x24" python "$here/agent/arms.py" 0 "$P" 1 "$2"

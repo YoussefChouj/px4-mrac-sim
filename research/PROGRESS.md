@@ -932,3 +932,11 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
   and the higher roll-pitch rate rms come from the inner L1 loops reacting to vibration, biases and the thrust curve
   [S: rate-only arm not flown in P]. Next: a tilt budget tied to the vehicle's tilt limit and thrust margin across
   all loops, and the rate-loop L1 bandwidth against vibration.
+
+## Gazebo on CI, first run: PX4 could not boot (2026-11-06, run 42106084872)
+- gz.yml run 42106084872 (95acc71): the gz build worked (19 min, 48.5 MB runtime), Gazebo, Xvfb and the research-drone
+  model installed on the fly runners, but every flight's PX4 stopped at startup ("cannot open .../etc/init.d/
+  rc.mc_defaults"): ci/build_gz.sh packed the build with --exclude='*.d' (meant for dependency files), which also
+  dropped the etc/init.d directory. Each job retried until the 90 min job limit; cancelled, no flight data.
+  Fixed: no '*.d' exclude, the build now fails if the packed runtime lacks etc/init.d or etc/init.d-posix, and the
+  per-flight timeout is 25 min. Wave Q re-flown.
