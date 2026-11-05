@@ -76,6 +76,10 @@ this file (state + next) before every session ends.
    d_<NAME> in all.json), param steps can ramp (ramp_s); SIH_ACT_DJIT adds per-sample delay jitter. Wave O
    (`waves/O-montecarlo.txt`, pushed 6f72ef9, 240 jobs): mc-*/mcf-* draw all vehicle, sensor and scene params; arms
    alone, mrac, l1r6, l1r6t; digest it, then regress the paired gain on the d_ draws (sensitivity).
+   Fidelity ladder (`research/notes/fidelity-ladder.md`): SIH high-fidelity physics `px4-mrac/sih_fidelity.hpp`
+   (SIH_* params, off by default; test `ci/test_sih_fidelity.cpp`); wave P (`waves/P-highfidelity.txt`, pushed c6c54d8,
+   decks hf-*/hff-*) flies it in Monte Carlo. Needs the owner: real logs for L4 identification, board for HITL.
+   Param docs: run PX4's src/lib/parameters/px_process_params.py on changed *_params.c before pushing (wave N broke there).
    Open inside 3b: the inner-loop share of the extra tilt (rate L1 bandwidth or a rate-loop budget); L1 vs MRAC at
    0/20/30 ms on the V5 decks (delay-margin curve).
 4. The review experiments below, then V4, V6-V8 and P13-P16 (`research/OPEN-ITEMS.md`).
@@ -99,4 +103,5 @@ this file (state + next) before every session ends.
 - Claim shape: bounded and configurable (which loops, disturbances and delay range), not "MRAC is better".
 
 ## Desktop-only (needs the owner's PC)
+- 2026-11-06: Gazebo on CI (`build-gz` + `fly-gz` jobs), see `research/notes/fidelity-ladder.md` L5.
 - Any `.github/workflows/` change; Gazebo (gz) runs with rendering or video; local WSL caches; publishing the review.
