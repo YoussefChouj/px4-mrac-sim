@@ -337,9 +337,10 @@ PARAM_DEFINE_FLOAT(XYC_INT_MAX, 2.0f);
  *
  * Bits: 1 x, 2 r, 4 bias (7 = the original law); block 1 structured: 8 x|x|/xs, 32 baseline command,
  * 64 gyroscopic w_j*w_k, 128 cross-axis rate; block 1 unstructured: 256 five Gaussian bumps on x/xs; block 3: 16 reference
- * derivative feedforward; block 2: 512 gated fast copy of every active term. A change restarts adaptation.
+ * derivative feedforward; block 2: 512 gated fast copy of every active term; v2 block 1: 1024 known-delay
+ * command lag (or MRL_R_V2 bit 1). A change restarts adaptation.
  * @min 0
- * @max 1023
+ * @max 2047
  * @group MRAC layers
  */
 PARAM_DEFINE_INT32(MRL_R_FEAT, 7);
@@ -358,9 +359,10 @@ PARAM_DEFINE_FLOAT(MRL_R_XS, 3.0f);
  *
  * Bits: 1 x, 2 r, 4 bias (7 = the original law); block 1 structured: 8 x|x|/xs, 32 baseline command,
  * 64 other-axis angle, 128 other-axis setpoint; block 1 unstructured: 256 five Gaussian bumps on x/xs; block 3: 16 reference
- * derivative feedforward; block 2: 512 gated fast copy of every active term. A change restarts adaptation.
+ * derivative feedforward; block 2: 512 gated fast copy of every active term; v2 block 1: 1024 known-delay
+ * command lag (used by the rate layer only; 0 here). A change restarts adaptation.
  * @min 0
- * @max 1023
+ * @max 2047
  * @group MRAC layers
  */
 PARAM_DEFINE_INT32(MRL_A_FEAT, 7);
@@ -379,9 +381,10 @@ PARAM_DEFINE_FLOAT(MRL_A_XS, 0.3f);
  *
  * Bits: 1 x, 2 r, 4 bias (7 = the original law); block 1 structured: 8 x|x|/xs, 32 baseline command,
  * 64 1/cos(tilt)-1, 128 vx^2+vy^2; block 1 unstructured: 256 five Gaussian bumps on x/xs; block 3: 16 reference
- * derivative feedforward; block 2: 512 gated fast copy of every active term. A change restarts adaptation.
+ * derivative feedforward; block 2: 512 gated fast copy of every active term; v2 block 1: 1024 known-delay
+ * command lag (used by the rate layer only; 0 here). A change restarts adaptation.
  * @min 0
- * @max 1023
+ * @max 2047
  * @group MRAC layers
  */
 PARAM_DEFINE_INT32(MRL_P_FEAT, 7);
@@ -400,9 +403,10 @@ PARAM_DEFINE_FLOAT(MRL_P_XS, 1.0f);
  *
  * Bits: 1 x, 2 r, 4 bias (7 = the original law); block 1 structured: 8 x|x|/xs, 32 baseline command,
  * 64 own-axis velocity v, 128 v|v|; block 1 unstructured: 256 five Gaussian bumps on x/xs; block 3: 16 reference
- * derivative feedforward; block 2: 512 gated fast copy of every active term. A change restarts adaptation.
+ * derivative feedforward; block 2: 512 gated fast copy of every active term; v2 block 1: 1024 known-delay
+ * command lag (used by the rate layer only; 0 here). A change restarts adaptation.
  * @min 0
- * @max 1023
+ * @max 2047
  * @group MRAC layers
  */
 PARAM_DEFINE_INT32(MRL_X_FEAT, 7);
@@ -439,3 +443,49 @@ PARAM_DEFINE_FLOAT(MRL_G_W, 0.15f);
  * @group MRAC layers
  */
 PARAM_DEFINE_FLOAT(MRL_G_K, 5.0f);
+
+/**
+ * rate layer v2 three-block switches (research/notes/three-block-v2.md); 0 = the law of MRL_R_FEAT alone.
+ *
+ * Bits: 1 block 1 known-delay command lag feature ub(t) - ub(t - MRL_R_KDLY); 2 block 2 scheduler scales the
+ * adaptation gain; 4 block 2 scheduler scales u_ad; 8 block 3 reference model delayed by MRL_R_KDLY.
+ * @min 0
+ * @max 15
+ * @group MRAC layers
+ */
+PARAM_DEFINE_INT32(MRL_R_V2, 0);
+
+/**
+ * rate layer known loop delay used by the v2 blocks 1 and 3.
+ * @unit ms
+ * @min 0
+ * @max 250
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_R_KDLY, 0.0f);
+
+/**
+ * v2 block 2 scheduler: high-pass corner on the tracking error e.
+ * @unit Hz
+ * @min 0.1
+ * @max 50
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_S_FC, 1.5f);
+
+/**
+ * v2 block 2 scheduler: strength k in s = 1 / (1 + k rho^2), rho = high-band share of the power of e.
+ * @min 0
+ * @max 1000
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_S_K, 20.0f);
+
+/**
+ * v2 block 2 scheduler: averaging time of the error powers.
+ * @unit s
+ * @min 0.02
+ * @max 10
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_S_TAV, 0.5f);

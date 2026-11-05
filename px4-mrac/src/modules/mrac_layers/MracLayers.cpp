@@ -94,7 +94,14 @@ void MracLayers::Run()
 	for (int a = 0; a < 3; a++) {
 		const bool on = (mode == 1) && ((a < 2) || (_param_yaw.get() == 1));
 		// block 1 structured terms of the rate loop: gyroscopic product w_j*w_k and the cross-axis rate
-		_ax[a].cfg(_param_feat.get(), _param_xs.get(), _param_ge0.get(), _param_gw.get(), _param_gk.get());
+		// v2 blocks (MRL_R_V2 bits): 1 block 1 known-delay command lag, 2/4 block 2 scheduler on gain/output,
+		// 8 block 3 delayed reference; MRL_R_KDLY is the known delay both use
+		const int v2 = _param_v2.get();
+		_ax[a].cfg(_param_feat.get() | ((v2 & 1) ? MRF_ULAG : 0), _param_xs.get(), _param_ge0.get(), _param_gw.get(),
+			   _param_gk.get());
+		_ax[a].kdly = math::max(_param_kdly.get(), 0.f) * 1e-3f;
+		_ax[a].ref_dly = (v2 & 8) != 0;
+		_ax[a].sch = MracSched{(v2 >> 1) & 3, _param_s_fc.get(), _param_s_k.get(), _param_s_tav.get()};
 		_ax[a].ub = base.xyz[a];
 		_ax[a].s[0] = av.xyz[(a + 1) % 3] * av.xyz[(a + 2) % 3];
 		_ax[a].s[1] = av.xyz[a == 0 ? 1 : 0];
@@ -109,6 +116,7 @@ void MracLayers::Run()
 		for (int i = 0; i < MracAxis::NPHI; i++) { st.theta[a * MracAxis::NPHI + i] = _ax[a].theta[i]; }
 
 		st.theta_norm[a] = _ax[a].tnorm();
+		st.sched_cut[a] = 1.f - _ax[a].sc;
 		st.n_phi = _ax[a].nphi;
 	}
 

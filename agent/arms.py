@@ -13,6 +13,7 @@ Every arm flies RUNS times, one sim at a time. Per run the ULog (flight.ulg) giv
   uad_max         peak |u_ad| from mrac_rate_status (0 when the layer is off or route-only); att_/pos_ prefixes
                   for mrac_att_status / mrac_pos_status
   theta_end       |Theta| (all axes) at the end of the log
+  sched_cut_mean  v2 scheduler cut 1 - s, roll+pitch mean while airborne (MRL_R_V2 bits 2/4); sched_cut_p95 its 95th pct
 Writes ~/.cache/px4-arms/<time>/arms.json and prints a mean [min..max] table per arm.
 """
 import hashlib
@@ -153,6 +154,10 @@ def ulog_metrics(path):
                 m[f'{key}uad_clamp_frac'] = float(np.mean(ua >= 0.99 * par[f'{pre}_UMAX']))
                 th = np.max(np.abs(np.stack([s[f'theta[{i}]'][w] for i in range(9)], 1)), 1)
                 m[f'{key}theta_lim_frac'] = float(np.mean(th >= 0.99 * par[f'{pre}_LIM']))
+            if key == '' and 'sched_cut[0]' in s and w.any():  # v2 block 2 (rate layer): how much it cut, roll+pitch
+                sc = np.stack([s[f'sched_cut[{a}]'][w] for a in range(2)], 1)
+                m['sched_cut_mean'] = float(np.mean(sc))
+                m['sched_cut_p95'] = float(np.percentile(np.max(sc, 1), 95))
     return m
 
 

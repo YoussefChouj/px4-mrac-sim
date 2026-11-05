@@ -82,6 +82,11 @@ private:
 		(ParamFloat<px4::params::MRL_DIST_R>) _param_dist_r,
 		(ParamFloat<px4::params::MRL_ID_AMP>) _param_id_amp,
 		(ParamInt<px4::params::MRL_ID_AX>) _param_id_ax,
-		(ParamFloat<px4::params::MRL_DIST_P>) _param_dist_p
+		(ParamFloat<px4::params::MRL_DIST_P>) _param_dist_p,
+		(ParamInt<px4::params::MRL_R_V2>) _param_v2,
+		(ParamFloat<px4::params::MRL_R_KDLY>) _param_kdly,
+		(ParamFloat<px4::params::MRL_S_FC>) _param_s_fc,
+		(ParamFloat<px4::params::MRL_S_K>) _param_s_k,
+		(ParamFloat<px4::params::MRL_S_TAV>) _param_s_tav
 	)
 };
