@@ -111,7 +111,7 @@ def main():
         ax2.set_xlim(-1, 1)
         ax2.set_xlabel(f'Spearman rho with the paired change ({lab.get(tgt, tgt)}); dashed = 5 % level', fontsize=8)
         ax2.set_title(f'({chr(98 + 2 * r)}) what drives the gain, {deck}', loc='left', fontsize=10, color=INK)
-    fig.suptitle(title, x=0.01, ha='left', fontsize=12, color=INK, weight='bold')
+    fig.suptitle(title, x=0.01, y=1.0 + 0.09 / len(decks), ha='left', fontsize=12, color=INK, weight='bold')
     fig.text(0.01, -0.02, 'Each dot is one seed: the same drawn vehicle, sensors and scene flown by both arms. Bars: '
              'median and its bootstrap 95 % interval. Log-like axis beyond +-1. Sensitivity: rank correlation over '
              'seeds; negative rho = a larger parameter value goes with a larger improvement.', fontsize=7.5, color=INK2)

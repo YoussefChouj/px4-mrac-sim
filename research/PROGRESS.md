@@ -913,3 +913,22 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
   model ends near +7 ms of model error with slow motors [S: one seed].
 - Key flights (motor-fault deck): seed 25 median case (hold rms 0.46 -> 0.36 m), seed 19 PX4's worst (old MRAC falls
   3 m at the motor fault; L1 rms 0.45 vs 0.68 m), seed 8 L1's failure.
+
+## Wave P: high-fidelity physics Monte Carlo (2026-11-06, run 42112117524)
+- `results/P-highfidelity-42112117524` (7f43807, third try; the first two had no result): wave O's draws plus the
+  sih_fidelity.hpp physics, all drawn per seed: thrust curve, spin-down lag, 4-motor spread, ISA density at home
+  altitude 0-2500 m and -20..35 C, axial inflow, translational lift, ground effect, rotor drag + quadratic body drag,
+  4S LiPo 1300-1800 mAh from 55-100 % charge (sag from the battery model), CoM offset, rotor vibration, IMU biases.
+  The controller keeps the nominal model. 147/240 passed. Tables `research/digests/wave-digest-P.md`, figure
+  `research/figs/P-highfidelity-summary.png`.
+- Pass, hf / hff: PX4 PID 27/30, 26/30; L1 + tilt budget 20/30, 22/30 (tilt 45.2-48.6 deg in 9 and 8 flights,
+  2 and 2 never landed); L1 roles 2+3 13/30, 15/30; old MRAC 16/30, 13/30 (10 and 11 never landed).
+- Paired vs PX4 PID, mean [95 %], hf / hff: L1 + tilt budget max_hold_err_m -0.81 [-1.42, -0.40] / -1.18 [-2.44, -0.42],
+  rms_track_err_m -0.135 / -0.159, max_tilt_deg +3.33 [+2.21, +4.45] / +3.86 [+2.98, +4.81], rate_rms_rp +0.10 / +0.11
+  (all exclude 0). Median peak tilt: PX4 PID 40.3 / 38.5 deg, L1 + budget 42.9 / 41.3 deg.
+- Reading: with the richer physics the hold gain of L1 is larger than in SIH-stock physics (wave O: -0.55 / -0.58 m),
+  but so is its extra tilt (+3.3-3.9 vs +0.6-0.9 deg), and PX4 PID itself peaks near 40 deg in these missions, so the
+  45 deg gate binds. The 30 deg xy tilt budget limits only the xy layer's own acceleration; the remaining extra tilt
+  and the higher roll-pitch rate rms come from the inner L1 loops reacting to vibration, biases and the thrust curve
+  [S: rate-only arm not flown in P]. Next: a tilt budget tied to the vehicle's tilt limit and thrust margin across
+  all loops, and the rate-loop L1 bandwidth against vibration.
