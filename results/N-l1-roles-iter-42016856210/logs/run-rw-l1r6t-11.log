@@ -1,0 +1,39 @@
+rw-l1r6t-11 FAIL rate_rms_rp=0.1172 att_track_rms_deg=1.9705 tilt_geo_max_deg=38.1385 xy_err_rms_m=3.8117 xy_offset_m=0.0206 xy_spread_m=3.8116 motor_sat_frac=0.0019 sp_dt_p99_ms=236.0000 uad_max=0.0479 theta_end=0.0000 uad_clamp_frac=0.0000 theta_lim_frac=0.0000 sched_cut_mean=0.0242 sched_cut_p95=0.0349 att_uad_max=0.0577 att_theta_end=0.0000 att_uad_clamp_frac=0.0000 att_theta_lim_frac=0.0000 pos_uad_max=0.1500 pos_theta_end=0.0000 pos_uad_clamp_frac=0.0067 pos_theta_lim_frac=0.0000 xy_uad_max=2.0000 xy_theta_end=0.0000 xy_uad_clamp_frac=0.0506 xy_theta_lim_frac=0.0000 max_hold_err_m=0.5561 rms_track_err_m=0.7099 max_tilt_deg=37.9534
+
+metric                              rw-l1r6t
+att_theta_end          0.0000 [0.000..0.000]
+att_theta_lim_frac       0.0000 [0.000..0.000]
+att_track_rms_deg       1.9705 [1.970..1.970]
+att_uad_clamp_frac       0.0000 [0.000..0.000]
+att_uad_max            0.0577 [0.058..0.058]
+max_hold_err_m         0.5561 [0.556..0.556]
+max_tilt_deg        37.9534 [37.953..37.953]
+motor_sat_frac         0.0019 [0.002..0.002]
+pos_theta_end          0.0000 [0.000..0.000]
+pos_theta_lim_frac       0.0000 [0.000..0.000]
+pos_uad_clamp_frac       0.0067 [0.007..0.007]
+pos_uad_max            0.1500 [0.150..0.150]
+rate_rms_rp            0.1172 [0.117..0.117]
+rms_track_err_m        0.7099 [0.710..0.710]
+sched_cut_mean         0.0242 [0.024..0.024]
+sched_cut_p95          0.0349 [0.035..0.035]
+sp_dt_p99_ms     236.0000 [236.000..236.000]
+theta_end              0.0000 [0.000..0.000]
+theta_lim_frac         0.0000 [0.000..0.000]
+tilt_geo_max_deg    38.1385 [38.139..38.139]
+uad_clamp_frac         0.0000 [0.000..0.000]
+uad_max                0.0479 [0.048..0.048]
+xy_err_rms_m           3.8117 [3.812..3.812]
+xy_offset_m            0.0206 [0.021..0.021]
+xy_spread_m            3.8116 [3.812..3.812]
+xy_theta_end           0.0000 [0.000..0.000]
+xy_theta_lim_frac       0.0000 [0.000..0.000]
+xy_uad_clamp_frac       0.0506 [0.051..0.051]
+xy_uad_max             2.0000 [2.000..2.000]
+pass                                     0/1
+-> /home/runner/work/px4-mrac-sim/px4-mrac-sim/out/rw-l1r6t-r11
+
+== checks rw-l1r6t-11
+PASS max_hold_err_m: 0.556 (limit 3.0)
+FAIL max_tilt_deg: 37.953 (limit 35)
+PASS must_land: True (limit True)
