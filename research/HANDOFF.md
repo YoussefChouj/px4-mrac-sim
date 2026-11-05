@@ -80,6 +80,13 @@ this file (state + next) before every session ends.
    (SIH_* params, off by default; test `ci/test_sih_fidelity.cpp`); wave P (`waves/P-highfidelity.txt`, pushed c6c54d8,
    decks hf-*/hff-*) flies it in Monte Carlo. Needs the owner: real logs for L4 identification, board for HITL.
    Param docs: run PX4's src/lib/parameters/px_process_params.py on changed *_params.c before pushing (wave N broke there).
+   2026-11-06 results: wave O (Monte Carlo, run 42107461595) and wave P (high-fidelity physics, run 42112117524):
+   L1 + tilt budget holds better than PX4 PID in 27-29/30 seeds (-0.55..-1.18 m) but adds +3.3-3.9 deg peak tilt in
+   the high-fidelity physics (gate 45 binds: 20-22/30 pass vs PX4 26-27/30); L1 fails seed 8 (delay 32 ms vs 25
+   assumed, slow motors). Next: tilt budget from the real tilt limit / thrust margin across all loops; robust delay
+   (online estimate or lower rate bandwidth). Figures: research/figs (tools/mc_figs.py, tools/key_flight_plots.py),
+   emailed to the owner 2026-11-06. Gazebo: .github/workflows/gz.yml + ci/build_gz.sh + ci/run_gz.sh, waves-gz/;
+   first run 42106084872 (gz build OK in 19 min; flights hit the 40 min scenario timeout, cause to read).
    Open inside 3b: the inner-loop share of the extra tilt (rate L1 bandwidth or a rate-loop budget); L1 vs MRAC at
    0/20/30 ms on the V5 decks (delay-margin curve).
 4. The review experiments below, then V4, V6-V8 and P13-P16 (`research/OPEN-ITEMS.md`).
