@@ -1,4 +1,4 @@
-# Q (gz, re-fly 2026-11-06: first gz runtime lacked etc/init.d): Gazebo cross-check of the real-world mission, PX4 PID vs old MRAC vs recommended L1 (roles 2+3, xy tilt
+# Q (gz, third try 2026-11-06: runtime lacked etc/init.d, then a false pack-check failure): Gazebo cross-check of the real-world mission, PX4 PID vs old MRAC vs recommended L1 (roles 2+3, xy tilt
 # budget), seeds 1-3 (9 jobs), plus chase-camera video of PX4 PID and L1 on seed 1 (2 jobs). Owner 2026-11-06.
 runs 3
 first 1

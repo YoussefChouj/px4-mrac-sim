@@ -1,4 +1,4 @@
-# Q (gz) video (re-fly 2026-11-06): chase-camera Gazebo renders of PX4 PID and the recommended L1 on the mission, seed 1 (2 jobs).
+# Q (gz) video (third try 2026-11-06): chase-camera Gazebo renders of PX4 PID and the recommended L1 on the mission, seed 1 (2 jobs).
 runs 1
 first 1
 gzv-rw-alone gzv-rw-l1r6t

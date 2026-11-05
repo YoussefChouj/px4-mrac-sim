@@ -26,6 +26,9 @@ test -f "$P/build/px4_sitl_default/rootfs/gz_env.sh"
 tar -C "$P" -I 'zstd -T0 -3' --exclude='*.o' --exclude='*.a' --exclude='.ninja_*' \
   --exclude='CMakeFiles' -cf "$1" build/px4_sitl_default Tools/simulation/gz
 # the runtime must carry the startup scripts (an exclude pattern once dropped etc/init.d and PX4 could not boot)
-tar -I zstd -tf "$1" | grep -q 'etc/init.d/rc.mc_defaults' || { echo 'packed runtime lacks etc/init.d' >&2; exit 1; }
-tar -I zstd -tf "$1" | grep -q 'etc/init.d-posix/rcS' || { echo 'packed runtime lacks etc/init.d-posix' >&2; exit 1; }
+# (list to a file first: grep -q stops reading early, tar then fails on SIGPIPE and pipefail reports it)
+tar -I zstd -tf "$1" > "$1.list"
+grep -q 'etc/init.d/rc.mc_defaults' "$1.list" || { echo 'packed runtime lacks etc/init.d' >&2; exit 1; }
+grep -q 'etc/init.d-posix/rcS' "$1.list" || { echo 'packed runtime lacks etc/init.d-posix' >&2; exit 1; }
+rm -f "$1.list"
 ls -l "$1"

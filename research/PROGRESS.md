@@ -940,3 +940,6 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
   dropped the etc/init.d directory. Each job retried until the 90 min job limit; cancelled, no flight data.
   Fixed: no '*.d' exclude, the build now fails if the packed runtime lacks etc/init.d or etc/init.d-posix, and the
   per-flight timeout is 25 min. Wave Q re-flown.
+- Re-fly run 42123822795 (4670815): the gz build compiled, then my new pack check failed it falsely (`tar | grep -q` under
+  pipefail: grep exits at the first match, tar dies on SIGPIPE). The check now lists to a file first (tested on a good
+  and a broken archive). No flight data; wave Q re-flown again.
