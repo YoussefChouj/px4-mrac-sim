@@ -12,7 +12,8 @@ import subprocess
 from pathlib import Path
 
 NAME = re.compile(r'[A-Za-z0-9._-]+')
-WAVE = re.compile(r'waves/[A-Za-z0-9._-]+\.txt')
+WAVES_DIR = os.environ.get('WAVES_DIR', 'waves')  # gz.yml plans waves-gz/ (Gazebo), arms.yml waves/ (SIH)
+WAVE = re.compile(re.escape(WAVES_DIR) + r'/[A-Za-z0-9._-]+\.txt')
 MAX_JOBS = 256  # GitHub matrix limit
 
 
@@ -30,7 +31,7 @@ def changed_waves():
         if not before.strip('0'):  # new branch
             base = (ev.get('repository') or {}).get('default_branch', 'main')
             before = git('merge-base', f'origin/{base}', 'HEAD').strip() or 'HEAD~1'
-        files = git('diff', '--name-only', '--diff-filter=AM', before, 'HEAD', '--', 'waves').split()
+        files = git('diff', '--name-only', '--diff-filter=AM', before, 'HEAD', '--', WAVES_DIR).split()
     return sorted({f for f in files if WAVE.fullmatch(f) and Path(f).is_file()})
 
 

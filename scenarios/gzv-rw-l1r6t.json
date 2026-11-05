@@ -1,0 +1,102 @@
+{
+ "sim": "gz",
+ "vehicle": "research_drone_chase",
+ "world": "gusty",
+ "speed": 1,
+ "alt": 3.0,
+ "limits": {
+  "max_hold_err_m": 3.0,
+  "max_tilt_deg": 45,
+  "must_land": true
+ },
+ "why": "Gazebo cross-check of the real-world mission (owner 2026-11-06): research drone gz model (per-rotor MulticopterMotorModel, rotor drag), gusty world (WindEffects: 3.4 m/s mean, 1 m/s Dryden turbulence, a +4 m/s 1-cosine gust), +25 ms actuator delay (SIM_GZ_ACT_DLY), PX4 PID baseline. Arm l1r6t as rw-l1r6t (SIH params dropped; vz L1 nominal b = g / 0.55 for the gz hover throttle). Chase-camera video.",
+ "params": {
+  "XYC_MODE": 0,
+  "MRL_R_KDLY": 25.0,
+  "MPC_XY_VEL_MAX": 5.0,
+  "MRL_X_L1D": 0.45,
+  "MRL_EN_RATE": 1,
+  "MRL_EN_ATT": 1,
+  "MRL_EN_POS": 1,
+  "MRL_EN_XY": 1,
+  "MRL_R_LAW": 1,
+  "MRL_A_LAW": 1,
+  "MRL_P_LAW": 1,
+  "MRL_X_LAW": 1,
+  "MRL_R_L1R": 6,
+  "MRL_A_L1R": 6,
+  "MRL_P_L1R": 6,
+  "MRL_X_L1R": 6,
+  "MRL_L1_MV": 0,
+  "MRL_X_TILT": 30.0,
+  "SIM_GZ_ACT_DLY": 25,
+  "MRL_P_L1B": 17.8
+ },
+ "steps": [
+  {
+   "do": "takeoff"
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "wind",
+   "mean": [
+    3.0,
+    1.5
+   ],
+   "sigma": 1.0,
+   "L_m": 23,
+   "dur_s": 150,
+   "seed": "run",
+   "gusts": [
+    {
+     "t": 58,
+     "amp": 4.0,
+     "dur": 3.0,
+     "dir_deg": 0
+    }
+   ]
+  },
+  {
+   "do": "hold",
+   "s": 10
+  },
+  {
+   "do": "goto",
+   "n": 20,
+   "e": 0
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "track",
+   "shape": "fig8",
+   "size": 4,
+   "period": 16,
+   "laps": 1
+  },
+  {
+   "do": "hold",
+   "s": 8
+  },
+  {
+   "do": "goto",
+   "n": 0,
+   "e": 0
+  },
+  {
+   "do": "hold",
+   "s": 14
+  },
+  {
+   "do": "land"
+  }
+ ],
+ "video": [
+  "chase"
+ ]
+}

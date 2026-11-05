@@ -1,0 +1,61 @@
+#!/bin/sh
+#
+# @name Research drone with a chase camera (Gazebo, CI video runs)
+#
+# @type Quadrotor x
+#
+# Numbers and sources: research/research_drone_params.yaml. Rotor order and spin
+# directions follow 4001_gz_x500; rotors at +-0.1 m (0.2 m motor-to-motor diagonal).
+# Lives outside the PX4 tree; px4ctl gz copies it into an overlay etc directory.
+#
+
+. ${R}etc/init.d/rc.mc_defaults
+
+PX4_SIMULATOR=${PX4_SIMULATOR:=gz}
+PX4_GZ_WORLD=${PX4_GZ_WORLD:=default}
+PX4_SIM_MODEL=${PX4_SIM_MODEL:=research_drone}
+
+param set-default SIM_GZ_EN 1
+
+param set-default CA_AIRFRAME 0
+param set-default CA_ROTOR_COUNT 4
+
+# KM 0.016 (x500 gz value); twin fit 0.109 made gz hover 11 % low (P8 M2 2026-11-03). FRD metres.
+param set-default CA_ROTOR0_PX 0.1
+param set-default CA_ROTOR0_PY 0.1
+param set-default CA_ROTOR0_KM 0.016
+param set-default CA_ROTOR1_PX -0.1
+param set-default CA_ROTOR1_PY -0.1
+param set-default CA_ROTOR1_KM 0.016
+param set-default CA_ROTOR2_PX 0.1
+param set-default CA_ROTOR2_PY -0.1
+param set-default CA_ROTOR2_KM -0.016
+param set-default CA_ROTOR3_PX -0.1
+param set-default CA_ROTOR3_PY 0.1
+param set-default CA_ROTOR3_KM -0.016
+
+# Gazebo motor commands are rotor speeds in rad/s: idle 150 (as x500), max 969.
+param set-default SIM_GZ_EC_FUNC1 101
+param set-default SIM_GZ_EC_FUNC2 102
+param set-default SIM_GZ_EC_FUNC3 103
+param set-default SIM_GZ_EC_FUNC4 104
+param set-default SIM_GZ_EC_MIN1 150
+param set-default SIM_GZ_EC_MIN2 150
+param set-default SIM_GZ_EC_MIN3 150
+param set-default SIM_GZ_EC_MIN4 150
+param set-default SIM_GZ_EC_MAX1 969
+param set-default SIM_GZ_EC_MAX2 969
+param set-default SIM_GZ_EC_MAX3 969
+param set-default SIM_GZ_EC_MAX4 969
+
+# Hover speed 597 rad/s: (597 - 150) / (969 - 150) = 0.546, the logged hover PWM fraction 0.545.
+param set-default MPC_THR_HOVER 0.55
+
+param set-default NAV_DLL_ACT 2
+
+# Actuator delay (PX4-mrac tree only): stock gz shows ~10 ms rate-loop delay, the real drone 12.9-14.1 ms [D];
+# +3 ms fits 12.7-13.3 ms (plant_fit.py, rd-gz-id 2026-11-03).
+if param find SIM_GZ_ACT_DLY
+then
+	param set-default SIM_GZ_ACT_DLY 3
+fi
