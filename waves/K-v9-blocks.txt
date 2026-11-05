@@ -1,0 +1,9 @@
+# V9 three-block v2: leave-one-block-out x delay (HANDOFF next item 3). 11 arms x 4 delays x 5 seeds = 220 jobs.
+# Arms: alone (no adaptation), v1 (old law), b1 lag feature, b2 scheduler (gain+output), b3 delayed reference,
+# pairs b12 b13 b23, all b123, and the scheduler split b2g (gain only) / b2o (output only). Rate layer gam 2.
+runs 5
+first 1
+v9-dly0-alone v9-dly0-v1 v9-dly0-b1 v9-dly0-b2 v9-dly0-b3 v9-dly0-b12 v9-dly0-b13 v9-dly0-b23 v9-dly0-b123 v9-dly0-b2g v9-dly0-b2o
+v9-dly20-alone v9-dly20-v1 v9-dly20-b1 v9-dly20-b2 v9-dly20-b3 v9-dly20-b12 v9-dly20-b13 v9-dly20-b23 v9-dly20-b123 v9-dly20-b2g v9-dly20-b2o
+v9-dly30-alone v9-dly30-v1 v9-dly30-b1 v9-dly30-b2 v9-dly30-b3 v9-dly30-b12 v9-dly30-b13 v9-dly30-b23 v9-dly30-b123 v9-dly30-b2g v9-dly30-b2o
+v9-dly45-alone v9-dly45-v1 v9-dly45-b1 v9-dly45-b2 v9-dly45-b3 v9-dly45-b12 v9-dly45-b13 v9-dly45-b23 v9-dly45-b123 v9-dly45-b2g v9-dly45-b2o

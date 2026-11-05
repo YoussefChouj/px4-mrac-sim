@@ -1,0 +1,56 @@
+{
+ "sim": "sih",
+ "airframe": "research-drone",
+ "speed": 5,
+ "alt": 0.5,
+ "why": "V9 three-block v2, leave-one-block-out at delay 45 ms, rate layer gam 2: arm b1 (MRL_R_V2 1; bits 1 lag feature, 2/4 scheduler gain/output, 8 delayed reference; known delay MRL_R_KDLY = SIH_ACT_DLY). Script copied from v5-dly30-g2.",
+ "params": {
+  "MRL_EN_RATE": 1,
+  "MRL_EN_ATT": 0,
+  "MRL_EN_POS": 0,
+  "XYC_MODE": 1,
+  "SIH_ACT_DLY": 45,
+  "MRL_DIST_R": 0.08,
+  "MRL_R_GAM": 2.0,
+  "MRL_R_V2": 1,
+  "MRL_R_KDLY": 45.0
+ },
+ "steps": [
+  {
+   "do": "takeoff"
+  },
+  {
+   "do": "hold",
+   "s": 3
+  },
+  {
+   "do": "track",
+   "shape": "fig8",
+   "size": 0.3,
+   "period": 18,
+   "laps": 1
+  },
+  {
+   "do": "hold",
+   "s": 3
+  },
+  {
+   "do": "param",
+   "name": "MRL_DIST_R",
+   "value": 0.0
+  },
+  {
+   "do": "land"
+  }
+ ],
+ "limits": {
+  "max_hold_err_m": 0.5,
+  "max_tilt_deg": 35,
+  "must_land": true
+ },
+ "boot_params": {
+  "SIM_GPS_NSCL": 0.1,
+  "EKF2_GPS_P_NOISE": 0.05,
+  "EKF2_GPS_V_NOISE": 0.05
+ }
+}
