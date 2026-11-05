@@ -746,3 +746,28 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
   from its parameters, not traced in its source here]. The delay edge is therefore the onset of a self-sustained
   rate limit cycle (a stability limit of the rate loop, bounded by saturation), caught by the must_land gate; it
   is not a flight-limit failure. Gate unchanged.
+
+## Wave K: three-block v2, leave one block out x delay (2026-11-05, run 42003800394)
+- `results/K-v9-blocks-42003800394` (branch claude/collect-landed, cee2cca, new build): 11 rate-layer arms x delay
+  {0, 20, 30, 45} ms x seeds 1-5, gam 2, torque disturbance 0.08; 145/220 passed, no lost jobs. Blocks (MRL_R_V2):
+  1 known-delay command-lag feature, 2 scheduler on the high-band share of e (gain and/or output), 3 reference model
+  delayed by the known delay (= SIH_ACT_DLY). Paired tables: `research/digests/wave-digest-K.md`.
+- Pass (5 seeds each): 0 and 20 ms all 11 arms 5/5. 30 ms: alone 5/5, v1 (old law) 0/5, b1 0/5, b3 0/5, b13 0/5, every
+  arm with the scheduler 5/5 (b2, b12, b23, b123, b2g, b2o). 45 ms: 0/5 for every arm, alone included (must_land:
+  never landed), so 45 ms is past the baseline's own edge.
+- Blocks 1 and 3 do not move the delay edge: at 30 ms b1 and b3 stay 0/5 with the same saturated oscillation as v1
+  (motor_sat_frac +0 / -0.006 vs v1); both lower the hold error vs v1 (-0.156 and -0.152 m, intervals exclude 0)
+  but not to a pass. At 0 ms both match v1 (att_track_rms interval crosses 0). Leave-one-out at 30 ms: removing block 2
+  (b123 - b13) is the only change that matters (att -0.833 deg, motor_sat -0.718).
+- Block 2 cuts nearly everything everywhere: mean cut 1 - s = 0.91-0.93 in every scheduler arm at every delay,
+  0 ms included. So at 0 ms it returns most of the old law's nominal gain: att_track_rms vs alone -0.472 deg (v1),
+  -0.128 (b2), -0.307 (b2g gain only), -0.299 (b2o output only). At 30 ms gain-only beats the baseline:
+  b2g - alone att -0.240 [-0.263, -0.219] deg, hold -0.035 [-0.055, -0.019] m, motor_sat +0.
+- Why it cuts at 0 ms (ULogs of seed 1, mrac_rate_status e, roll, airborne, 63 Hz copy): at 0 ms e rms 0.028 rad/s
+  with 87-88 % of its power above 5 Hz (v1 and alone alike); at 30 ms (v1) e rms 0.377 rad/s with 97 % in 1.5-5 Hz.
+  The scheduler used the high-band SHARE only, and a share is the same for tiny noise and a large oscillation.
+- Reading: a delay-robust rate layer needs its authority cut only when the high-band error is large; with a ~93 %
+  constant cut the scheduler acts as a fixed gain of about 2 x 0.07 = 0.14 [S: mean cut, not a flown constant-gain
+  arm], which V7's model rule also predicts to be safe at 30 ms. Not yet shown: that the scheduler beats a constant
+  low gain (the review's negative control). Next: an amplitude floor on the scheduler (cut only when high-band e is
+  above noise) against constant gam 0.14 and 0.5, 10 seeds.
