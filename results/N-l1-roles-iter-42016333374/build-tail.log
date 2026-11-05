@@ -1,0 +1,644 @@
+
+[ubuntu.sh] Starting...
+[ubuntu.sh] arch: x86_64
+[ubuntu.sh] Ubuntu 24.04
+[ubuntu.sh] Installing PX4 general dependencies
+Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [152 B]
+Hit:5 http://security.ubuntu.com/ubuntu noble-security InRelease
+Hit:2 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble InRelease
+Hit:3 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble-updates InRelease
+Hit:4 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble-backports InRelease
+Hit:6 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+file is already the newest version (1:5.45-3build1).
+g++ is already the newest version (4:13.2.0-7ubuntu1).
+gcc is already the newest version (4:13.2.0-7ubuntu1).
+git is already the newest version (1:2.55.0-0ppa1~ubuntu24.04.2).
+git set to manually installed.
+libssl-dev is already the newest version (3.0.13-0ubuntu3.16).
+libxml2-dev is already the newest version (2.9.14+dfsg-1.3ubuntu3.10).
+libxml2-dev set to manually installed.
+make is already the newest version (4.3-4.1build2).
+python3 is already the newest version (3.12.3-0ubuntu2.1).
+python3-dev is already the newest version (3.12.3-0ubuntu2.1).
+python3-pip is already the newest version (24.0+dfsg-1ubuntu1.3).
+python3-setuptools is already the newest version (68.1.2-2ubuntu1.2).
+python3-setuptools set to manually installed.
+python3-wheel is already the newest version (0.42.0-2).
+python3-wheel set to manually installed.
+rsync is already the newest version (3.2.7-1ubuntu1.5).
+shellcheck is already the newest version (0.9.0-1).
+unzip is already the newest version (6.0-28ubuntu4.1).
+zip is already the newest version (3.0-13ubuntu0.2).
+The following additional packages will be installed:
+  cmake-data libalgorithm-c3-perl libb-hooks-endofscope-perl
+  libb-hooks-op-check-perl libbabeltrace1 libcapture-tiny-perl
+  libclass-c3-perl libclass-data-inheritable-perl libclass-inspector-perl
+  libclass-method-modifiers-perl libclass-singleton-perl libdata-optlist-perl
+  libdatetime-locale-perl libdatetime-perl libdatetime-timezone-perl
+  libdevel-callchecker-perl libdevel-stacktrace-perl
+  libdynaloader-functions-perl libeval-closure-perl libexception-class-perl
+  libfile-sharedir-perl libhiredis1.1.0 libipt2 libjsoncpp25
+  libmodule-implementation-perl libmodule-runtime-perl libmro-compat-perl
+  libnamespace-autoclean-perl libnamespace-clean-perl libpackage-stash-perl
+  libparams-classify-perl libparams-util-perl
+  libparams-validationcompiler-perl libperlio-gzip-perl librhash0
+  librole-tiny-perl libsource-highlight-common libsource-highlight4t64
+  libspecio-perl libsub-exporter-perl libsub-exporter-progressive-perl
+  libsub-identify-perl libsub-install-perl libsub-name-perl libsub-quote-perl
+  libtry-tiny-perl libvariable-magic-perl libxstring-perl
+Suggested packages:
+  distcc | icecc cmake-doc cmake-format elpa-cmake-mode cppcheck-gui clang
+  clang-tidy gdb-doc gdbserver libscalar-number-perl libtest-fatal-perl
+Recommended packages:
+  libc-dbg libgd-gd2-perl libclass-c3-xs-perl libdevel-lexalias-perl
+  libpackage-stash-xs-perl libclass-xsaccessor-perl libref-util-perl
+The following NEW packages will be installed:
+  astyle build-essential ccache cmake cmake-data cppcheck gdb lcov
+  libalgorithm-c3-perl libb-hooks-endofscope-perl libb-hooks-op-check-perl
+  libbabeltrace1 libcapture-tiny-perl libclass-c3-perl
+  libclass-data-inheritable-perl libclass-inspector-perl
+  libclass-method-modifiers-perl libclass-singleton-perl libdata-optlist-perl
+  libdatetime-locale-perl libdatetime-perl libdatetime-timezone-perl
+  libdevel-callchecker-perl libdevel-stacktrace-perl
+  libdynaloader-functions-perl libeval-closure-perl libexception-class-perl
+  libfile-sharedir-perl libhiredis1.1.0 libipt2 libjsoncpp25
+  libmodule-implementation-perl libmodule-runtime-perl libmro-compat-perl
+  libnamespace-autoclean-perl libnamespace-clean-perl libpackage-stash-perl
+  libparams-classify-perl libparams-util-perl
+  libparams-validationcompiler-perl libperlio-gzip-perl librhash0
+  librole-tiny-perl libsource-highlight-common libsource-highlight4t64
+  libspecio-perl libsub-exporter-perl libsub-exporter-progressive-perl
+  libsub-identify-perl libsub-install-perl libsub-name-perl libsub-quote-perl
+  libtry-tiny-perl libvariable-magic-perl libxml2-utils libxstring-perl
+  ninja-build
+0 upgraded, 57 newly installed, 0 to remove and 83 not upgraded.
+Need to get 25.5 MB of archives.
+After this operation, 105 MB of additional disk space will be used.
+Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [152 B]
+Get:2 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/universe amd64 astyle amd64 3.1-3build1 [212 kB]
+Get:3 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 build-essential amd64 12.10ubuntu1 [4928 B]
+Get:4 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/universe amd64 libhiredis1.1.0 amd64 1.2.0-6ubuntu3 [41.4 kB]
+Get:5 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/universe amd64 ccache amd64 4.9.1-1 [592 kB]
+Get:6 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libjsoncpp25 amd64 1.9.5-6build1 [82.8 kB]
+Get:7 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 librhash0 amd64 1.4.3-3build1 [129 kB]
+Get:8 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 cmake-data all 3.28.3-1build7 [2155 kB]
+Get:9 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 cmake amd64 3.28.3-1build7 [11.2 MB]
+Get:10 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/universe amd64 cppcheck amd64 2.13.0-2ubuntu3 [2136 kB]
+Get:11 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libbabeltrace1 amd64 1.5.11-3build3 [164 kB]
+Get:12 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libipt2 amd64 2.0.6-1build1 [45.7 kB]
+Get:13 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libsource-highlight-common all 3.1.9-4.3build1 [64.2 kB]
+Get:14 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libsource-highlight4t64 amd64 3.1.9-4.3build1 [258 kB]
+Get:15 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble-updates/main amd64 gdb amd64 15.1-1ubuntu1~24.04.1 [4083 kB]
+Get:16 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libcapture-tiny-perl all 0.48-2 [20.2 kB]
+Get:17 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libclass-inspector-perl all 1.36-3 [15.4 kB]
+Get:18 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libfile-sharedir-perl all 1.118-3 [14.0 kB]
+Get:19 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libb-hooks-op-check-perl amd64 0.22-3build1 [9518 B]
+Get:20 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libdynaloader-functions-perl all 0.003-3 [12.1 kB]
+Get:21 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libdevel-callchecker-perl amd64 0.008-2build3 [13.2 kB]
+Get:22 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libparams-classify-perl amd64 0.015-2build5 [20.1 kB]
+Get:23 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libmodule-runtime-perl all 0.016-2 [16.4 kB]
+Get:24 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libtry-tiny-perl all 0.31-2 [20.8 kB]
+Get:25 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libmodule-implementation-perl all 0.09-2 [12.0 kB]
+Get:26 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libsub-exporter-progressive-perl all 0.001013-3 [6718 B]
+Get:27 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libvariable-magic-perl amd64 0.63-1build3 [35.1 kB]
+Get:28 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libb-hooks-endofscope-perl all 0.28-1 [15.8 kB]
+Get:29 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libpackage-stash-perl all 0.40-1 [19.5 kB]
+Get:30 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libsub-identify-perl amd64 0.14-3build3 [9786 B]
+Get:31 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libsub-name-perl amd64 0.27-1build3 [10.8 kB]
+Get:32 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libnamespace-clean-perl all 0.27-2 [14.0 kB]
+Get:33 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/universe amd64 libnamespace-autoclean-perl all 0.29-2 [11.7 kB]
+Get:34 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libparams-util-perl amd64 1.102-2build3 [21.2 kB]
+Get:35 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libsub-install-perl all 0.929-1 [9764 B]
+Get:36 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libdata-optlist-perl all 0.114-1 [9708 B]
+Get:37 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libsub-exporter-perl all 0.990-1 [49.0 kB]
+Get:38 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/universe amd64 libeval-closure-perl all 0.14-3 [10.1 kB]
+Get:39 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libclass-data-inheritable-perl all 0.08-3 [8084 B]
+Get:40 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libdevel-stacktrace-perl all 2.0500-1 [22.1 kB]
+Get:41 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libexception-class-perl all 1.45-1 [28.6 kB]
+Get:42 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/universe amd64 libparams-validationcompiler-perl all 0.31-1 [28.3 kB]
+Get:43 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/universe amd64 libalgorithm-c3-perl all 0.11-2 [10.2 kB]
+Get:44 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/universe amd64 libclass-c3-perl all 0.35-2 [18.4 kB]
+Get:45 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/universe amd64 libmro-compat-perl all 0.15-2 [10.1 kB]
+Get:46 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libclass-method-modifiers-perl all 2.15-1 [16.1 kB]
+Get:47 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 librole-tiny-perl all 2.002004-1 [16.3 kB]
+Get:48 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libsub-quote-perl all 2.006008-1ubuntu1 [20.7 kB]
+Get:49 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/universe amd64 libxstring-perl amd64 0.005-2build3 [7852 B]
+Get:50 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/universe amd64 libspecio-perl all 0.48-1 [137 kB]
+Get:51 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/universe amd64 libdatetime-locale-perl all 1:1.37-1 [2833 kB]
+Get:52 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/universe amd64 libclass-singleton-perl all 1.6-2 [11.5 kB]
+Get:53 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/universe amd64 libdatetime-timezone-perl all 1:2.62-1+2024a [262 kB]
+Get:54 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/universe amd64 libdatetime-perl amd64 2:1.65-1build2 [95.8 kB]
+Get:55 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libperlio-gzip-perl amd64 0.20-1build4 [14.6 kB]
+Get:56 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/universe amd64 lcov all 2.0-4ubuntu2 [223 kB]
+Get:57 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble-updates/main amd64 libxml2-utils amd64 2.9.14+dfsg-1.3ubuntu3.10 [39.4 kB]
+Get:58 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/universe amd64 ninja-build amd64 1.11.1-2 [129 kB]
+Fetched 25.5 MB in 3s (8768 kB/s)
+Selecting previously unselected package astyle.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 214038 files and directories currently installed.)
+Preparing to unpack .../00-astyle_3.1-3build1_amd64.deb ...
+Unpacking astyle (3.1-3build1) ...
+Selecting previously unselected package build-essential.
+Preparing to unpack .../01-build-essential_12.10ubuntu1_amd64.deb ...
+Unpacking build-essential (12.10ubuntu1) ...
+Selecting previously unselected package libhiredis1.1.0:amd64.
+Preparing to unpack .../02-libhiredis1.1.0_1.2.0-6ubuntu3_amd64.deb ...
+Unpacking libhiredis1.1.0:amd64 (1.2.0-6ubuntu3) ...
+Selecting previously unselected package ccache.
+Preparing to unpack .../03-ccache_4.9.1-1_amd64.deb ...
+Unpacking ccache (4.9.1-1) ...
+Selecting previously unselected package libjsoncpp25:amd64.
+Preparing to unpack .../04-libjsoncpp25_1.9.5-6build1_amd64.deb ...
+Unpacking libjsoncpp25:amd64 (1.9.5-6build1) ...
+Selecting previously unselected package librhash0:amd64.
+Preparing to unpack .../05-librhash0_1.4.3-3build1_amd64.deb ...
+Unpacking librhash0:amd64 (1.4.3-3build1) ...
+Selecting previously unselected package cmake-data.
+Preparing to unpack .../06-cmake-data_3.28.3-1build7_all.deb ...
+Unpacking cmake-data (3.28.3-1build7) ...
+Selecting previously unselected package cmake.
+Preparing to unpack .../07-cmake_3.28.3-1build7_amd64.deb ...
+Unpacking cmake (3.28.3-1build7) ...
+Selecting previously unselected package cppcheck.
+Preparing to unpack .../08-cppcheck_2.13.0-2ubuntu3_amd64.deb ...
+Unpacking cppcheck (2.13.0-2ubuntu3) ...
+Selecting previously unselected package libbabeltrace1:amd64.
+Preparing to unpack .../09-libbabeltrace1_1.5.11-3build3_amd64.deb ...
+Unpacking libbabeltrace1:amd64 (1.5.11-3build3) ...
+Selecting previously unselected package libipt2.
+Preparing to unpack .../10-libipt2_2.0.6-1build1_amd64.deb ...
+Unpacking libipt2 (2.0.6-1build1) ...
+Selecting previously unselected package libsource-highlight-common.
+Preparing to unpack .../11-libsource-highlight-common_3.1.9-4.3build1_all.deb ...
+Unpacking libsource-highlight-common (3.1.9-4.3build1) ...
+Selecting previously unselected package libsource-highlight4t64:amd64.
+Preparing to unpack .../12-libsource-highlight4t64_3.1.9-4.3build1_amd64.deb ...
+Unpacking libsource-highlight4t64:amd64 (3.1.9-4.3build1) ...
+Selecting previously unselected package gdb.
+Preparing to unpack .../13-gdb_15.1-1ubuntu1~24.04.1_amd64.deb ...
+Unpacking gdb (15.1-1ubuntu1~24.04.1) ...
+Selecting previously unselected package libcapture-tiny-perl.
+Preparing to unpack .../14-libcapture-tiny-perl_0.48-2_all.deb ...
+Unpacking libcapture-tiny-perl (0.48-2) ...
+Selecting previously unselected package libclass-inspector-perl.
+Preparing to unpack .../15-libclass-inspector-perl_1.36-3_all.deb ...
+Unpacking libclass-inspector-perl (1.36-3) ...
+Selecting previously unselected package libfile-sharedir-perl.
+Preparing to unpack .../16-libfile-sharedir-perl_1.118-3_all.deb ...
+Unpacking libfile-sharedir-perl (1.118-3) ...
+Selecting previously unselected package libb-hooks-op-check-perl:amd64.
+Preparing to unpack .../17-libb-hooks-op-check-perl_0.22-3build1_amd64.deb ...
+Unpacking libb-hooks-op-check-perl:amd64 (0.22-3build1) ...
+Selecting previously unselected package libdynaloader-functions-perl.
+Preparing to unpack .../18-libdynaloader-functions-perl_0.003-3_all.deb ...
+Unpacking libdynaloader-functions-perl (0.003-3) ...
+Selecting previously unselected package libdevel-callchecker-perl:amd64.
+Preparing to unpack .../19-libdevel-callchecker-perl_0.008-2build3_amd64.deb ...
+Unpacking libdevel-callchecker-perl:amd64 (0.008-2build3) ...
+Selecting previously unselected package libparams-classify-perl:amd64.
+Preparing to unpack .../20-libparams-classify-perl_0.015-2build5_amd64.deb ...
+Unpacking libparams-classify-perl:amd64 (0.015-2build5) ...
+Selecting previously unselected package libmodule-runtime-perl.
+Preparing to unpack .../21-libmodule-runtime-perl_0.016-2_all.deb ...
+Unpacking libmodule-runtime-perl (0.016-2) ...
+Selecting previously unselected package libtry-tiny-perl.
+Preparing to unpack .../22-libtry-tiny-perl_0.31-2_all.deb ...
+Unpacking libtry-tiny-perl (0.31-2) ...
+Selecting previously unselected package libmodule-implementation-perl.
+Preparing to unpack .../23-libmodule-implementation-perl_0.09-2_all.deb ...
+Unpacking libmodule-implementation-perl (0.09-2) ...
+Selecting previously unselected package libsub-exporter-progressive-perl.
+Preparing to unpack .../24-libsub-exporter-progressive-perl_0.001013-3_all.deb ...
+Unpacking libsub-exporter-progressive-perl (0.001013-3) ...
+Selecting previously unselected package libvariable-magic-perl.
+Preparing to unpack .../25-libvariable-magic-perl_0.63-1build3_amd64.deb ...
+Unpacking libvariable-magic-perl (0.63-1build3) ...
+Selecting previously unselected package libb-hooks-endofscope-perl.
+Preparing to unpack .../26-libb-hooks-endofscope-perl_0.28-1_all.deb ...
+Unpacking libb-hooks-endofscope-perl (0.28-1) ...
+Selecting previously unselected package libpackage-stash-perl.
+Preparing to unpack .../27-libpackage-stash-perl_0.40-1_all.deb ...
+Unpacking libpackage-stash-perl (0.40-1) ...
+Selecting previously unselected package libsub-identify-perl.
+Preparing to unpack .../28-libsub-identify-perl_0.14-3build3_amd64.deb ...
+Unpacking libsub-identify-perl (0.14-3build3) ...
+Selecting previously unselected package libsub-name-perl:amd64.
+Preparing to unpack .../29-libsub-name-perl_0.27-1build3_amd64.deb ...
+Unpacking libsub-name-perl:amd64 (0.27-1build3) ...
+Selecting previously unselected package libnamespace-clean-perl.
+Preparing to unpack .../30-libnamespace-clean-perl_0.27-2_all.deb ...
+Unpacking libnamespace-clean-perl (0.27-2) ...
+Selecting previously unselected package libnamespace-autoclean-perl.
+Preparing to unpack .../31-libnamespace-autoclean-perl_0.29-2_all.deb ...
+Unpacking libnamespace-autoclean-perl (0.29-2) ...
+Selecting previously unselected package libparams-util-perl.
+Preparing to unpack .../32-libparams-util-perl_1.102-2build3_amd64.deb ...
+Unpacking libparams-util-perl (1.102-2build3) ...
+Selecting previously unselected package libsub-install-perl.
+Preparing to unpack .../33-libsub-install-perl_0.929-1_all.deb ...
+Unpacking libsub-install-perl (0.929-1) ...
+Selecting previously unselected package libdata-optlist-perl.
+Preparing to unpack .../34-libdata-optlist-perl_0.114-1_all.deb ...
+Unpacking libdata-optlist-perl (0.114-1) ...
+Selecting previously unselected package libsub-exporter-perl.
+Preparing to unpack .../35-libsub-exporter-perl_0.990-1_all.deb ...
+Unpacking libsub-exporter-perl (0.990-1) ...
+Selecting previously unselected package libeval-closure-perl.
+Preparing to unpack .../36-libeval-closure-perl_0.14-3_all.deb ...
+Unpacking libeval-closure-perl (0.14-3) ...
+Selecting previously unselected package libclass-data-inheritable-perl.
+Preparing to unpack .../37-libclass-data-inheritable-perl_0.08-3_all.deb ...
+Unpacking libclass-data-inheritable-perl (0.08-3) ...
+Selecting previously unselected package libdevel-stacktrace-perl.
+Preparing to unpack .../38-libdevel-stacktrace-perl_2.0500-1_all.deb ...
+Unpacking libdevel-stacktrace-perl (2.0500-1) ...
+Selecting previously unselected package libexception-class-perl.
+Preparing to unpack .../39-libexception-class-perl_1.45-1_all.deb ...
+Unpacking libexception-class-perl (1.45-1) ...
+Selecting previously unselected package libparams-validationcompiler-perl.
+Preparing to unpack .../40-libparams-validationcompiler-perl_0.31-1_all.deb ...
+Unpacking libparams-validationcompiler-perl (0.31-1) ...
+Selecting previously unselected package libalgorithm-c3-perl.
+Preparing to unpack .../41-libalgorithm-c3-perl_0.11-2_all.deb ...
+Unpacking libalgorithm-c3-perl (0.11-2) ...
+Selecting previously unselected package libclass-c3-perl.
+Preparing to unpack .../42-libclass-c3-perl_0.35-2_all.deb ...
+Unpacking libclass-c3-perl (0.35-2) ...
+Selecting previously unselected package libmro-compat-perl.
+Preparing to unpack .../43-libmro-compat-perl_0.15-2_all.deb ...
+Unpacking libmro-compat-perl (0.15-2) ...
+Selecting previously unselected package libclass-method-modifiers-perl.
+Preparing to unpack .../44-libclass-method-modifiers-perl_2.15-1_all.deb ...
+Unpacking libclass-method-modifiers-perl (2.15-1) ...
+Selecting previously unselected package librole-tiny-perl.
+Preparing to unpack .../45-librole-tiny-perl_2.002004-1_all.deb ...
+Unpacking librole-tiny-perl (2.002004-1) ...
+Selecting previously unselected package libsub-quote-perl.
+Preparing to unpack .../46-libsub-quote-perl_2.006008-1ubuntu1_all.deb ...
+Unpacking libsub-quote-perl (2.006008-1ubuntu1) ...
+Selecting previously unselected package libxstring-perl:amd64.
+Preparing to unpack .../47-libxstring-perl_0.005-2build3_amd64.deb ...
+Unpacking libxstring-perl:amd64 (0.005-2build3) ...
+Selecting previously unselected package libspecio-perl.
+Preparing to unpack .../48-libspecio-perl_0.48-1_all.deb ...
+Unpacking libspecio-perl (0.48-1) ...
+Selecting previously unselected package libdatetime-locale-perl.
+Preparing to unpack .../49-libdatetime-locale-perl_1%3a1.37-1_all.deb ...
+Unpacking libdatetime-locale-perl (1:1.37-1) ...
+Selecting previously unselected package libclass-singleton-perl.
+Preparing to unpack .../50-libclass-singleton-perl_1.6-2_all.deb ...
+Unpacking libclass-singleton-perl (1.6-2) ...
+Selecting previously unselected package libdatetime-timezone-perl.
+Preparing to unpack .../51-libdatetime-timezone-perl_1%3a2.62-1+2024a_all.deb ...
+Unpacking libdatetime-timezone-perl (1:2.62-1+2024a) ...
+Selecting previously unselected package libdatetime-perl.
+Preparing to unpack .../52-libdatetime-perl_2%3a1.65-1build2_amd64.deb ...
+Unpacking libdatetime-perl (2:1.65-1build2) ...
+Selecting previously unselected package libperlio-gzip-perl.
+Preparing to unpack .../53-libperlio-gzip-perl_0.20-1build4_amd64.deb ...
+Unpacking libperlio-gzip-perl (0.20-1build4) ...
+Selecting previously unselected package lcov.
+Preparing to unpack .../54-lcov_2.0-4ubuntu2_all.deb ...
+Unpacking lcov (2.0-4ubuntu2) ...
+Selecting previously unselected package libxml2-utils.
+Preparing to unpack .../55-libxml2-utils_2.9.14+dfsg-1.3ubuntu3.10_amd64.deb ...
+Unpacking libxml2-utils (2.9.14+dfsg-1.3ubuntu3.10) ...
+Selecting previously unselected package ninja-build.
+Preparing to unpack .../56-ninja-build_1.11.1-2_amd64.deb ...
+Unpacking ninja-build (1.11.1-2) ...
+Setting up libclass-inspector-perl (1.36-3) ...
+Setting up libdynaloader-functions-perl (0.003-3) ...
+Setting up libclass-method-modifiers-perl (2.15-1) ...
+Setting up libsub-identify-perl (0.14-3build3) ...
+Setting up libtry-tiny-perl (0.31-2) ...
+Setting up libclass-singleton-perl (1.6-2) ...
+Setting up libxstring-perl:amd64 (0.005-2build3) ...
+Setting up libsource-highlight-common (3.1.9-4.3build1) ...
+Setting up ninja-build (1.11.1-2) ...
+Setting up libsub-install-perl (0.929-1) ...
+Setting up libclass-data-inheritable-perl (0.08-3) ...
+Setting up libalgorithm-c3-perl (0.11-2) ...
+Setting up libvariable-magic-perl (0.63-1build3) ...
+Setting up libb-hooks-op-check-perl:amd64 (0.22-3build1) ...
+Setting up libjsoncpp25:amd64 (1.9.5-6build1) ...
+Setting up libipt2 (2.0.6-1build1) ...
+Setting up libbabeltrace1:amd64 (1.5.11-3build3) ...
+Setting up libparams-util-perl (1.102-2build3) ...
+Setting up cppcheck (2.13.0-2ubuntu3) ...
+Setting up libsub-exporter-progressive-perl (0.001013-3) ...
+Setting up libcapture-tiny-perl (0.48-2) ...
+Setting up libsub-name-perl:amd64 (0.27-1build3) ...
+Setting up librhash0:amd64 (1.4.3-3build1) ...
+Setting up astyle (3.1-3build1) ...
+Setting up librole-tiny-perl (2.002004-1) ...
+Setting up libfile-sharedir-perl (1.118-3) ...
+Setting up build-essential (12.10ubuntu1) ...
+Setting up libsub-quote-perl (2.006008-1ubuntu1) ...
+Setting up libdevel-stacktrace-perl (2.0500-1) ...
+Setting up cmake-data (3.28.3-1build7) ...
+Setting up libxml2-utils (2.9.14+dfsg-1.3ubuntu3.10) ...
+Setting up libperlio-gzip-perl (0.20-1build4) ...
+Setting up libhiredis1.1.0:amd64 (1.2.0-6ubuntu3) ...
+Setting up ccache (4.9.1-1) ...
+Updating symlinks in /usr/lib/ccache ...
+Setting up libsource-highlight4t64:amd64 (3.1.9-4.3build1) ...
+Setting up libexception-class-perl (1.45-1) ...
+Setting up libclass-c3-perl (0.35-2) ...
+Setting up libdevel-callchecker-perl:amd64 (0.008-2build3) ...
+Setting up gdb (15.1-1ubuntu1~24.04.1) ...
+Setting up libdata-optlist-perl (0.114-1) ...
+Setting up cmake (3.28.3-1build7) ...
+Setting up libmro-compat-perl (0.15-2) ...
+Setting up libsub-exporter-perl (0.990-1) ...
+Setting up libeval-closure-perl (0.14-3) ...
+Setting up libparams-validationcompiler-perl (0.31-1) ...
+Setting up libparams-classify-perl:amd64 (0.015-2build5) ...
+Setting up libmodule-runtime-perl (0.016-2) ...
+Setting up libmodule-implementation-perl (0.09-2) ...
+Setting up libpackage-stash-perl (0.40-1) ...
+Setting up libspecio-perl (0.48-1) ...
+Setting up libb-hooks-endofscope-perl (0.28-1) ...
+Setting up libnamespace-clean-perl (0.27-2) ...
+Setting up libnamespace-autoclean-perl (0.29-2) ...
+Setting up libdatetime-locale-perl (1:1.37-1) ...
+Setting up libdatetime-timezone-perl (1:2.62-1+2024a) ...
+Setting up libdatetime-perl (2:1.65-1build2) ...
+Setting up lcov (2.0-4ubuntu2) ...
+Processing triggers for libc-bin (2.39-0ubuntu8.9) ...
+Processing triggers for man-db (2.12.0-4build2) ...
+Not building database; man-db/auto-update is not 'true'.
+
+Running kernel seems to be up-to-date.
+
+No services need to be restarted.
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+
+[ubuntu.sh] Installing PX4 Python3 dependencies
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: argcomplete in /usr/local/lib/python3.12/dist-packages (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 1)) (3.7.2)
+Collecting cerberus (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 2))
+  Downloading cerberus-1.3.8-py3-none-any.whl.metadata (5.5 kB)
+Collecting coverage (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 3))
+  Downloading coverage-7.17.2-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (8.1 kB)
+Collecting empy<4,>=3.3 (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 4))
+  Downloading empy-3.3.4.tar.gz (62 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 62.9/62.9 kB 10.6 MB/s eta 0:00:00
+  Preparing metadata (setup.py): started
+  Preparing metadata (setup.py): finished with status 'done'
+Collecting future (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 5))
+  Downloading future-1.0.0-py3-none-any.whl.metadata (4.0 kB)
+Requirement already satisfied: jinja2>=2.8 in /usr/lib/python3/dist-packages (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 6)) (3.1.2)
+Requirement already satisfied: jsonschema in /usr/lib/python3/dist-packages (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 7)) (4.10.3)
+Collecting kconfiglib (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 8))
+  Downloading kconfiglib-14.1.0-py2.py3-none-any.whl.metadata (39 kB)
+Collecting lark (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 9))
+  Downloading lark-1.3.1-py3-none-any.whl.metadata (1.8 kB)
+Collecting lxml (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 10))
+  Downloading lxml-6.1.3-cp312-cp312-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl.metadata (3.3 kB)
+Collecting matplotlib>=3.0 (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 11))
+  Downloading matplotlib-3.11.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (80 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 80.3/80.3 kB 20.4 MB/s eta 0:00:00
+Collecting numpy>=1.13 (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 12))
+  Downloading numpy-2.5.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+Collecting nunavut>=1.1.0 (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 13))
+  Downloading nunavut-3.1.0-py3-none-any.whl.metadata (11 kB)
+Requirement already satisfied: packaging in /usr/lib/python3/dist-packages (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 14)) (24.0)
+Collecting pandas>=0.21 (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 15))
+  Downloading pandas-3.1.1-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (16 kB)
+Collecting pkgconfig (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 16))
+  Downloading pkgconfig-1.6.0-py3-none-any.whl.metadata (4.9 kB)
+Collecting psutil (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 17))
+  Downloading psutil-7.2.2-cp36-abi3-manylinux2010_x86_64.manylinux_2_12_x86_64.manylinux_2_28_x86_64.whl.metadata (22 kB)
+Collecting pycryptodome (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 18))
+  Downloading pycryptodome-4.3.0-cp39-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (6.1 kB)
+Requirement already satisfied: pygments in /usr/lib/python3/dist-packages (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 19)) (2.17.2)
+Collecting pymavlink (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 20))
+  Downloading pymavlink-2.4.50-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (7.6 kB)
+Collecting pyros-genmsg (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 21))
+  Downloading pyros_genmsg-0.5.8-py2.py3-none-any.whl.metadata (358 bytes)
+Requirement already satisfied: pyserial in /usr/lib/python3/dist-packages (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 22)) (3.5)
+Collecting pyulog>=0.5.0 (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 23))
+  Downloading pyulog-1.3.0-py3-none-any.whl.metadata (1.6 kB)
+Requirement already satisfied: pyyaml in /usr/lib/python3/dist-packages (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 24)) (6.0.1)
+Requirement already satisfied: requests in /usr/lib/python3/dist-packages (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 25)) (2.31.0)
+Requirement already satisfied: setuptools>=39.2.0 in /usr/lib/python3/dist-packages (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 26)) (68.1.2)
+Requirement already satisfied: six>=1.12.0 in /usr/lib/python3/dist-packages (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 27)) (1.16.0)
+Collecting sympy>=1.10.1 (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 28))
+  Downloading sympy-1.14.0-py3-none-any.whl.metadata (12 kB)
+Collecting toml>=0.9 (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 29))
+  Downloading toml-0.10.2-py2.py3-none-any.whl.metadata (7.1 kB)
+Requirement already satisfied: wheel>=0.31.1 in /usr/lib/python3/dist-packages (from -r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 30)) (0.42.0)
+Requirement already satisfied: attrs>=17.4.0 in /usr/lib/python3/dist-packages (from jsonschema->-r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 7)) (23.2.0)
+Requirement already satisfied: pyrsistent!=0.17.0,!=0.17.1,!=0.17.2,>=0.14.0 in /usr/lib/python3/dist-packages (from jsonschema->-r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 7)) (0.20.0)
+Collecting contourpy>=1.0.1 (from matplotlib>=3.0->-r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 11))
+  Downloading contourpy-1.4.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (3.8 kB)
+Collecting cycler>=0.10 (from matplotlib>=3.0->-r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 11))
+  Downloading cycler-0.12.1-py3-none-any.whl.metadata (3.8 kB)
+Collecting fonttools>=4.28.2 (from matplotlib>=3.0->-r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 11))
+  Downloading fonttools-4.68.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (139 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 139.9/139.9 kB 42.3 MB/s eta 0:00:00
+Collecting kiwisolver>=1.3.1 (from matplotlib>=3.0->-r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 11))
+  Downloading kiwisolver-1.5.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (5.2 kB)
+Collecting pillow>=9 (from matplotlib>=3.0->-r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 11))
+  Downloading pillow-13.0.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (9.1 kB)
+Requirement already satisfied: pyparsing>=3 in /usr/lib/python3/dist-packages (from matplotlib>=3.0->-r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 11)) (3.1.1)
+Requirement already satisfied: python-dateutil>=2.7 in /usr/lib/python3/dist-packages (from matplotlib>=3.0->-r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 11)) (2.8.2)
+Collecting pydsdl>=1.25.0 (from nunavut>=1.1.0->-r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 13))
+  Downloading pydsdl-1.25.0-py3-none-any.whl.metadata (1.9 kB)
+Collecting python-dateutil>=2.7 (from matplotlib>=3.0->-r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 11))
+  Downloading python_dateutil-4.0.0-py3-none-any.whl.metadata (7.3 kB)
+Collecting fastcrc (from pymavlink->-r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 20))
+  Downloading fastcrc-0.5.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
+Collecting mpmath<1.4,>=1.1.0 (from sympy>=1.10.1->-r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 28))
+  Downloading mpmath-1.3.0-py3-none-any.whl.metadata (8.6 kB)
+Collecting tzdata (from python-dateutil>=2.7->matplotlib>=3.0->-r /home/runner/PX4-mrac/Tools/setup/requirements.txt (line 11))
+  Downloading tzdata-2026.6-py2.py3-none-any.whl.metadata (1.4 kB)
+Downloading cerberus-1.3.8-py3-none-any.whl (30 kB)
+Downloading coverage-7.17.2-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (263 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 263.7/263.7 kB 58.7 MB/s eta 0:00:00
+Downloading future-1.0.0-py3-none-any.whl (491 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 491.3/491.3 kB 68.0 MB/s eta 0:00:00
+Downloading kconfiglib-14.1.0-py2.py3-none-any.whl (145 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 145.9/145.9 kB 67.5 MB/s eta 0:00:00
+Downloading lark-1.3.1-py3-none-any.whl (113 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 113.2/113.2 kB 76.3 MB/s eta 0:00:00
+Downloading lxml-6.1.3-cp312-cp312-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl (5.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.2/5.2 MB 151.2 MB/s eta 0:00:00
+Downloading matplotlib-3.11.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (9.9 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 9.9/9.9 MB 289.8 MB/s eta 0:00:00
+Downloading numpy-2.5.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.7 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.7/16.7 MB 282.7 MB/s eta 0:00:00
+Downloading nunavut-3.1.0-py3-none-any.whl (417 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 417.8/417.8 kB 199.9 MB/s eta 0:00:00
+Downloading pandas-3.1.1-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (12.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.0/12.0 MB 309.0 MB/s eta 0:00:00
+Downloading pkgconfig-1.6.0-py3-none-any.whl (7.1 kB)
+Downloading psutil-7.2.2-cp36-abi3-manylinux2010_x86_64.manylinux_2_12_x86_64.manylinux_2_28_x86_64.whl (155 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 155.6/155.6 kB 103.8 MB/s eta 0:00:00
+Downloading pycryptodome-4.3.0-cp39-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (3.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.0/3.0 MB 309.7 MB/s eta 0:00:00
+Downloading pymavlink-2.4.50-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (7.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 7.2/7.2 MB 190.1 MB/s eta 0:00:00
+Downloading pyros_genmsg-0.5.8-py2.py3-none-any.whl (25 kB)
+Downloading pyulog-1.3.0-py3-none-any.whl (53 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 53.4/53.4 kB 43.0 MB/s eta 0:00:00
+Downloading sympy-1.14.0-py3-none-any.whl (6.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.3/6.3 MB 87.1 MB/s eta 0:00:00
+Downloading toml-0.10.2-py2.py3-none-any.whl (16 kB)
+Downloading contourpy-1.4.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (383 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 383.2/383.2 kB 190.8 MB/s eta 0:00:00
+Downloading cycler-0.12.1-py3-none-any.whl (8.3 kB)
+Downloading fonttools-4.68.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (5.4 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.4/5.4 MB 326.9 MB/s eta 0:00:00
+Downloading kiwisolver-1.5.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (1.5 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.5/1.5 MB 289.8 MB/s eta 0:00:00
+Downloading mpmath-1.3.0-py3-none-any.whl (536 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 536.2/536.2 kB 219.5 MB/s eta 0:00:00
+Downloading pillow-13.0.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (7.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 7.1/7.1 MB 317.1 MB/s eta 0:00:00
+Downloading pydsdl-1.25.0-py3-none-any.whl (145 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 145.3/145.3 kB 106.1 MB/s eta 0:00:00
+Downloading python_dateutil-4.0.0-py3-none-any.whl (92 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 92.9/92.9 kB 68.0 MB/s eta 0:00:00
+Downloading fastcrc-0.5.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (1.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.0/1.0 MB 281.5 MB/s eta 0:00:00
+Downloading tzdata-2026.6-py2.py3-none-any.whl (348 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 348.2/348.2 kB 183.9 MB/s eta 0:00:00
+Building wheels for collected packages: empy
+  Building wheel for empy (setup.py): started
+  Building wheel for empy (setup.py): finished with status 'done'
+  Created wheel for empy: filename=empy-3.3.4-py3-none-any.whl size=29337 sha256=bc026f5de4904962c7660e7ac66636137a71748fa14bc0dc1f0c133de47f65ee
+  Stored in directory: /home/runner/.cache/pip/wheels/d4/8c/2a/6c28d813f5c017e0c5270ca3b58527616dff038084815779ae
+Successfully built empy
+Installing collected packages: pyros-genmsg, pydsdl, mpmath, empy, tzdata, toml, sympy, pycryptodome, psutil, pkgconfig, pillow, nunavut, numpy, lxml, lark, kiwisolver, kconfiglib, future, fonttools, fastcrc, cycler, coverage, cerberus, pyulog, python-dateutil, pymavlink, contourpy, pandas, matplotlib
+Successfully installed cerberus-1.3.8 contourpy-1.4.0 coverage-7.17.2 cycler-0.12.1 empy-3.3.4 fastcrc-0.5.0 fonttools-4.68.0 future-1.0.0 kconfiglib-14.1.0 kiwisolver-1.5.1 lark-1.3.1 lxml-6.1.3 matplotlib-3.11.2 mpmath-1.3.0 numpy-2.5.4 nunavut-3.1.0 pandas-3.1.1 pillow-13.0.0 pkgconfig-1.6.0 psutil-7.2.2 pycryptodome-4.3.0 pydsdl-1.25.0 pymavlink-2.4.50 pyros-genmsg-0.5.8 python-dateutil-4.0.0 pyulog-1.3.0 sympy-1.14.0 toml-0.10.2 tzdata-2026.6
+mc_rate_control patched
+mc_att_control + mc_pos_control patched
+mc_pos_control xyc switch patched
+gz actuator delay patched
+patch_gps_noise ok
+SIH actuator delay patched
+patch_sih_imu_noise ok
+patched
+KDV default: PARAM_DEFINE_FLOAT(SIH_KDV, 1.0f)
+msg/VehicleTorqueSetpoint.msg:7:# TOPICS vehicle_torque_setpoint vehicle_torque_setpoint_base
+src/modules/logger/logged_topics.cpp:149:	add_topic("mrac_rate_status", 10);
+src/modules/logger/logged_topics.cpp:150:	add_topic("mrac_att_status", 20);
+src/modules/logger/logged_topics.cpp:151:	add_topic("mrac_pos_status", 20);
+src/modules/logger/logged_topics.cpp:152:	add_topic("mrac_xy_status", 20);
+ROMFS/px4fmu_common/init.d/rc.mc_apps:40:mrac_layers start
+src/modules/mc_rate_control/MulticopterRateControl.cpp:269:				_torque_base_pub.publish(vehicle_torque_setpoint);
+src/modules/mc_rate_control/MulticopterRateControl.hpp:112:	uORB::Publication<vehicle_torque_setpoint_s>	_torque_base_pub{ORB_ID(vehicle_torque_setpoint_base)};
+src/modules/mc_rate_control/MulticopterRateControl.hpp:113:	int32_t _mrl_en_rate{0};	// MRL_EN_RATE (mrac_layers): >= 1 routes torque through the MRAC layer
+make: Entering directory '/home/runner/PX4-mrac'
+-- PX4_GIT_TAG: v1.17.0
+CMake Warning (dev) at CMakeLists.txt:176 (find_package):
+  Policy CMP0148 is not set: The FindPythonInterp and FindPythonLibs modules
+  are removed.  Run "cmake --help-policy CMP0148" for policy details.  Use
+  the cmake_policy command to set the policy and suppress this warning.
+
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Found PythonInterp: /home/runner/.venvs/px4/bin/python3 (found suitable version "3.12.3", minimum required is "3")
+-- PX4 config file: /home/runner/PX4-mrac/boards/px4/sitl/default.px4board
+-- PLATFORM posix
+-- ROMFSROOT px4fmu_common
+-- TESTING y
+-- ETHERNET y
+-- ROOT_PATH .
+-- PARAM_FILE /fs/mtd_params
+-- PX4 config: px4_sitl_default
+-- PX4 platform: posix
+-- PX4 lockstep: enabled
+-- The CXX compiler identification is GNU 13.3.0
+-- The C compiler identification is GNU 13.3.0
+-- The ASM compiler identification is GNU
+-- Found assembler: /usr/bin/cc
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- cmake build type: RelWithDebInfo
+-- ccache enabled (export CCACHE_DISABLE=1 to disable)
+CMake Deprecation Warning at platforms/posix/src/px4/common/lockstep_scheduler/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+
+
+-- Could NOT find gz-transport (missing: gz-transport_DIR)
+-- Gazebo simulation bridge module disabled: missing dependencies
+-- Could NOT find Protobuf (missing: Protobuf_LIBRARIES Protobuf_INCLUDE_DIR) 
+-- Could NOT find gz-transport (missing: gz-transport_DIR)
+-- Could NOT find gz-sim (missing: gz-sim_DIR)
+-- Could NOT find gz-sensors (missing: gz-sensors_DIR)
+-- Could NOT find gz-plugin (missing: gz-plugin_DIR)
+-- Found Java: /usr/lib/jvm/temurin-17-jdk-amd64/bin/java (found version "17.0.20")
+-- ROMFS: ROMFS/px4fmu_common
+Architecture:  amd64
+==> CPACK_INSTALL_PREFIX = @DEB_INSTALL_PREFIX@
+-- Configuring done (8.1s)
+-- Generating done (0.4s)
+-- Build files have been written to: /home/runner/PX4-mrac/build/px4_sitl_default
+ninja: warning: Ignoring jobserver: Pipe-based protocol is not supported! [w -j4 --jobserver-auth=3,4]
+[1/1114] Generating combined event json file
+[2/1114] Generating Flight Tasks
+[2/1114] git submodule src/modules/uxrce_dds_client/Micro-XRCE-DDS-Client
+[3/1114] Generating px4 event header file
+[5/1114] Generating XRCE-DDS topic bridge
+[5/1114] git submodule src/modules/mavlink/mavlink
+[6/1114] Building C object boards/px4/sitl/src/CMakeFiles/drivers_board.dir/sitl_led.c.o
+[8/1114] Generating output_functions.hpp
+[9/1114] Generating git version header
+[10/1114] Building CXX object boards/px4/sitl/src/CMakeFiles/drivers_board.dir/board_shutdown.cpp.o
+[11/1114] Generating Mavlink uAvionix: src/modules/mavlink/mavlink/message_definitions/v1.0/uAvionix.xml
+[12/1114] Generating actuators.json
+[13/1114] Generating serial_params.c
+[14/1114] Generating uORB topic headers
+[15/1114] Generating ../romfs_files.tar
+[16/1114] Generating uORB json files
+[17/1114] Building C object platforms/common/work_queue/CMakeFiles/work_queue.dir/dq_addlast.c.o
+[18/1114] Building C object platforms/common/work_queue/CMakeFiles/work_queue.dir/dq_rem.c.o
+[19/1114] Generating parameters.xml
+FAILED: [code=1] parameters.xml parameters.json parameters.json.xz /home/runner/PX4-mrac/build/px4_sitl_default/parameters.xml /home/runner/PX4-mrac/build/px4_sitl_default/parameters.json /home/runner/PX4-mrac/build/px4_sitl_default/parameters.json.xz 
+cd /home/runner/PX4-mrac/build/px4_sitl_default/src/lib/parameters && /home/runner/.venvs/px4/bin/python3 /home/runner/PX4-mrac/src/lib/parameters/px_process_params.py --src-path /home/runner/PX4-mrac/src/lib/adsb /home/runner/PX4-mrac/src/lib/airspeed /home/runner/PX4-mrac/src/lib/atmosphere /home/runner/PX4-mrac/src/lib/battery /home/runner/PX4-mrac/src/lib/button /home/runner/PX4-mrac/src/lib/cdev /home/runner/PX4-mrac/src/lib/cdev/test /home/runner/PX4-mrac/src/lib/circuit_breaker /home/runner/PX4-mrac/src/lib/collision_prevention /home/runner/PX4-mrac/src/lib/control_allocation/control_allocation /home/runner/PX4-mrac/src/lib/control_allocation/actuator_effectiveness /home/runner/PX4-mrac/src/lib/controllib /home/runner/PX4-mrac/src/lib/controllib/controllib_test /home/runner/PX4-mrac/src/lib/conversion /home/runner/PX4-mrac/src/lib/dataman_client /home/runner/PX4-mrac/src/lib/drivers/accelerometer /home/runner/PX4-mrac/src/lib/drivers/device /home/runner/PX4-mrac/src/lib/drivers/gyroscope /home/runner/PX4-mrac/src/lib/drivers/led /home/runner/PX4-mrac/src/lib/drivers/magnetometer /home/runner/PX4-mrac/src/lib/drivers/rangefinder /home/runner/PX4-mrac/src/lib/drivers/smbus /home/runner/PX4-mrac/src/lib/drivers/smbus_sbs /home/runner/PX4-mrac/src/lib/heatshrink /home/runner/PX4-mrac/src/lib/hysteresis /home/runner/PX4-mrac/src/lib/led /home/runner/PX4-mrac/src/lib/mathlib /home/runner/PX4-mrac/src/lib/mixer_module /home/runner/PX4-mrac/src/lib/motion_planning /home/runner/PX4-mrac/src/lib/npfg /home/runner/PX4-mrac/src/lib/fw_performance_model /home/runner/PX4-mrac/src/lib/pid /home/runner/PX4-mrac/src/lib/pure_pursuit /home/runner/PX4-mrac/src/lib/rate_control /home/runner/PX4-mrac/src/lib/rc/rc_tests /home/runner/PX4-mrac/src/lib/ringbuffer /home/runner/PX4-mrac/src/lib/rover_control /home/runner/PX4-mrac/src/lib/rtl /home/runner/PX4-mrac/src/lib/sensor_calibration /home/runner/PX4-mrac/src/lib/slew_rate /home/runner/PX4-mrac/src/lib/sticks /home/runner/PX4-mrac/src/lib/stick_yaw /home/runner/PX4-mrac/src/lib/systemlib /home/runner/PX4-mrac/src/lib/system_identification /home/runner/PX4-mrac/src/lib/tecs /home/runner/PX4-mrac/src/lib/terrain_estimation /home/runner/PX4-mrac/src/lib/timesync /home/runner/PX4-mrac/src/lib/tunes /home/runner/PX4-mrac/src/lib/variable_length_ringbuffer /home/runner/PX4-mrac/src/lib/weather_vane /home/runner/PX4-mrac/platforms/posix/src/px4/common/px4_daemon /home/runner/PX4-mrac/platforms/posix/src/px4/common/lockstep_scheduler /home/runner/PX4-mrac/platforms/posix/src/px4/generic/generic/tone_alarm /home/runner/PX4-mrac/platforms/common/uORB /home/runner/PX4-mrac/platforms/common/uORB/uORB_tests /home/runner/PX4-mrac/platforms/common/px4_work_queue /home/runner/PX4-mrac/platforms/common/px4_work_queue/test /home/runner/PX4-mrac/src/drivers/camera_trigger /home/runner/PX4-mrac/src/drivers/gnss/septentrio /home/runner/PX4-mrac/src/drivers/gps /home/runner/PX4-mrac/src/drivers/osd/msp_osd/MessageDisplay /home/runner/PX4-mrac/src/drivers/osd/msp_osd /home/runner/PX4-mrac/src/drivers/tone_alarm /home/runner/PX4-mrac/src/modules/airship_att_control /home/runner/PX4-mrac/src/modules/airspeed_selector /home/runner/PX4-mrac/src/modules/attitude_estimator_q /home/runner/PX4-mrac/src/modules/camera_feedback /home/runner/PX4-mrac/src/modules/commander/Arming/ArmAuthorization /home/runner/PX4-mrac/src/modules/commander/failsafe /home/runner/PX4-mrac/src/modules/commander/failure_detector /home/runner/PX4-mrac/src/modules/commander/HealthAndArmingChecks /home/runner/PX4-mrac/src/modules/commander/MulticopterThrowLaunch /home/runner/PX4-mrac/src/modules/commander /home/runner/PX4-mrac/src/modules/control_allocator/VehicleActuatorEffectiveness /home/runner/PX4-mrac/src/modules/control_allocator /home/runner/PX4-mrac/src/modules/dataman /home/runner/PX4-mrac/src/modules/ekf2 /home/runner/PX4-mrac/src/modules/events /home/runner/PX4-mrac/src/modules/flight_mode_manager/tasks/FlightTask /home/runner/PX4-mrac/src/modules/flight_mode_manager/tasks/Utility /home/runner/PX4-mrac/src/modules/flight_mode_manager/tasks/Auto /home/runner/PX4-mrac/src/modules/flight_mode_manager/tasks/Descend /home/runner/PX4-mrac/src/modules/flight_mode_manager/tasks/Failsafe /home/runner/PX4-mrac/src/modules/flight_mode_manager/tasks/ManualAcceleration /home/runner/PX4-mrac/src/modules/flight_mode_manager/tasks/ManualAccelerationSlow /home/runner/PX4-mrac/src/modules/flight_mode_manager/tasks/ManualAltitude /home/runner/PX4-mrac/src/modules/flight_mode_manager/tasks/ManualAltitudeSmoothVel /home/runner/PX4-mrac/src/modules/flight_mode_manager/tasks/ManualPosition /home/runner/PX4-mrac/src/modules/flight_mode_manager/tasks/Transition /home/runner/PX4-mrac/src/modules/flight_mode_manager/tasks/AltitudeCruise /home/runner/PX4-mrac/src/modules/flight_mode_manager/tasks/AutoFollowTarget/follow_target_estimator /home/runner/PX4-mrac/src/modules/flight_mode_manager/tasks/AutoFollowTarget /home/runner/PX4-mrac/src/modules/flight_mode_manager/tasks/Orbit /home/runner/PX4-mrac/src/modules/flight_mode_manager /home/runner/PX4-mrac/src/modules/fw_att_control /home/runner/PX4-mrac/src/modules/fw_autotune_attitude_control /home/runner/PX4-mrac/src/modules/fw_lateral_longitudinal_control /home/runner/PX4-mrac/src/modules/fw_mode_manager/launchdetection /home/runner/PX4-mrac/src/modules/fw_mode_manager/runway_takeoff /home/runner/PX4-mrac/src/modules/fw_mode_manager/figure_eight /home/runner/PX4-mrac/src/modules/fw_mode_manager /home/runner/PX4-mrac/src/modules/fw_rate_control /home/runner/PX4-mrac/src/modules/gimbal /home/runner/PX4-mrac/src/modules/gyro_calibration /home/runner/PX4-mrac/src/modules/gyro_fft /home/runner/PX4-mrac/src/modules/land_detector /home/runner/PX4-mrac/src/modules/landing_target_estimator /home/runner/PX4-mrac/src/modules/load_mon /home/runner/PX4-mrac/src/modules/local_position_estimator /home/runner/PX4-mrac/src/modules/logger /home/runner/PX4-mrac/src/modules/mag_bias_estimator /home/runner/PX4-mrac/src/modules/manual_control /home/runner/PX4-mrac/src/modules/mavlink /home/runner/PX4-mrac/src/modules/mc_att_control/AttitudeControl /home/runner/PX4-mrac/src/modules/mc_att_control /home/runner/PX4-mrac/src/modules/mc_autotune_attitude_control /home/runner/PX4-mrac/src/modules/mc_hover_thrust_estimator /home/runner/PX4-mrac/src/modules/mc_pos_control/GotoControl /home/runner/PX4-mrac/src/modules/mc_pos_control/PositionControl /home/runner/PX4-mrac/src/modules/mc_pos_control/Takeoff /home/runner/PX4-mrac/src/modules/mc_pos_control /home/runner/PX4-mrac/src/modules/mc_rate_control /home/runner/PX4-mrac/src/modules/mrac_layers /home/runner/PX4-mrac/src/modules/navigator/GeofenceBreachAvoidance /home/runner/PX4-mrac/src/modules/navigator/MissionFeasibility /home/runner/PX4-mrac/src/modules/navigator /home/runner/PX4-mrac/src/modules/payload_deliverer /home/runner/PX4-mrac/src/modules/rc_update /home/runner/PX4-mrac/src/modules/replay /home/runner/PX4-mrac/src/modules/rover_ackermann/AckermannActControl /home/runner/PX4-mrac/src/modules/rover_ackermann/AckermannRateControl /home/runner/PX4-mrac/src/modules/rover_ackermann/AckermannAttControl /home/runner/PX4-mrac/src/modules/rover_ackermann/AckermannSpeedControl /home/runner/PX4-mrac/src/modules/rover_ackermann/AckermannPosControl /home/runner/PX4-mrac/src/modules/rover_ackermann/AckermannDriveModes/AckermannAutoMode /home/runner/PX4-mrac/src/modules/rover_ackermann/AckermannDriveModes/AckermannManualMode /home/runner/PX4-mrac/src/modules/rover_ackermann/AckermannDriveModes/AckermannOffboardMode /home/runner/PX4-mrac/src/modules/rover_ackermann /home/runner/PX4-mrac/src/modules/rover_differential/DifferentialActControl /home/runner/PX4-mrac/src/modules/rover_differential/DifferentialRateControl /home/runner/PX4-mrac/src/modules/rover_differential/DifferentialAttControl /home/runner/PX4-mrac/src/modules/rover_differential/DifferentialSpeedControl /home/runner/PX4-mrac/src/modules/rover_differential/DifferentialPosControl /home/runner/PX4-mrac/src/modules/rover_differential/DifferentialDriveModes/DifferentialAutoMode /home/runner/PX4-mrac/src/modules/rover_differential/DifferentialDriveModes/DifferentialManualMode /home/runner/PX4-mrac/src/modules/rover_differential/DifferentialDriveModes/DifferentialOffboardMode /home/runner/PX4-mrac/src/modules/rover_differential /home/runner/PX4-mrac/src/modules/rover_mecanum/MecanumActControl /home/runner/PX4-mrac/src/modules/rover_mecanum/MecanumRateControl /home/runner/PX4-mrac/src/modules/rover_mecanum/MecanumAttControl /home/runner/PX4-mrac/src/modules/rover_mecanum/MecanumSpeedControl /home/runner/PX4-mrac/src/modules/rover_mecanum/MecanumPosControl /home/runner/PX4-mrac/src/modules/rover_mecanum/MecanumDriveModes/MecanumAutoMode /home/runner/PX4-mrac/src/modules/rover_mecanum/MecanumDriveModes/MecanumManualMode /home/runner/PX4-mrac/src/modules/rover_mecanum/MecanumDriveModes/MecanumOffboardMode /home/runner/PX4-mrac/src/modules/rover_mecanum /home/runner/PX4-mrac/src/modules/sensors/data_validator /home/runner/PX4-mrac/src/modules/sensors/vehicle_acceleration /home/runner/PX4-mrac/src/modules/sensors/vehicle_imu /home/runner/PX4-mrac/src/modules/sensors/vehicle_air_data /home/runner/PX4-mrac/src/modules/sensors/vehicle_angular_velocity /home/runner/PX4-mrac/src/modules/sensors/vehicle_gps_position /home/runner/PX4-mrac/src/modules/sensors/vehicle_magnetometer /home/runner/PX4-mrac/src/modules/sensors/vehicle_optical_flow /home/runner/PX4-mrac/src/modules/sensors /home/runner/PX4-mrac/src/modules/simulation/battery_simulator /home/runner/PX4-mrac/src/modules/simulation/pwm_out_sim /home/runner/PX4-mrac/src/modules/simulation/sensor_agp_sim /home/runner/PX4-mrac/src/modules/simulation/sensor_airspeed_sim /home/runner/PX4-mrac/src/modules/simulation/sensor_baro_sim /home/runner/PX4-mrac/src/modules/simulation/sensor_gps_sim /home/runner/PX4-mrac/src/modules/simulation/sensor_mag_sim /home/runner/PX4-mrac/src/modules/simulation/simulator_mavlink /home/runner/PX4-mrac/src/modules/simulation/simulator_sih /home/runner/PX4-mrac/src/modules/simulation/system_power_simulator /home/runner/PX4-mrac/src/modules/temperature_compensation /home/runner/PX4-mrac/src/modules/uuv_att_control /home/runner/PX4-mrac/src/modules/uuv_pos_control /home/runner/PX4-mrac/src/modules/uxrce_dds_client /home/runner/PX4-mrac/src/modules/vtol_att_control /home/runner/PX4-mrac/src/systemcmds/actuator_test /home/runner/PX4-mrac/src/systemcmds/bsondump /home/runner/PX4-mrac/src/systemcmds/dyn /home/runner/PX4-mrac/src/systemcmds/failure /home/runner/PX4-mrac/src/systemcmds/led_control /home/runner/PX4-mrac/src/systemcmds/param /home/runner/PX4-mrac/src/systemcmds/perf /home/runner/PX4-mrac/src/systemcmds/sd_bench /home/runner/PX4-mrac/src/systemcmds/shutdown /home/runner/PX4-mrac/src/systemcmds/system_time /home/runner/PX4-mrac/src/systemcmds/tests /home/runner/PX4-mrac/src/systemcmds/tests/hrt_test /home/runner/PX4-mrac/src/systemcmds/topic_listener /home/runner/PX4-mrac/src/systemcmds/tune_control /home/runner/PX4-mrac/src/systemcmds/uorb /home/runner/PX4-mrac/src/systemcmds/ver /home/runner/PX4-mrac/src/systemcmds/work_queue /home/runner/PX4-mrac/src/examples/dyn_hello /home/runner/PX4-mrac/src/examples/fake_gps /home/runner/PX4-mrac/src/examples/fake_imu /home/runner/PX4-mrac/src/examples/fake_magnetometer /home/runner/PX4-mrac/src/examples/hello /home/runner/PX4-mrac/src/examples/px4_mavlink_debug /home/runner/PX4-mrac/src/examples/px4_simple_app /home/runner/PX4-mrac/src/examples/work_item /home/runner/PX4-mrac/src/lib/events /home/runner/PX4-mrac/build/px4_sitl_default/generated_params --xml /home/runner/PX4-mrac/build/px4_sitl_default/parameters.xml --json /home/runner/PX4-mrac/build/px4_sitl_default/parameters.json --compress --overrides {} --board px4_sitl && /home/runner/.venvs/px4/bin/python3 /home/runner/PX4-mrac/Tools/validate_json.py --schema-file /home/runner/PX4-mrac/src/modules/mavlink/mavlink/component_information/parameter.schema.json /home/runner/PX4-mrac/build/px4_sitl_default/parameters.json --skip-if-no-schema
+Traceback (most recent call last):
+  File "/home/runner/PX4-mrac/src/lib/parameters/px_process_params.py", line 181, in <module>
+    main()
+  File "/home/runner/PX4-mrac/src/lib/parameters/px_process_params.py", line 122, in main
+    if not scanner.ScanDir(args.src_path, parser):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/PX4-mrac/src/lib/parameters/px4params/srcscanner.py", line 28, in ScanDir
+    if not self.ScanFile(path, parser):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/PX4-mrac/src/lib/parameters/px4params/srcscanner.py", line 45, in ScanFile
+    return parser.Parse(contents)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/PX4-mrac/src/lib/parameters/px4params/srcparser.py", line 308, in Parse
+    raise Exception('short description must be a single line (parameter: {:})'.format(name))
+Exception: short description must be a single line (parameter: MRL_L1_MV)
+[20/1114] Building CXX object src/lib/perf/CMakeFiles/perf.dir/perf_counter.cpp.o
+[21/1114] Building CXX object src/lib/tinybson/CMakeFiles/tinybson.dir/tinybson.cpp.o
+[22/1114] Building C object platforms/common/work_queue/CMakeFiles/work_queue.dir/dq_remfirst.c.o
+[23/1114] Generating uORB topic ucdr headers
+[24/1114] Linking CXX static library boards/px4/sitl/src/libdrivers_board.a
+ninja: build stopped: subcommand failed.
+make: *** [Makefile:222: px4_sitl_default] Error 1
+make: Leaving directory '/home/runner/PX4-mrac'
