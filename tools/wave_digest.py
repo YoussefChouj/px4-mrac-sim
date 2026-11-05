@@ -5,8 +5,8 @@ Input: results/<wave>-<run id>/ folders (all.json + meta.json), e.g. after
 Per wave:
 - Pass table: every deck with failing flights, the scenario limits its failing records break (limits from
   scenarios/<deck>.json at the wave's commit; scenario.py passes a limit when value <= limit), the value range and
-  the failing runs. The record has no `landed` or error field, so a failure that breaks no recorded limit shows as
-  "not in record" with the limits that could not be checked.
+  the failing runs. Records from 2026-11-05 on carry `landed` (ci/collect.py), so must_land failures are named;
+  a failure that still breaks no recorded limit shows as "not in record" with the limits that could not be checked.
 - Paired differences treatment - control, matched by `run` (= seed): mean, 95 % percentile bootstrap interval over
   runs (10000 resamples, fixed seed; with 5-10 runs it is a little narrow); `*` = the interval excludes 0.
   Control = a deck with the name token `alone`; a treatment is a deck whose name without its arm tokens (plus, mrac,
@@ -49,15 +49,19 @@ def pass_table(d, sha):
         fails = [r for r in recs if not r.get('pass')]
         if not fails:
             continue
-        lim, hits, unexplained = limits(sha, deck), {}, 0
+        lim, hits, unexplained, noland = limits(sha, deck), {}, 0, 0
         for r in fails:
             bad = [k for k, v in lim.items() if num(r.get(k)) and r[k] > v]
             for k in bad:
                 hits.setdefault(k, []).append(r[k])
-            unexplained += not bad
+            nl = bool(lim.get('must_land')) and r.get('landed') is False
+            noland += nl
+            unexplained += not bad and not nl
         parts = [f'{k} {len(v)} ({min(v):.3g}..{max(v):.3g} > {lim[k]})' for k, v in hits.items()]
+        if noland:
+            parts.insert(0, f'must_land {noland} (never landed)')
         if unexplained:
-            rest = [k for k in lim if not num(fails[0].get(k))] + ['error']
+            rest = [k for k in lim if not num(fails[0].get(k)) and k != 'must_land'] + ['error']
             parts.append(f'not in record {unexplained} ({", ".join(rest)})')
         runs = ', '.join(str(r.get('run')) for r in fails) if len(fails) <= 3 else f'{len(fails)} runs'
         print(f'| {deck} | {len(recs) - len(fails)}/{len(recs)} | {"; ".join(parts)} | {runs} |')
