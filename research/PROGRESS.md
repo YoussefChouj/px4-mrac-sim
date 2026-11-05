@@ -721,3 +721,28 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
   the retry's folder) and never raises, so the publish step after collect still runs. Tested on a fake runs folder
   (8 cases, including corrupt and missing metrics.json and an empty folder). From the next run on, a must_land failure
   shows in all.json without the logs. Older folders on the results branch stay as they are.
+
+## Delay failure traced: the land detector never fires (2026-11-05)
+- Source: job artifacts of run 41809780319 (wave J, 9 flights: v5-dly24-g2, v5-dly30-g1, v5-dly35-g05, seeds 1-3),
+  scenario logs + ULogs, `tools/land_trace.py`.
+- Where the TimeoutError comes from: in all 9 scenario logs the last finished step is the param step (MRL_DIST_R 0.08
+  -> 0, at 10.5-10.8 s) and `step failed: TimeoutError` follows at 130.5-130.8 s: the land step's 120 s wait for
+  `in_air == False` (agent/scenario.py:301). Takeoff, hold, track and hold had finished.
+- What the land detector saw (AUTO_LAND to log end, 549-560 s sim): ground_contact set 99 % of the time, maybe_landed
+  and landed 0 %, freefall 0 %. Second half of the window: |vz| median 0.007-0.009 m/s (LNDMC_Z_VEL_MAX 0.25),
+  collective thrust median 0.120 (= MPC_THR_MIN 0.12), dist_bottom median 0.000-0.233 m; roll-pitch rate rms
+  0.54 rad/s (31 deg/s) in dly24-g2, 0.70 (40 deg/s) in dly30-g1, 0.78 (45 deg/s) in dly35-g05, against
+  LNDMC_ROT_MAX 20 deg/s. Max tilt over the flight stays 8.9-14.6 deg (all.json): no crash.
+
+| deck | rp rate rms, 2nd half of land window, deg/s (seeds 1-3) | ground_contact | maybe_landed |
+|---|---|---|---|
+| v5-dly24-g2 | 31.0 / 31.1 / 31.2 | 99 % | 0 % |
+| v5-dly30-g1 | 40.0 / 39.9 / 39.9 | 99 % | 0 % |
+| v5-dly35-g05 | 44.9 / 44.9 / 45.1 | 99 % | 0 % |
+
+- Reading: the vehicle comes down and sits at minimum thrust, but past the delay edge the rate layer keeps a roll-pitch
+  oscillation going with the disturbance off and the vehicle on the ground. That rate is the only measured
+  land-detector input above its limit, so the rotation check blocks maybe_landed [S: PX4's land-detector logic read
+  from its parameters, not traced in its source here]. The delay edge is therefore the onset of a self-sustained
+  rate limit cycle (a stability limit of the rate loop, bounded by saturation), caught by the must_land gate; it
+  is not a flight-limit failure. Gate unchanged.

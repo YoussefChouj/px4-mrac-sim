@@ -50,12 +50,12 @@ this file (state + next) before every session ends.
   2 flights), so the failing check is must_land or an error (next item 1). Tables: `research/digests/wave-digest-H.md`.
 
 ## Next items (in order)
-1. Done 2026-11-04 (wave J, PROGRESS "Wave J"): past the delay edge only `must_land` and a runner TimeoutError fail;
-   every flight limit passes. Next: trace where scenario.py raises the TimeoutError and check the land detector during the
-   rate oscillation (ULog vehicle_land_detected), before calling the delay edge a stability limit.
-   2026-11-05: all.json records now carry `landed` (`ci/collect.py`, null = no readable metrics.json), so a later
-   wave shows must_land failures without the logs; `tools/wave_digest.py` does not read the field yet.
-2. More seeds where the layer should help but the hold interval crosses 0: B's dist, mass, slow and tmax pairs.
+1. Done 2026-11-05 (PROGRESS "Delay failure traced"): past the delay edge the TimeoutError is the land step's 120 s
+   `in_air` wait; on the ground the rate layer keeps a 31-45 deg/s roll-pitch oscillation (disturbance off, thrust at
+   minimum), above LNDMC_ROT_MAX 20 deg/s, so maybe_landed never sets. The delay edge is a rate limit cycle, not a
+   flight-limit failure. all.json records now carry `landed` (`ci/collect.py`); `tools/wave_digest.py` does not read
+   it yet. Job artifacts download with `gh run download RUN_ID -p 'run-*'` (14 days); `tools/land_trace.py` reads them.
+2. Done 2026-11-04 (PROGRESS "Wave I", "Waves B + I pooled"). More seeds where the layer should help but the hold interval crosses 0: B's dist, mass, slow and tmax pairs.
    Pushed 2026-11-04 as `waves/I-b-pair-seeds.txt` (8 decks, runs 10, first 11 = seeds 11-20): digest its
    results folder (`I-b-pair-seeds-*`) with `tools/wave_digest.py`; pool with B's seeds 1-10 only if both
    flew the same build.
