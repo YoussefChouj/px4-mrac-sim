@@ -64,7 +64,12 @@ this file (state + next) before every session ends.
    MRL_S_FC/K/TAV/EF scheduler). Only block 2 (scheduler) moves the delay edge; blocks 1 and 3 add nothing there.
    The scheduler beats a constant low gain at 0/20/30 ms. Best delay margin: gain scheduling without floor (b2g);
    best nominal: floored output scaling (f2o), which keeps a small oscillation at 30 ms. Outer layers untouched.
-   Owner question: an L1-style low-pass on u_ad (bounded delay margin by design) as the next arm.
+   Owner approved 2026-11-05: L1 in every loop with the three roles, flown on a real-world mission.
+3b. In progress 2026-11-05: L1 law (`px4-mrac/.../L1Axis.hpp`, MRL_*_LAW 1, roles MRL_*_L1R bits 1 memory,
+   2 scheduler, 4 physics; per-loop b/a_s/w_c/lag params) in rate, attitude, vz and xy. Wave M
+   (`waves/M-l1-realworld.txt`, pushed 1d3cb86, 252 jobs): decks rw-* (battery sag) and rwf-* (motor 1 at 75 %),
+   real IMU noise, stock GPS, drag, 25 ms delay, PX4 PID, gusty wind, payload; arms alone, mrac, L1 roles
+   0/1/2/4/7, leave-one-role-out 6/5/3, L1 per loop. Digest `results/M-l1-realworld-*`.
 4. The review experiments below, then V4, V6-V8 and P13-P16 (`research/OPEN-ITEMS.md`).
 5. Owner decision: heavy-hover-step's 35 deg tilt limit (PX4's default tilt maximum is 45 deg [S]). Do not change
    the gate without the owner.
