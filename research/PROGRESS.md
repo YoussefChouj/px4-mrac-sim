@@ -836,3 +836,27 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
   gusts, payload and battery or motor faults, paying about 3 deg more peak tilt (stronger gust rejection). The xy loop
   carries most of the single-loop gain; all four loops together beat any one. Role 1 as built (unfiltered feature map
   fed forward) adds error; it needs a slower, filtered target before it can act as memory.
+
+## Wave N: L1 roles iterated, tilt budget and memory v2, 18 seeds (2026-11-05, run 42016856210)
+- `results/N-l1-roles-iter-42016856210` (claude/collect-landed, 7b823ac; first push 2f76f35 failed the PX4 param-doc
+  parser, run 42016333374, no flights): decks rw/rwf of wave M, 5 arms x seeds 1-18, 28/180 passed (only the 35 deg tilt
+  gate fails; every flight landed; alone passes 6/18 and 12/18). Tables: `research/digests/wave-digest-N.md`.
+- Arms: alone; r6 (L1 roles 2+3, wave M best); r7m2 (all roles, memory v2: features low-passed at 2 w_c, fitted to the
+  applied low-frequency estimate); r6t / r7m2t (the same with a 30 deg tilt budget on the xy adaptive acceleration).
+- Paired vs alone, rw / rwf (all intervals exclude 0 unless noted):
+
+| arm | max_hold_err_m | rms_track_err_m | max_tilt_deg |
+|---|---|---|---|
+| r6 | -0.344 / -0.331 | -0.131 / -0.144 | +3.35 / +2.84 |
+| r6t (tilt budget) | -0.343 / -0.380 | -0.125 / -0.129 | +1.86 / +1.45 |
+| r7m2 (memory v2) | -0.172 / -0.092 (crosses 0) | -0.099 / -0.056 (crosses 0) | +2.83 / +2.58 |
+
+- r6 replicates wave M on 18 seeds (median worst hold 0.638 / 0.650 m vs alone 0.988 / 1.042 m). The tilt budget cuts the
+  extra peak tilt by 1.49 / 1.39 deg (r6t - r6) at no hold cost (rw +0.002 crosses 0; rwf -0.049, better). Memory v2
+  still costs hold vs r6: +0.172 / +0.239 m, like v1 in wave M (+0.172 / +0.320 m vs r7).
+- Reading: the recommended configuration is L1 in all four loops with the bandwidth scheduler, the known delay/lag
+  physics and the xy tilt budget: about 35 % less worst hover drift and 15 % less tracking error than PX4 PID in the
+  real-world mission, for 1.5-1.9 deg more peak tilt. The memory role does not pay in a single mission where the fast
+  L1 estimate already covers every uncertainty and nothing repeats; its test is the episodic one (review E4: A->B->A->C,
+  repeated payload or relaunch). The remaining extra tilt comes from the inner loops [S: in wave M the rate-loop-only
+  L1 added +2.59 deg, the xy-only L1 +0.96 deg].

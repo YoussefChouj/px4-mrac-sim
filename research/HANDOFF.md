@@ -65,13 +65,14 @@ this file (state + next) before every session ends.
    The scheduler beats a constant low gain at 0/20/30 ms. Best delay margin: gain scheduling without floor (b2g);
    best nominal: floored output scaling (f2o), which keeps a small oscillation at 30 ms. Outer layers untouched.
    Owner approved 2026-11-05: L1 in every loop with the three roles, flown on a real-world mission.
-3b. Done 2026-11-05 (PROGRESS "Wave M"): L1 law in all four loops (L1Axis.hpp; MRL_*_LAW 1, roles MRL_*_L1R bits
-   1 memory, 2 bandwidth scheduler, 4 known physics; per-loop MRL_*_L1B/A/W/T, MRL_X_L1D drag, MRL_L1_EF/KF/LK).
-   Realistic mission decks rw-* / rwf-*. Result: plain L1 and old MRAC are unstable at 25 ms; L1 with roles 2+3 holds
-   position ~40 % better than PX4 PID, +3 deg peak tilt; role 1 (memory) hurts as built. Next inside item 3:
-   (a) role 1 v2: fit the memory to the C(s)-filtered estimate and feed it through C(s); (b) a tilt budget on the xy
-   L1 output (feasibility-aware, review E3); (c) more seeds (first 10) for r6 vs alone; (d) L1 vs MRAC at 0/20/30 ms
-   on the V5 decks for the delay-margin curve.
+3b. Done 2026-11-05 (PROGRESS "Wave M", "Wave N"): L1 law in all four loops (L1Axis.hpp; MRL_*_LAW 1, roles MRL_*_L1R
+   bits 1 memory, 2 bandwidth scheduler, 4 known physics; per-loop MRL_*_L1B/A/W/T, MRL_X_L1D drag, MRL_L1_EF/KF/LK,
+   MRL_L1_MV memory version, MRL_X_TILT xy tilt budget). Realistic mission decks rw-* (battery sag) / rwf-* (motor 75 %).
+   Recommended configuration: L1 roles 2+3 (L1R 6) in all loops + MRL_X_TILT 30 (decks rw-l1r6t / rwf-l1r6t):
+   hold -0.34 / -0.38 m, track -0.13 m vs PX4 PID, +1.5-1.9 deg peak tilt (18 seeds). Plain L1 and old MRAC unsafe at
+   25 ms delay. Memory (role 1, v1 and v2) costs hold in a single mission: test it episodically in E4.
+   Open inside 3b: the inner-loop share of the extra tilt (rate L1 bandwidth or a rate-loop budget); L1 vs MRAC at
+   0/20/30 ms on the V5 decks (delay-margin curve).
 4. The review experiments below, then V4, V6-V8 and P13-P16 (`research/OPEN-ITEMS.md`).
 5. Owner decision: the 35 deg tilt gate on the real-world mission decks (rw-*, rwf-*: PX4 PID itself peaks 35.3-36.7 deg
    in 7 of 18 flights) and heavy-hover-step's 35 deg tilt limit (PX4's default tilt maximum is 45 deg [S]). Do not change

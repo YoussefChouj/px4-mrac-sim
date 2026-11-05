@@ -46,7 +46,8 @@ instance 8 (headless SIH may run 2 in parallel if CPU allows); no paid compute (
 2026-11-05: all.json records carry `landed` (ci/collect.py). V5: the SIH delay edge is a self-sustained rate limit
 cycle that blocks the land detector (PROGRESS "Delay failure traced"); the gam-vs-delay rule is still model-stage [S].
 V9 v2 (rate layer): built; waves K and L: scheduler moves the delay edge to >30 ms and beats a constant low gain.
-L1 (all loops, three roles): wave M real-world mission: roles 2+3 hold ~40 % better than PX4 PID; memory role to redo.
+L1 (all loops, three roles): waves M, N real-world mission: roles 2+3 + xy tilt budget hold ~35 % better and track
+~15 % better than PX4 PID (18 seeds); memory role pays nothing in one mission, to be tested episodically (E4).
 
 Checks live in PROGRESS.md. Done: P1-P7, P9, P10, P12 (pipeline), P8 M2 (actuator delay). P11 done except wind
 gusts (SIH has no wind; moved to P13). Open: P8 gyro noise + attitude step vs lab_d_sysid_angle, P13-P15.
