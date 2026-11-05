@@ -115,7 +115,7 @@ def draw(name, v, cur=None):
     return x
 
 
-async def ramp(drone, k, v0, v1, dur):
+async def ramp_param(drone, k, v0, v1, dur):
     """Move param k linearly from v0 to v1 over dur sim seconds (gradual change in flight, e.g. battery sag), in
     steps of 0.5 sim s, in the background."""
     n = max(int(dur / 0.5), 1)
@@ -352,7 +352,7 @@ async def fly(drone):
                         v0 = await drone.param.get_param_int(step['name'])
                     restore.setdefault(step['name'], v0)
                     say(f'param {step["name"]}: {v0} -> {v} over {step["ramp_s"]} s')
-                    asyncio.ensure_future(ramp(drone, step['name'], v0, v, float(step['ramp_s'])))
+                    asyncio.ensure_future(ramp_param(drone, step["name"], v0, v, float(step["ramp_s"])))
                 else:
                     old = await set_param(drone, step['name'], v)
                     restore.setdefault(step['name'], old)

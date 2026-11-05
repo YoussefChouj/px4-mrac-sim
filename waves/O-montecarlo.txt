@@ -1,4 +1,4 @@
-# O: Monte Carlo real-world mission (owner 2026-11-06): all vehicle, sensor and scene parameters drawn per seed.
+# O (re-fly 2026-11-06: the first try stopped every mission at the battery-sag ramp, scenario.py bug): Monte Carlo real-world mission (owner 2026-11-06): all vehicle, sensor and scene parameters drawn per seed.
 # mc = healthy + battery sag, mcf = + motor 1 fault. 4 arms x 2 decks x 30 seeds = 240 jobs. Tilt gate 45 deg.
 runs 30
 first 1

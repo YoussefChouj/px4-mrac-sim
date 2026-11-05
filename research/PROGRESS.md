@@ -876,3 +876,10 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
   sih_params.c, and "SIH_AIR_T" appears in SIH_RHO_EN's description, so SIH_AIR_T was never defined (28 of 29 in the
   ULog parameter table). Fixed in dfc9321 (checks the PARAM_DEFINE itself, asserts all 29); wave P re-flown. This run
   holds no result.
+
+## Wave O first try: missions cut at the battery-sag step (2026-11-06, run 42102214518)
+- `results/O-montecarlo-42102214518` (6f72ef9): 0/240, every flight `error: TypeError 'float' object is not callable`
+  at the gradual battery-sag step: the new helper `ramp()` in agent/scenario.py was shadowed by the goto step's local
+  `ramp` (a float). The missions stopped there (no return leg, gust or landing), so this run holds no result.
+  Fixed (helper renamed `ramp_param`, AST check: no helper is shadowed by a local of any function); wave O re-flown.
+  Wave P is not affected (its decks have no ramp step; the battery model sags instead).
