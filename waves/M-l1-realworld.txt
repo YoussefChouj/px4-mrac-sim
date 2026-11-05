@@ -1,0 +1,7 @@
+# M: L1 three-role framework in all loops on a real-world mission (owner 2026-11-05). 14 arms x 2 decks x 9 seeds = 252 jobs.
+# rw = mission with battery sag, rwf = mission with motor 1 at 75 %. Arms: alone, mrac (old law), L1 roles 0/1/2/4/7,
+# leave-one-role-out 6/5/3, and full L1 in one loop at a time (rate, att, vz, xy).
+runs 9
+first 1
+rw-alone rw-mrac rw-l1r0 rw-l1r1 rw-l1r2 rw-l1r4 rw-l1r7 rw-l1r6 rw-l1r5 rw-l1r3 rw-l1rate rw-l1att rw-l1vz rw-l1xy
+rwf-alone rwf-mrac rwf-l1r0 rwf-l1r1 rwf-l1r2 rwf-l1r4 rwf-l1r7 rwf-l1r6 rwf-l1r5 rwf-l1r3 rwf-l1rate rwf-l1att rwf-l1vz rwf-l1xy

@@ -9,6 +9,7 @@
 #pragma once
 
 #include "MracAxis.hpp"
+#include "L1Axis.hpp"
 #include "OuterLayers.hpp"
 #include "XyCtrl.hpp"
 
@@ -61,6 +62,7 @@ private:
 	XyCtrlLayer _xy_layer;
 
 	MracAxis _ax[3];
+	L1Axis _l1[3];
 	float _rate_sp[3] {};
 	bool _landed{true};
 	hrt_abstime _last_t{0};
@@ -88,6 +90,15 @@ private:
 		(ParamFloat<px4::params::MRL_S_FC>) _param_s_fc,
 		(ParamFloat<px4::params::MRL_S_K>) _param_s_k,
 		(ParamFloat<px4::params::MRL_S_TAV>) _param_s_tav,
-		(ParamFloat<px4::params::MRL_S_EF>) _param_s_ef
+		(ParamFloat<px4::params::MRL_S_EF>) _param_s_ef,
+		(ParamInt<px4::params::MRL_R_LAW>) _param_law,
+		(ParamInt<px4::params::MRL_R_L1R>) _param_l1r,
+		(ParamFloat<px4::params::MRL_R_L1B>) _param_l1b,
+		(ParamFloat<px4::params::MRL_R_L1A>) _param_l1a,
+		(ParamFloat<px4::params::MRL_R_L1W>) _param_l1w,
+		(ParamFloat<px4::params::MRL_R_L1T>) _param_l1t,
+		(ParamFloat<px4::params::MRL_L1_EF>) _param_l1_ef,
+		(ParamFloat<px4::params::MRL_L1_KF>) _param_l1_kf,
+		(ParamFloat<px4::params::MRL_L1_LK>) _param_l1_lk
 	)
 };

@@ -12,6 +12,7 @@
 #pragma once
 
 #include "MracAxis.hpp"
+#include "L1Axis.hpp"
 
 #include <px4_platform_common/module_params.h>
 #include <px4_platform_common/px4_work_queue/WorkItem.hpp>
@@ -49,6 +50,7 @@ private:
 	uORB::Publication<mrac_rate_status_s> _status_pub{ORB_ID(mrac_att_status)};
 
 	MracAxis _ax[2];
+	L1Axis _l1[2];
 	float _ang_sp[2] {};
 	bool _landed{true};
 	hrt_abstime _last_t{0};
@@ -65,7 +67,20 @@ private:
 		(ParamFloat<px4::params::MRL_A_XS>) _param_xs,
 		(ParamFloat<px4::params::MRL_G_E0>) _param_ge0,
 		(ParamFloat<px4::params::MRL_G_W>) _param_gw,
-		(ParamFloat<px4::params::MRL_G_K>) _param_gk
+		(ParamFloat<px4::params::MRL_G_K>) _param_gk,
+		(ParamInt<px4::params::MRL_A_LAW>) _param_alaw,
+		(ParamInt<px4::params::MRL_A_L1R>) _param_al1r,
+		(ParamFloat<px4::params::MRL_A_L1B>) _param_al1b,
+		(ParamFloat<px4::params::MRL_A_L1A>) _param_al1a,
+		(ParamFloat<px4::params::MRL_A_L1W>) _param_al1w,
+		(ParamFloat<px4::params::MRL_A_L1T>) _param_al1t,
+		(ParamFloat<px4::params::MRL_R_KDLY>) _param_kdly,
+		(ParamFloat<px4::params::MRL_S_FC>) _param_s_fc,
+		(ParamFloat<px4::params::MRL_S_K>) _param_s_k,
+		(ParamFloat<px4::params::MRL_S_TAV>) _param_s_tav,
+		(ParamFloat<px4::params::MRL_L1_EF>) _param_l1_ef,
+		(ParamFloat<px4::params::MRL_L1_KF>) _param_l1_kf,
+		(ParamFloat<px4::params::MRL_L1_LK>) _param_l1_lk
 	)
 };
 
@@ -91,6 +106,8 @@ private:
 
 	MracAxis _z;
 	MracAxis _xy[2];
+	L1Axis _l1z;
+	L1Axis _l1xy[2];
 	float _acc_sp[2] {};
 	float _vz_sp{0.f};
 	bool _landed{true};
@@ -118,6 +135,26 @@ private:
 		(ParamFloat<px4::params::MRL_X_XS>) _param_xy_xs,
 		(ParamFloat<px4::params::MRL_G_E0>) _param_ge0,
 		(ParamFloat<px4::params::MRL_G_W>) _param_gw,
-		(ParamFloat<px4::params::MRL_G_K>) _param_gk
+		(ParamFloat<px4::params::MRL_G_K>) _param_gk,
+		(ParamInt<px4::params::MRL_P_LAW>) _param_plaw,
+		(ParamInt<px4::params::MRL_P_L1R>) _param_pl1r,
+		(ParamFloat<px4::params::MRL_P_L1B>) _param_pl1b,
+		(ParamFloat<px4::params::MRL_P_L1A>) _param_pl1a,
+		(ParamFloat<px4::params::MRL_P_L1W>) _param_pl1w,
+		(ParamFloat<px4::params::MRL_P_L1T>) _param_pl1t,
+		(ParamInt<px4::params::MRL_X_LAW>) _param_xlaw,
+		(ParamInt<px4::params::MRL_X_L1R>) _param_xl1r,
+		(ParamFloat<px4::params::MRL_X_L1B>) _param_xl1b,
+		(ParamFloat<px4::params::MRL_X_L1A>) _param_xl1a,
+		(ParamFloat<px4::params::MRL_X_L1W>) _param_xl1w,
+		(ParamFloat<px4::params::MRL_X_L1T>) _param_xl1t,
+		(ParamFloat<px4::params::MRL_X_L1D>) _param_xl1d,
+		(ParamFloat<px4::params::MRL_R_KDLY>) _param_kdly,
+		(ParamFloat<px4::params::MRL_S_FC>) _param_s_fc,
+		(ParamFloat<px4::params::MRL_S_K>) _param_s_k,
+		(ParamFloat<px4::params::MRL_S_TAV>) _param_s_tav,
+		(ParamFloat<px4::params::MRL_L1_EF>) _param_l1_ef,
+		(ParamFloat<px4::params::MRL_L1_KF>) _param_l1_kf,
+		(ParamFloat<px4::params::MRL_L1_LK>) _param_l1_lk
 	)
 };

@@ -106,7 +106,25 @@ void MracLayers::Run()
 		_ax[a].ub = base.xyz[a];
 		_ax[a].s[0] = av.xyz[(a + 1) % 3] * av.xyz[(a + 2) % 3];
 		_ax[a].s[1] = av.xyz[a == 0 ? 1 : 0];
-		const float u_ad = _ax[a].step(av.xyz[a], _rate_sp[a], dt, _landed, on, on, g, _sat_pos[a], _sat_neg[a]);
+		float u_ad = 0.f;
+
+		if (_param_law.get() == 1) {
+			// L1 (L1Axis.hpp): x = body rate, command = normalized torque; nominal w_dot = b u (b measured in SIH,
+			// 2026-11-05: 160-180 rad/s^2 per unit with the 50 ms motor lag); role 3 knows that lag and the delay
+			const L1Cfg lc{_param_l1b.get(), _param_l1a.get(), _param_l1w.get(), _param_l1t.get(),
+				       math::max(_param_kdly.get(), 0.f) * 1e-3f, _param_umax.get(), _param_l1r.get(),
+				       _param_s_fc.get(), _param_s_k.get(), _param_s_tav.get(), _param_l1_ef.get(),
+				       _param_l1_kf.get(), _param_l1_lk.get()};
+			_l1[a].s[0] = _ax[a].s[0];
+			_l1[a].s[1] = _ax[a].s[1];
+			u_ad = _l1[a].step(av.xyz[a], base.xyz[a], 0.f, dt, _landed, on, lc, _sat_pos[a], _sat_neg[a]);
+			_ax[a].xm = _l1[a].xh;
+			_ax[a].e = _l1[a].xt;
+			_ax[a].sc = _l1[a].sc;
+
+		} else {
+			u_ad = _ax[a].step(av.xyz[a], _rate_sp[a], dt, _landed, on, on, g, _sat_pos[a], _sat_neg[a]);
+		}
 
 		out.xyz[a] = math::constrain(base.xyz[a] + u_ad + (_landed ? 0.f : dist[a]), -1.f, 1.f);
 
@@ -114,9 +132,11 @@ void MracLayers::Run()
 		st.e[a] = _ax[a].e;
 		st.u_ad[a] = u_ad;
 
-		for (int i = 0; i < MracAxis::NPHI; i++) { st.theta[a * MracAxis::NPHI + i] = _ax[a].theta[i]; }
+		const bool l1 = _param_law.get() == 1;
 
-		st.theta_norm[a] = _ax[a].tnorm();
+		for (int i = 0; i < MracAxis::NPHI; i++) { st.theta[a * MracAxis::NPHI + i] = l1 ? _l1[a].theta[i] : _ax[a].theta[i]; }
+
+		st.theta_norm[a] = l1 ? _l1[a].tnorm() : _ax[a].tnorm();
 		st.sched_cut[a] = 1.f - _ax[a].sc;
 		st.n_phi = _ax[a].nphi;
 	}

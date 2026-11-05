@@ -1,0 +1,155 @@
+{
+ "sim": "sih",
+ "airframe": "research-drone",
+ "speed": 5,
+ "alt": 3.0,
+ "boot_params": {
+  "SIH_KDV": 0.45
+ },
+ "limits": {
+  "max_hold_err_m": 3.0,
+  "max_tilt_deg": 35,
+  "must_land": true
+ },
+ "why": "Real-world mission (motor 1 at 75 % mid-flight): research drone (real IMU noise), stock GPS noise, drag SIH_KDV 0.45, actuator delay 25 ms (real 78 ms loop delay vs 53 ms in the sim twin), PX4 PID baseline, gusty wind 3.4 m/s mean + 1 m/s turbulence + a 7 m/s gust, 20 m legs at 5 m/s, fig-8, +20 % payload. Arm l1r6: L1 full minus role 1, all loops.",
+ "params": {
+  "XYC_MODE": 0,
+  "SIH_ACT_DLY": 25,
+  "MRL_R_KDLY": 25.0,
+  "MPC_XY_VEL_MAX": 5.0,
+  "MRL_X_L1D": 0.455,
+  "MRL_EN_RATE": 1,
+  "MRL_EN_ATT": 1,
+  "MRL_EN_POS": 1,
+  "MRL_EN_XY": 1,
+  "MRL_R_LAW": 1,
+  "MRL_A_LAW": 1,
+  "MRL_P_LAW": 1,
+  "MRL_X_LAW": 1,
+  "MRL_R_L1R": 6,
+  "MRL_A_L1R": 6,
+  "MRL_P_L1R": 6,
+  "MRL_X_L1R": 6
+ },
+ "steps": [
+  {
+   "do": "takeoff"
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_SEED",
+   "value": "run"
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_TAU",
+   "value": 3.0
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_SIG",
+   "value": 1.0
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_N",
+   "value": 1.5
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_E",
+   "value": 3.0
+  },
+  {
+   "do": "hold",
+   "s": 10
+  },
+  {
+   "do": "goto",
+   "n": 20,
+   "e": 0
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "track",
+   "shape": "fig8",
+   "size": 4,
+   "period": 16,
+   "laps": 1
+  },
+  {
+   "do": "param",
+   "name": "SIH_MASS",
+   "value": 1.186
+  },
+  {
+   "do": "hold",
+   "s": 8
+  },
+  {
+   "do": "param",
+   "name": "SIH_MOT1_EFF",
+   "value": 0.75
+  },
+  {
+   "do": "hold",
+   "s": 8
+  },
+  {
+   "do": "goto",
+   "n": 0,
+   "e": 0
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_E",
+   "value": 7.0
+  },
+  {
+   "do": "hold",
+   "s": 6
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_E",
+   "value": 3.0
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_SIG",
+   "value": 0.0
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_N",
+   "value": 0.0
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_E",
+   "value": 0.0
+  },
+  {
+   "do": "hold",
+   "s": 3
+  },
+  {
+   "do": "land"
+  }
+ ]
+}

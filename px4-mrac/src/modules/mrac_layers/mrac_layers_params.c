@@ -456,7 +456,7 @@ PARAM_DEFINE_FLOAT(MRL_G_K, 5.0f);
 PARAM_DEFINE_INT32(MRL_R_V2, 0);
 
 /**
- * rate layer known loop delay used by the v2 blocks 1 and 3.
+ * known transport delay used by the rate v2 blocks 1 and 3 and by L1 role 3 in every layer.
  * @unit ms
  * @min 0
  * @max 250
@@ -501,3 +501,249 @@ PARAM_DEFINE_FLOAT(MRL_S_TAV, 0.5f);
  * @group MRAC layers
  */
 PARAM_DEFINE_FLOAT(MRL_S_EF, 0.0f);
+
+/**
+ * rate layer adaptive law: 0 MRAC (MracAxis), 1 L1 (L1Axis.hpp: fast piecewise-constant estimate, low-pass control).
+ *
+ * L1 here: x = body rate [rad/s], command normalized torque.
+ * @value 0 MRAC
+ * @value 1 L1
+ * @group MRAC layers
+ */
+PARAM_DEFINE_INT32(MRL_R_LAW, 0);
+
+/**
+ * rate layer L1 roles (thesis three-role framework), bits: 1 feature memory, 2 bandwidth scheduler, 4 known physics.
+ * @min 0
+ * @max 7
+ * @group MRAC layers
+ */
+PARAM_DEFINE_INT32(MRL_R_L1R, 0);
+
+/**
+ * rate layer L1 nominal input gain b (rad/s^2 per unit; measured in SIH 2026-11-05 (160-180 with the 50 ms motor lag)).
+ * @min -1000
+ * @max 1000
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_R_L1B, 170.0f);
+
+/**
+ * rate layer L1 predictor pole a_s (error decay rate of the state predictor).
+ * @unit rad/s
+ * @min 0.1
+ * @max 1000
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_R_L1A, 100.0f);
+
+/**
+ * rate layer L1 filter bandwidth w_c of C(s) = w_c / (s + w_c); sets robustness and delay margin.
+ * @unit rad/s
+ * @min 0.01
+ * @max 200
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_R_L1W, 10.0f);
+
+/**
+ * rate layer L1 role 3 known first-order lag of what follows the command (motor lag (SIH_T_TAU 0.0505 on the research drone)).
+ * @unit s
+ * @min 0
+ * @max 2
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_R_L1T, 0.0505f);
+
+/**
+ * attitude layer adaptive law: 0 MRAC (MracAxis), 1 L1 (L1Axis.hpp: fast piecewise-constant estimate, low-pass control).
+ *
+ * L1 here: x = roll/pitch angle [rad], command rate setpoint [rad/s].
+ * @value 0 MRAC
+ * @value 1 L1
+ * @group MRAC layers
+ */
+PARAM_DEFINE_INT32(MRL_A_LAW, 0);
+
+/**
+ * attitude layer L1 roles (thesis three-role framework), bits: 1 feature memory, 2 bandwidth scheduler, 4 known physics.
+ * @min 0
+ * @max 7
+ * @group MRAC layers
+ */
+PARAM_DEFINE_INT32(MRL_A_L1R, 0);
+
+/**
+ * attitude layer L1 nominal input gain b (angle rate per rate setpoint).
+ * @min -1000
+ * @max 1000
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_A_L1B, 1.0f);
+
+/**
+ * attitude layer L1 predictor pole a_s (error decay rate of the state predictor).
+ * @unit rad/s
+ * @min 0.1
+ * @max 1000
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_A_L1A, 40.0f);
+
+/**
+ * attitude layer L1 filter bandwidth w_c of C(s) = w_c / (s + w_c); sets robustness and delay margin.
+ * @unit rad/s
+ * @min 0.01
+ * @max 200
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_A_L1W, 4.0f);
+
+/**
+ * attitude layer L1 role 3 known first-order lag of what follows the command (inner rate-loop lag [S: rate loop + motor time constants]).
+ * @unit s
+ * @min 0
+ * @max 2
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_A_L1T, 0.08f);
+
+/**
+ * vz layer adaptive law: 0 MRAC (MracAxis), 1 L1 (L1Axis.hpp: fast piecewise-constant estimate, low-pass control).
+ *
+ * L1 here: x = vz NED [m/s], command thrust_body[2].
+ * @value 0 MRAC
+ * @value 1 L1
+ * @group MRAC layers
+ */
+PARAM_DEFINE_INT32(MRL_P_LAW, 0);
+
+/**
+ * vz layer L1 roles (thesis three-role framework), bits: 1 feature memory, 2 bandwidth scheduler, 4 known physics.
+ * @min 0
+ * @max 7
+ * @group MRAC layers
+ */
+PARAM_DEFINE_INT32(MRL_P_L1R, 0);
+
+/**
+ * vz layer L1 nominal input gain b (m/s^2 per thrust unit = g / hover thrust (0.38 on the research drone)).
+ * @min -1000
+ * @max 1000
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_P_L1B, 25.8f);
+
+/**
+ * vz layer L1 predictor pole a_s (error decay rate of the state predictor).
+ * @unit rad/s
+ * @min 0.1
+ * @max 1000
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_P_L1A, 30.0f);
+
+/**
+ * vz layer L1 filter bandwidth w_c of C(s) = w_c / (s + w_c); sets robustness and delay margin.
+ * @unit rad/s
+ * @min 0.01
+ * @max 200
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_P_L1W, 3.0f);
+
+/**
+ * vz layer L1 role 3 known first-order lag of what follows the command (motor lag).
+ * @unit s
+ * @min 0
+ * @max 2
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_P_L1T, 0.0505f);
+
+/**
+ * xy layer adaptive law: 0 MRAC (MracAxis), 1 L1 (L1Axis.hpp: fast piecewise-constant estimate, low-pass control).
+ *
+ * L1 here: x = horizontal velocity NED [m/s], command acceleration setpoint [m/s^2].
+ * @value 0 MRAC
+ * @value 1 L1
+ * @group MRAC layers
+ */
+PARAM_DEFINE_INT32(MRL_X_LAW, 0);
+
+/**
+ * xy layer L1 roles (thesis three-role framework), bits: 1 feature memory, 2 bandwidth scheduler, 4 known physics.
+ * @min 0
+ * @max 7
+ * @group MRAC layers
+ */
+PARAM_DEFINE_INT32(MRL_X_L1R, 0);
+
+/**
+ * xy layer L1 nominal input gain b (velocity rate per acceleration setpoint).
+ * @min -1000
+ * @max 1000
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_X_L1B, 1.0f);
+
+/**
+ * xy layer L1 predictor pole a_s (error decay rate of the state predictor).
+ * @unit rad/s
+ * @min 0.1
+ * @max 1000
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_X_L1A, 15.0f);
+
+/**
+ * xy layer L1 filter bandwidth w_c of C(s) = w_c / (s + w_c); sets robustness and delay margin.
+ * @unit rad/s
+ * @min 0.01
+ * @max 200
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_X_L1W, 1.5f);
+
+/**
+ * xy layer L1 role 3 known first-order lag of what follows the command (attitude-loop lag [S]).
+ * @unit s
+ * @min 0
+ * @max 2
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_X_L1T, 0.15f);
+
+/**
+ * xy layer L1 role 3 known linear drag per mass (v_dot += -MRL_X_L1D v); SIH: SIH_KDV / SIH_MASS.
+ * @unit 1/s
+ * @min 0
+ * @max 5
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_X_L1D, 0.0f);
+
+/**
+ * L1 role 2 scheduler floor as a fraction of the layer's umax (amplitude gate on the high band of sigma_hat).
+ * @min 0
+ * @max 5
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_L1_EF, 0.2f);
+
+/**
+ * L1 role 1 feature-memory learning gain (normalised gradient toward sigma_hat).
+ * @min 0
+ * @max 100
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_L1_KF, 0.5f);
+
+/**
+ * L1 role 1 feature-memory leakage.
+ * @unit 1/s
+ * @min 0
+ * @max 10
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_L1_LK, 0.02f);
