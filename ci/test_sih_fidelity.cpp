@@ -72,6 +72,7 @@ int main()
 	{
 		State sb;
 		const float u2[4] {0.39f, 0.39f, 0.39f, 0.39f};
+		step(pb, sb, u2, tmax, qmax, l, l, m, z3, z3, 0.f, 10.f, dt);   // power follows last step's thrust
 		Out o = step(pb, sb, u2, tmax, qmax, l, l, m, z3, z3, 0.f, 10.f, dt);
 		const float P = sb.v_bat * sb.i_bat, T0 = o.T[0];
 		check(P > 80.f && P < 220.f, "battery hover power 80-220 W", P);
@@ -81,6 +82,20 @@ int main()
 
 		check(sb.soc > 0.55f && sb.soc < 0.75f, "after 180 s hover (~11 A from 1.5 Ah) SoC 0.55-0.75", sb.soc);
 		check(o.T[0] < T0, "thrust at the same throttle drops with the battery", o.T[0] / T0);
+	}
+	// 6b worn pack at altitude, full throttle (wave P failure case): 1875 m, 9 C, R0 0.096, still lifts the drone
+	Params pw; pw.bat_cap = 1489.f; pw.bat_n = 4.f; pw.bat_r0 = 0.096f; pw.bat_soc0 = 0.955f; pw.bat_eta = 0.505f;
+	pw.rho_en = 1; pw.air_t = 9.f; pw.thr_fac = 0.39f;
+	{
+		State sw;
+		const float uf[4] {1.f, 1.f, 1.f, 1.f};
+		Out o{};
+
+		for (int k = 0; k < 400; k++) { o = step(pw, sw, uf, 6.59f, qmax, l, l, 1.01f, z3, z3, 1875.f, 0.f, dt); }
+
+		const float tw = (o.T[0] + o.T[1] + o.T[2] + o.T[3]) / (1.01f * 9.80665f);
+		check(tw > 1.4f, "worn pack at 1875 m, full throttle: thrust/weight > 1.4", tw);
+		check(sw.v_bat > 12.5f, "worn pack at full throttle: voltage > 12.5 V (no collapse)", sw.v_bat);
 	}
 	// 7 CoM offset 1 cm forward: nose-down (negative? FRD pitch +) torque = x_cm * T
 	Params pc; pc.com_x = 0.01f;

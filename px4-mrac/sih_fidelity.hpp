@@ -44,6 +44,7 @@ struct State {
 	float soc{-1.f};          // < 0: not started (set from SIH_BAT_SOC0 on first use)
 	float v_bat{0.f}, i_bat{0.f};
 	float n[4] {};            // rotor speed fractions, for vibration
+	float T[4] {};            // thrust delivered last step [N] (battery power is drawn by what the rotors deliver)
 	float phase[4] {};
 };
 
@@ -104,8 +105,10 @@ inline Out step(const Params &p, State &s, const float u[4], float t_max, float 
 		float P = 0.f;
 
 		for (int i = 0; i < 4; i++) {
-			const float Ti = t_max * thrust_curve(clampf(u[i], 0.f, 1.f), p.thr_fac);
-			P += Ti * sqrtf(Ti / (2.f * rho * area));                 // ideal induced power
+			// ideal induced power of the thrust the rotor delivered last step: a sagging pack spins the motors
+			// slower and draws less (power from the commanded thrust over-drew and collapsed the voltage, wave P)
+			const float Ti = fmaxf(s.T[i], 0.f);
+			P += Ti * sqrtf(Ti / (2.f * rho * area));
 		}
 
 		P /= clampf(p.bat_eta, 0.05f, 1.f);
@@ -137,6 +140,7 @@ inline Out step(const Params &p, State &s, const float u[4], float t_max, float 
 	for (int i = 0; i < 4; i++) {
 		const float uc = thrust_curve(clampf(u[i], 0.f, 1.f), p.thr_fac);
 		o.T[i] = t_max * uc * p.eff[i] * sig * kb * fl * ge;
+		s.T[i] = o.T[i];
 		Tsum += o.T[i];
 		s.n[i] = sqrtf(fmaxf(uc * p.eff[i] * kb, 0.f));               // omega / omega_max
 		nsum += s.n[i];

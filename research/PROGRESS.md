@@ -883,3 +883,12 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
   `ramp` (a float). The missions stopped there (no return leg, gust or landing), so this run holds no result.
   Fixed (helper renamed `ramp_param`, AST check: no helper is shadowed by a local of any function); wave O re-flown.
   Wave P is not affected (its decks have no ramp step; the battery model sags instead).
+
+## Wave P second try: battery model bug, no result (2026-11-06, run 42106790422)
+- `results/P-highfidelity-42106790422` (dfc9321): 97/240; 107 flights never landed, most of them never finished the
+  takeoff (hold None). ULog of hf-alone seed 11 (home 1875 m, 9 C, pack R0 0.096 ohm): motors at 0.94-1.00 for 90 s,
+  ground-truth altitude 0. Cause: sih_fidelity.hpp drew battery power from the COMMANDED thrust at full voltage, so a
+  sagging pack still paid full-throttle current (about 600 W), the voltage collapsed and the thrust with it. A real
+  motor at lower voltage spins slower and draws less. Fixed: power from the thrust the rotors delivered last step.
+  ci/test_sih_fidelity.cpp gains the failure case (that pack at full throttle: thrust/weight 1.60, 13.75 V; 20 checks
+  pass). The arm comparison of this run is not used: takeoff failures were a model artefact. Wave P re-flown.
