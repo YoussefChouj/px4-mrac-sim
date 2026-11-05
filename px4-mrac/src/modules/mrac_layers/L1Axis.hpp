@@ -16,6 +16,9 @@
  *     layer) is fitted to sigma_hat by normalised gradient with leakage; it feeds forward unfiltered as a
  *     function of the measured state, and only the residual sigma_hat - Theta' phi goes through C(s). The learned
  *     map is what survives a fault-free stretch (memory), the lumped estimate handles the rest.
+ *     mv = 1 (memory v2, after wave M showed v1 adds error): phi is low-passed at 2 w_c and the map is fitted to
+ *     the low-frequency estimate already applied (Theta' phi_f + C(s) residual), so the memory consolidates what
+ *     the filter compensates instead of chasing the raw, noisy sigma_hat; Theta survives landing resets.
  *   2 role 2, scheduler: w_c is scaled by s = 1 / (1 + k rho^2), rho = high-band power of sigma_hat (first-order
  *     high-pass at fc) over its total plus a floor (ef * umax)^2. A large high-band estimate (a delay limit cycle)
  *     lowers the filter bandwidth; noise-sized estimates leave it alone. s is a known function of measured signals
@@ -34,6 +37,7 @@ struct L1Cfg {
 	float b{1.f}, as{10.f}, wc{1.f}, tau{0.f}, dly{0.f}, umax{1.f};
 	int roles{0};
 	float fc{1.5f}, k{20.f}, tav{0.5f}, ef{0.2f}, kf{0.5f}, lk{0.02f};
+	int mv{0};
 };
 
 struct L1Axis {
@@ -41,6 +45,7 @@ struct L1Axis {
 	static constexpr int NF = 3;
 	float xh{0.f}, sig{0.f}, uf{0.f}, u_out{0.f}, up{0.f}, uprev{0.f};
 	float theta[NF] {};
+	float phif[NF] {1.f, 0.f, 0.f};
 	float ubuf[NBUF] {};
 	int bi{0};
 	bool init{false};
@@ -52,6 +57,7 @@ struct L1Axis {
 	void reset(float x)
 	{
 		xh = x; sig = 0.f; uf = 0.f; u_out = 0.f; up = 0.f; uprev = 0.f; bi = 0; init = true;
+		phif[1] = s[0]; phif[2] = s[1];
 		sc = 1.f; shp = 0.f; sprev = 0.f; phf = 0.f; ptot = 0.f; xt = 0.f;
 
 		for (float &u : ubuf) { u = 0.f; }
@@ -93,16 +99,25 @@ struct L1Axis {
 		sig = -(as * mu / ((1.f - mu) * b)) * xt;
 
 		// role 1: slow feature map fitted to sigma_hat
-		const float phi[NF] {1.f, s[0], s[1]};
+		float phi[NF] {1.f, s[0], s[1]};
 		float fm = 0.f;
+
+		if (c.mv == 1) {   // memory v2: features low-passed at 2 w_c
+			const float a2 = math::min(dt * 2.f * c.wc, 1.f);
+
+			for (int i = 1; i < NF; i++) { phif[i] += (phi[i] - phif[i]) * a2; phi[i] = phif[i]; }
+		}
 
 		if (c.roles & 1) {
 			float pp = 1.f, pred = 0.f;
 
 			for (int i = 0; i < NF; i++) { pp += phi[i] * phi[i]; pred += theta[i] * phi[i]; }
 
+			// v1 fits the raw estimate; v2 fits the low-frequency estimate applied last step (-u_out = map + filter)
+			const float tgt = (c.mv == 1) ? -u_out : sig;
+
 			for (int i = 0; i < NF; i++) {
-				theta[i] = math::constrain(theta[i] + dt * (c.kf * (sig - pred) * phi[i] / pp - c.lk * theta[i]),
+				theta[i] = math::constrain(theta[i] + dt * (c.kf * (tgt - pred) * phi[i] / pp - c.lk * theta[i]),
 							   -c.umax, c.umax);
 				fm += theta[i] * phi[i];
 			}

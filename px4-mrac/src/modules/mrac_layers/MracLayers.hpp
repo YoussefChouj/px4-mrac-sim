@@ -99,6 +99,7 @@ private:
 		(ParamFloat<px4::params::MRL_R_L1T>) _param_l1t,
 		(ParamFloat<px4::params::MRL_L1_EF>) _param_l1_ef,
 		(ParamFloat<px4::params::MRL_L1_KF>) _param_l1_kf,
-		(ParamFloat<px4::params::MRL_L1_LK>) _param_l1_lk
+		(ParamFloat<px4::params::MRL_L1_LK>) _param_l1_lk,
+		(ParamInt<px4::params::MRL_L1_MV>) _param_l1_mv
 	)
 };

@@ -114,7 +114,7 @@ void MracLayers::Run()
 			const L1Cfg lc{_param_l1b.get(), _param_l1a.get(), _param_l1w.get(), _param_l1t.get(),
 				       math::max(_param_kdly.get(), 0.f) * 1e-3f, _param_umax.get(), _param_l1r.get(),
 				       _param_s_fc.get(), _param_s_k.get(), _param_s_tav.get(), _param_l1_ef.get(),
-				       _param_l1_kf.get(), _param_l1_lk.get()};
+				       _param_l1_kf.get(), _param_l1_lk.get(), _param_l1_mv.get()};
 			_l1[a].s[0] = _ax[a].s[0];
 			_l1[a].s[1] = _ax[a].s[1];
 			u_ad = _l1[a].step(av.xyz[a], base.xyz[a], 0.f, dt, _landed, on, lc, _sat_pos[a], _sat_neg[a]);

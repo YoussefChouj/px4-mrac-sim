@@ -66,7 +66,7 @@ void MracAttLayer::Run()
 		if (l1) {
 			// L1: x = angle, command = rate setpoint [rad/s], nominal angle_dot = rate (b = 1); role 3 knows the
 			// inner rate loop as a first-order lag MRL_A_L1T plus the transport delay
-			const L1Cfg lc = L1Cfg{_param_al1b.get(), _param_al1a.get(), _param_al1w.get(), _param_al1t.get(), math::max(_param_kdly.get(), 0.f) * 1e-3f, _param_umax.get(), _param_al1r.get(), _param_s_fc.get(), _param_s_k.get(), _param_s_tav.get(), _param_l1_ef.get(), _param_l1_kf.get(), _param_l1_lk.get()};
+			const L1Cfg lc = L1Cfg{_param_al1b.get(), _param_al1a.get(), _param_al1w.get(), _param_al1t.get(), math::max(_param_kdly.get(), 0.f) * 1e-3f, _param_umax.get(), _param_al1r.get(), _param_s_fc.get(), _param_s_k.get(), _param_s_tav.get(), _param_l1_ef.get(), _param_l1_kf.get(), _param_l1_lk.get(), _param_l1_mv.get()};
 			_l1[a].s[0] = _ax[a].s[0];
 			_l1[a].s[1] = _ax[a].s[1];
 			u = _l1[a].step(x[a], *rate[a], 0.f, dt, _landed, mode == 1, lc);
@@ -160,7 +160,7 @@ void MracPosLayer::Run()
 		// thrust (MRL_P_L1B); role 3 adds the tilt factor cos(tilt) to b, the motor lag and the delay
 		const float ct = 1.f - 2.f * (base.q_d[1] * base.q_d[1] + base.q_d[2] * base.q_d[2]);
 		const bool phys = _param_pl1r.get() & 4;
-		const L1Cfg lc = L1Cfg{_param_pl1b.get() * (phys ? math::max(ct, 0.5f) : 1.f), _param_pl1a.get(), _param_pl1w.get(), _param_pl1t.get(), math::max(_param_kdly.get(), 0.f) * 1e-3f, _param_umax.get(), _param_pl1r.get(), _param_s_fc.get(), _param_s_k.get(), _param_s_tav.get(), _param_l1_ef.get(), _param_l1_kf.get(), _param_l1_lk.get()};
+		const L1Cfg lc = L1Cfg{_param_pl1b.get() * (phys ? math::max(ct, 0.5f) : 1.f), _param_pl1a.get(), _param_pl1w.get(), _param_pl1t.get(), math::max(_param_kdly.get(), 0.f) * 1e-3f, _param_umax.get(), _param_pl1r.get(), _param_s_fc.get(), _param_s_k.get(), _param_s_tav.get(), _param_l1_ef.get(), _param_l1_kf.get(), _param_l1_lk.get(), _param_l1_mv.get()};
 		_l1z.s[0] = _z.s[0];
 		_l1z.s[1] = _z.s[1];
 		u = PX4_ISFINITE(lpos.vz) ? _l1z.step(lpos.vz, base.thrust_body[2], 9.80665f, dt, _landed, mode == 1, lc) : 0.f;
@@ -195,14 +195,40 @@ void MracPosLayer::Run()
 		if (_param_xlaw.get() == 1) {
 			// L1: x = velocity (NED), command = acceleration setpoint [m/s^2], nominal v_dot = u (b = 1); role 3 adds
 			// linear drag -MRL_X_L1D v, the attitude-loop lag MRL_X_L1T and the delay
-			const L1Cfg lc = L1Cfg{_param_xl1b.get(), _param_xl1a.get(), _param_xl1w.get(), _param_xl1t.get(), math::max(_param_kdly.get(), 0.f) * 1e-3f, _param_xy_umax.get(), _param_xl1r.get(), _param_s_fc.get(), _param_s_k.get(), _param_s_tav.get(), _param_l1_ef.get(), _param_l1_kf.get(), _param_l1_lk.get()};
+			const L1Cfg lc = L1Cfg{_param_xl1b.get(), _param_xl1a.get(), _param_xl1w.get(), _param_xl1t.get(), math::max(_param_kdly.get(), 0.f) * 1e-3f, _param_xy_umax.get(), _param_xl1r.get(), _param_s_fc.get(), _param_s_k.get(), _param_s_tav.get(), _param_l1_ef.get(), _param_l1_kf.get(), _param_l1_lk.get(), _param_l1_mv.get()};
 			_l1xy[i].s[0] = _xy[i].s[0];
 			_l1xy[i].s[1] = _xy[i].s[1];
 			_l1xy[i].fk = PX4_ISFINITE(vi) ? -_param_xl1d.get() * vi : 0.f;
-			uxy[i] = PX4_ISFINITE(vi) ? _l1xy[i].step(vi, _acc_sp[i], 0.f, dt, _landed, xy_mode == 1, lc) : 0.f;
+			uxy[i] = PX4_ISFINITE(vi) ? _l1xy[i].step(vi, _acc_sp[i], 0.f, dt, _landed, xy_mode == 1, lc, _xy_clip_pos[i],
+					 _xy_clip_neg[i]) : 0.f;
 
 		} else {
 			uxy[i] = PX4_ISFINITE(acc[i]) ? _xy[i].step(acc[i], _acc_sp[i], dt, _landed, xy_mode == 1, xy_mode == 1, gx) : 0.f;
+		}
+	}
+
+	// tilt budget (feasibility, MRL_X_TILT deg, 0 = off): the adaptive acceleration may not raise the horizontal
+	// acceleration past g tan(budget), nor past what the baseline already commands; the clip is fed back to L1 as
+	// saturation so its filter does not wind up
+	_xy_clip_pos[0] = _xy_clip_pos[1] = _xy_clip_neg[0] = _xy_clip_neg[1] = false;
+
+	if (_param_xlaw.get() == 1 && _param_xtilt.get() > 0.f) {
+		const float amax = 9.80665f * tanf(math::radians(math::constrain(_param_xtilt.get(), 1.f, 80.f)));
+		const float ab2 = _acc_sp[0] * _acc_sp[0] + _acc_sp[1] * _acc_sp[1];
+		const float at0 = _acc_sp[0] + uxy[0], at1 = _acc_sp[1] + uxy[1];
+		const float R = math::max(amax, sqrtf(ab2));
+		const float uu = uxy[0] * uxy[0] + uxy[1] * uxy[1];
+
+		if (uu > 1e-9f && at0 * at0 + at1 * at1 > R * R) {
+			const float bu = _acc_sp[0] * uxy[0] + _acc_sp[1] * uxy[1];
+			const float k = math::constrain((-bu + sqrtf(math::max(bu * bu - uu * (ab2 - R * R), 0.f))) / uu, 0.f, 1.f);
+
+			for (int i = 0; i < 2; i++) {
+				_xy_clip_pos[i] = uxy[i] > 0.f;
+				_xy_clip_neg[i] = uxy[i] < 0.f;
+				uxy[i] *= k;
+				_l1xy[i].uprev = uxy[i];   // the predictor must see what was applied
+			}
 		}
 	}
 

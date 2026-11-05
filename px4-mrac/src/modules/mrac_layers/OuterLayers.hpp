@@ -80,7 +80,8 @@ private:
 		(ParamFloat<px4::params::MRL_S_TAV>) _param_s_tav,
 		(ParamFloat<px4::params::MRL_L1_EF>) _param_l1_ef,
 		(ParamFloat<px4::params::MRL_L1_KF>) _param_l1_kf,
-		(ParamFloat<px4::params::MRL_L1_LK>) _param_l1_lk
+		(ParamFloat<px4::params::MRL_L1_LK>) _param_l1_lk,
+		(ParamInt<px4::params::MRL_L1_MV>) _param_l1_mv
 	)
 };
 
@@ -108,6 +109,7 @@ private:
 	MracAxis _xy[2];
 	L1Axis _l1z;
 	L1Axis _l1xy[2];
+	bool _xy_clip_pos[2] {}, _xy_clip_neg[2] {};
 	float _acc_sp[2] {};
 	float _vz_sp{0.f};
 	bool _landed{true};
@@ -149,12 +151,14 @@ private:
 		(ParamFloat<px4::params::MRL_X_L1W>) _param_xl1w,
 		(ParamFloat<px4::params::MRL_X_L1T>) _param_xl1t,
 		(ParamFloat<px4::params::MRL_X_L1D>) _param_xl1d,
+		(ParamFloat<px4::params::MRL_X_TILT>) _param_xtilt,
 		(ParamFloat<px4::params::MRL_R_KDLY>) _param_kdly,
 		(ParamFloat<px4::params::MRL_S_FC>) _param_s_fc,
 		(ParamFloat<px4::params::MRL_S_K>) _param_s_k,
 		(ParamFloat<px4::params::MRL_S_TAV>) _param_s_tav,
 		(ParamFloat<px4::params::MRL_L1_EF>) _param_l1_ef,
 		(ParamFloat<px4::params::MRL_L1_KF>) _param_l1_kf,
-		(ParamFloat<px4::params::MRL_L1_LK>) _param_l1_lk
+		(ParamFloat<px4::params::MRL_L1_LK>) _param_l1_lk,
+		(ParamInt<px4::params::MRL_L1_MV>) _param_l1_mv
 	)
 };
