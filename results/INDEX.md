@@ -4,6 +4,7 @@ One folder per finished `arms` run: `all.json` (every flight; `run` = seed index
 
 | finished UTC | wave | branch | sha | pass / jobs | lost | plan / build / fly | folder |
 |---|---|---|---|---|---|---|---|
+| 2026-11-05 20:46 | P-highfidelity | claude/collect-landed | c6c54d8 | 0 / 240 | 0 | success / success / success | [P-highfidelity-42104503167](P-highfidelity-42104503167/) |
 | 2026-11-05 11:21 | N-l1-roles-iter | claude/collect-landed | 7b823ac | 28 / 180 | 0 | success / success / success | [N-l1-roles-iter-42016856210](N-l1-roles-iter-42016856210/) |
 | 2026-11-05 11:10 | N-l1-roles-iter | claude/collect-landed | 2f76f35 | 0 / 180 | 180 | success / failure / skipped | [N-l1-roles-iter-42016333374](N-l1-roles-iter-42016333374/) |
 | 2026-11-05 11:03 | M-l1-realworld | claude/collect-landed | 1d3cb86 | 41 / 252 | 0 | success / success / success | [M-l1-realworld-42013772172](M-l1-realworld-42013772172/) |

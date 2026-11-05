@@ -1,0 +1,52 @@
+/home/runner/.venvs/px4/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:3862: RuntimeWarning: Mean of empty slice
+  return _methods._mean(a, axis=axis, dtype=dtype,
+/home/runner/.venvs/px4/lib/python3.12/site-packages/numpy/_core/_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+hf-l1r6-17 FAIL rate_rms_rp=nan att_track_rms_deg=nan tilt_geo_max_deg=nan motor_sat_frac=nan sp_dt_p99_ms=200.0000 uad_max=0.0000 theta_end=0.0000 att_uad_max=0.0000 att_theta_end=0.0000 pos_uad_max=0.0000 pos_theta_end=0.0000 xy_uad_max=0.0000 xy_theta_end=0.0000 d_SIH_LOC_H0=1275.6303 d_SIH_MASS=1.0176 d_SIH_IXX=0.0128 d_SIH_IYY=0.0149 d_SIH_IZZ=0.0103 d_SIH_T_MAX=6.1606 d_SIH_Q_MAX=0.0921 d_SIH_L_ROLL=0.1411 d_SIH_L_PITCH=0.1422 d_SIH_T_TAU=0.0692 d_SIH_KDV=0.0748 d_SIH_KDW=0.0186 d_SIH_MOT1_EFF=0.9736 d_SIH_ACT_DLY=18.0000 d_SIH_ACT_DJIT=2.6261 d_SIH_GYR_STD=0.0211 d_SIH_ACC_STD=0.1344 d_SIM_GPS_NSCL=1.6033 d_SIH_THR_FAC=0.2776 d_SIH_T_TAU_DN=0.0920 d_SIH_MOT2_EFF=0.9875 d_SIH_MOT3_EFF=0.9833 d_SIH_MOT4_EFF=0.9681 d_SIH_AIR_T=-8.4334
+
+metric                               hf-l1r6
+att_theta_end          0.0000 [0.000..0.000]
+att_track_rms_deg              nan [nan..nan]
+att_uad_max            0.0000 [0.000..0.000]
+d_SIH_ACC_STD          0.1344 [0.134..0.134]
+d_SIH_ACT_DJIT         2.6261 [2.626..2.626]
+d_SIH_ACT_DLY       18.0000 [18.000..18.000]
+d_SIH_AIR_T         -8.4334 [-8.433..-8.433]
+d_SIH_GYR_STD          0.0211 [0.021..0.021]
+d_SIH_IXX              0.0128 [0.013..0.013]
+d_SIH_IYY              0.0149 [0.015..0.015]
+d_SIH_IZZ              0.0103 [0.010..0.010]
+d_SIH_KDV              0.0748 [0.075..0.075]
+d_SIH_KDW              0.0186 [0.019..0.019]
+d_SIH_LOC_H0    1275.6303 [1275.630..1275.630]
+d_SIH_L_PITCH          0.1422 [0.142..0.142]
+d_SIH_L_ROLL           0.1411 [0.141..0.141]
+d_SIH_MASS             1.0176 [1.018..1.018]
+d_SIH_MOT1_EFF         0.9736 [0.974..0.974]
+d_SIH_MOT2_EFF         0.9875 [0.987..0.987]
+d_SIH_MOT3_EFF         0.9833 [0.983..0.983]
+d_SIH_MOT4_EFF         0.9681 [0.968..0.968]
+d_SIH_Q_MAX            0.0921 [0.092..0.092]
+d_SIH_THR_FAC          0.2776 [0.278..0.278]
+d_SIH_T_MAX            6.1606 [6.161..6.161]
+d_SIH_T_TAU            0.0692 [0.069..0.069]
+d_SIH_T_TAU_DN         0.0920 [0.092..0.092]
+d_SIM_GPS_NSCL         1.6033 [1.603..1.603]
+motor_sat_frac                nan [nan..nan]
+pos_theta_end          0.0000 [0.000..0.000]
+pos_uad_max            0.0000 [0.000..0.000]
+rate_rms_rp                   nan [nan..nan]
+sp_dt_p99_ms     200.0000 [200.000..200.000]
+theta_end              0.0000 [0.000..0.000]
+tilt_geo_max_deg              nan [nan..nan]
+uad_max                0.0000 [0.000..0.000]
+xy_theta_end           0.0000 [0.000..0.000]
+xy_uad_max             0.0000 [0.000..0.000]
+pass                                     0/1
+-> /home/runner/work/px4-mrac-sim/px4-mrac-sim/out/hf-l1r6-r17
+
+== checks hf-l1r6-17
+FAIL max_hold_err_m: None (limit 3.0)
+FAIL max_tilt_deg: None (limit 45)
+FAIL must_land: False (limit True)
+FAIL error: ParamError TIMEOUT: 'Timeout'; origin: get_param_float(); params: ('SIH_AIR_T',)
