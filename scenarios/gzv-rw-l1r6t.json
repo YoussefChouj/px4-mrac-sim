@@ -1,7 +1,7 @@
 {
  "sim": "gz",
  "vehicle": "research_drone_chase",
- "world": "gusty",
+ "world": "gusty_video",
  "speed": 1,
  "alt": 3.0,
  "limits": {
@@ -9,7 +9,7 @@
   "max_tilt_deg": 45,
   "must_land": true
  },
- "why": "Gazebo cross-check of the real-world mission (owner 2026-11-06): research drone gz model (per-rotor MulticopterMotorModel, rotor drag), gusty world (WindEffects: 3.4 m/s mean, 1 m/s Dryden turbulence, a +4 m/s 1-cosine gust), +25 ms actuator delay (SIM_GZ_ACT_DLY), PX4 PID baseline. Arm l1r6t as rw-l1r6t (SIH params dropped; vz L1 nominal b = g / 0.55 for the gz hover throttle). Chase-camera video.",
+ "why": "Gazebo cross-check of the real-world mission (owner 2026-11-06): research drone gz model (per-rotor MulticopterMotorModel, rotor drag), gusty world with a visual-only floor grid (worlds/gusty_video.sdf, same physics) (WindEffects: 3.4 m/s mean, 1 m/s Dryden turbulence, a +4 m/s 1-cosine gust), +25 ms actuator delay (SIM_GZ_ACT_DLY), PX4 PID baseline. Arm l1r6t as rw-l1r6t (SIH params dropped; vz L1 nominal b = g / 0.55 for the gz hover throttle). Chase-camera video.",
  "params": {
   "XYC_MODE": 0,
   "MRL_R_KDLY": 25.0,
