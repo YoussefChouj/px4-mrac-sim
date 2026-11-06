@@ -1031,3 +1031,21 @@ Paired medians [bootstrap 95 %]:
   (all-loops L1 passes 51.6 deg just after the fault; outer-only peaks 43.6 deg).
 - Reading: outer-only L1 is the configuration to carry: it keeps the hold/track gain of the full stack (fault or
   not) at PX4's tilt. Next: Gazebo wave S (10 seeds) checks the same ranking on a different simulator.
+
+## 2026-11-06 Gazebo wave S: 10 seeds, mission and dense path (run 42175778654)
+Gazebo Harmonic on CI (gz.yml, fresh gz build of ebced6d), research drone, decks gz-rw-* (real-world mission, as
+wave Q) and gzd-* (gusty_dense world: wind mean (3, 1.5) m/s, sigma 1, gust +4 m/s at 58 s, then the dense path of
+R/R3), 10 seeds, arms PX4 alone, L1 all loops (l1bd), L1 outer loops only (l1obd). Digest from the job artifacts
+(metrics.json) at 07:50 UTC with 3 gzd jobs still running (gzd-l1bd 3, 6; gzd-l1obd 5); 7 gz-rw jobs lost before
+flight (apt mirror: "gz runtime install try 2 failed"), 2 gzd flights refused arming (COMMAND_DENIED, gzd-alone 2,
+gzd-l1bd 10). Paired medians over the seeds both arms flew [bootstrap 95 %; n 6-9, so intervals are rough]:
+- Mission (gz-rw): l1obd vs PX4 hold -0.21 m [-0.25, -0.05] (5/6 better), track -0.09 m [-0.15, -0.06] (6/6), tilt
+  -1.1 deg [-1.5, +0.4]; pass 8/8 vs 7/7. l1bd vs PX4 hold -0.25, track -0.14, tilt +2.9 deg; pass 7/8 (seed 5:
+  61.4 deg). l1obd vs l1bd: tilt -3.0 deg (6/6), hold +0.04, track +0.01.
+- Dense path in gusts (gzd): cross-track rms PX4 52.6 cm (lap 1 38.3, lap 2 76.0), l1bd 42.5, l1obd 44.8. Paired
+  l1obd -7.5 cm [-13.7, -5.8] (8/8 better), lap 2 -9.4 cm, peak -22 cm, hold -0.30 m (8/8); tilt +2.9 deg [+2.6, +3.9]
+  but peaks of 26-32 deg only (the gate is 45). l1bd -10.1 cm, tilt +5.1 deg. l1obd vs l1bd +0.9 cm, tilt -1.9 deg.
+- Same ranking as SIH waves R2/R3: the outer loops carry the gain, the inner L1 layers carry the tilt cost; Gazebo
+  gains are about 2/3 of SIH's on the dense path (different physics and wind model).
+- Figures and video: research/figs/S-gz-dense-seed1.png; research/videos/gz-dense-px4-vs-l1outer.mp4 (chase camera,
+  side by side, seed 1: cross-track rms 47.4 vs 40.5 cm, peak 132 vs 106 cm, from the step metric).
