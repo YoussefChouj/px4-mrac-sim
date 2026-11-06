@@ -964,3 +964,6 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
   the second time); gzv-rw-l1r6t timed out twice in the silent Gazebo install (exit 124 at the 20 min limit, no apt
   output). ci/run_gz.sh now waits for the dpkg lock (a runner's own background apt [S]), bounds each try to 15 min,
   retries once and keeps the apt output. L1 video re-flown alone.
+- Video: `research/videos/gz-px4-vs-l1.mp4` (10.2 MB, 1280x360, 106 s, H.264 crf 28): Gazebo chase-camera renders of
+  PX4 PID (gz run 42142639940) and L1 + tilt budget (gz run 42145058896), seed 1, gridded gusty world (same physics as
+  wave Q), side by side from takeoff, labelled. The L1 video flew after the install fix (c6da7f8).
