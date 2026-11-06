@@ -53,6 +53,12 @@ L1 (all loops, three roles): waves M, N real-world mission: roles 2+3 + xy tilt 
 ranking; old MRAC flips there. Open: all-loop tilt/thrust-margin budget, robust delay handling, E4; L4 real-log
 identification and HITL need the owner.
 
+2026-11-06 (waves R, R2, R3, Gazebo S): authority budget and online delay identification built; the inner L1 layers
+cause the extra tilt, so the recommended stack is L1 in the outer loops only (roles 2+3 + budget + online delay):
+same hold/track gain as all loops (motor fault included) at PX4's peak tilt, SIH 30 seeds and Gazebo 10 seeds.
+Dense waypoint path (5 cm apart) cross-track -23 % SIH, -14 % Gazebo. Open: acceleration feed-forward for the
+baseline's reference lag (owner), memory role 1 episodic test (E4), V6 fair baselines.
+
 Checks live in PROGRESS.md. Done: P1-P7, P9, P10, P12 (pipeline), P8 M2 (actuator delay). P11 done except wind
 gusts (SIH has no wind; moved to P13). Open: P8 gyro noise + attitude step vs lab_d_sysid_angle, P13-P15.
 Seeds: every sim noise source draws from one libc rand() seeded 1234 (sih.cpp, SensorBaroSim.cpp); at speed 5 the

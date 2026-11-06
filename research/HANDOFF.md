@@ -1,6 +1,6 @@
 # Handoff
 
-Updated 2026-11-04 by the desktop session (the owner's PC is off for 2-3 days). Read `CLAUDE.md` first, and update
+Updated 2026-11-06 by a cloud session (branch claude/collect-landed, not merged into main yet). Read `CLAUDE.md` first, and update
 this file (state + next) before every session ends.
 
 ## State
@@ -94,6 +94,19 @@ this file (state + next) before every session ends.
    Both emailed to the owner 2026-11-06. Branch claude/collect-landed is not merged into main yet.
    Open inside 3b: the inner-loop share of the extra tilt (rate L1 bandwidth or a rate-loop budget); L1 vs MRAC at
    0/20/30 ms on the V5 decks (delay-margin curve).
+3c. Done 2026-11-06 (PROGRESS "Wave R", "Wave R2", "Wave R3", "Gazebo wave S"; branch claude/collect-landed):
+   authority budget (AuthorityBudget.hpp, MRL_B_EN/TMRG/FMRG: outer command scaled toward the baseline to stay inside
+   tilt <= TILTMAX - margin and |F| <= 1 - margin; cut fed back to L1 as saturation) and online delay identification
+   (DelayBank in L1Axis.hpp, MRL_R_DEST 1 rate loop, 2 all loops). The budget cuts <1 % of the time: the extra tilt
+   was attitude overshoot from the inner L1 layers, not a larger outer command. Recommended configuration now:
+   L1 in the outer loops only (vz, xy; roles 2+3; budget; online delay; rate and attitude route-only) = scenarios
+   *-l1obd. SIH 30 seeds: hold -0.4..-0.5 m, track -0.13..-0.16 m, tilt +-0 deg vs PX4, motor fault included;
+   dense path (1035 waypoints 5 cm apart) cross-track -23 % (62.9 -> 48.7 cm). Gazebo 10 seeds: same ranking.
+   Dense step (agent/scenario.py 'dense', metrics dense_*), plots tools/dense_plots.py.
+   Open inside 3c: the dense error left is the baseline's reference lag (lap 2 lag rms 1.3 m at 3 m/s): offboard
+   position + velocity setpoints, no acceleration feed-forward. Proposed to the owner: an acceleration (curvature)
+   feed-forward arm in the dense step (guidance, not adaptation). Gazebo jobs can die in apt (gz runtime install);
+   wave S lost 7 of 62 that way.
 4. The review experiments below, then V4, V6-V8 and P13-P16 (`research/OPEN-ITEMS.md`).
 5. Decided 2026-11-06 (owner): 45 deg on the mission decks. Was: owner decision on the 35 deg tilt gate on the real-world mission decks (rw-*, rwf-*: PX4 PID itself peaks 35.3-36.7 deg
    in 7 of 18 flights) and heavy-hover-step's 35 deg tilt limit (PX4's default tilt maximum is 45 deg [S]). Do not change
