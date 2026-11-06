@@ -1,0 +1,63 @@
+Setting up libgz-sensors8-camera-dev:amd64 (8.3.0-1~noble) ...
+Setting up libgz-sensors8-gpu-lidar-dev:amd64 (8.3.0-1~noble) ...
+Setting up libgz-sensors8-thermal-camera-dev:amd64 (8.3.0-1~noble) ...
+Setting up libgz-sensors8-air-pressure-dev:amd64 (8.3.0-1~noble) ...
+Setting up libgz-sensors8-logical-camera-dev:amd64 (8.3.0-1~noble) ...
+Setting up libgz-sensors8-depth-camera-dev:amd64 (8.3.0-1~noble) ...
+Setting up libgz-sensors8-dev:amd64 (8.3.0-1~noble) ...
+Setting up libgz-sim8-dev:amd64 (8.15.0-1~noble) ...
+Setting up libgz-launch7-dev:amd64 (7.1.2-1~noble) ...
+Setting up gz-harmonic (1.0.0-1~noble) ...
+
+Running kernel seems to be up-to-date.
+
+No services need to be restarted.
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+/home/runner/work/px4-mrac-sim/px4-mrac-sim/vehicles/models/research_drone/model.sdf
+gz-rw-l1bd-5 FAIL rate_rms_rp=0.3328 att_track_rms_deg=5.9887 tilt_geo_max_deg=61.7320 xy_err_rms_m=4.2454 xy_offset_m=0.1145 xy_spread_m=4.2439 motor_sat_frac=0.0278 sp_dt_p99_ms=204.0000 uad_max=0.2064 theta_end=0.0000 uad_clamp_frac=0.0000 theta_lim_frac=0.0000 sched_cut_mean=0.0344 sched_cut_p95=0.4040 dly_est_end_ms=29.6890 dly_est_med_ms=35.9943 att_uad_max=0.5000 att_theta_end=0.0000 att_uad_clamp_frac=0.7716 att_theta_lim_frac=0.0000 pos_uad_max=0.1500 pos_theta_end=0.0000 pos_uad_clamp_frac=0.0126 pos_theta_lim_frac=0.0000 xy_uad_max=1.9259 xy_theta_end=0.0000 xy_uad_clamp_frac=0.0000 xy_theta_lim_frac=0.0000 max_hold_err_m=0.3091 rms_track_err_m=0.5782 max_tilt_deg=61.3627 max_alt_err_m=0.2954
+
+metric                            gz-rw-l1bd
+att_theta_end          0.0000 [0.000..0.000]
+att_theta_lim_frac       0.0000 [0.000..0.000]
+att_track_rms_deg       5.9887 [5.989..5.989]
+att_uad_clamp_frac       0.7716 [0.772..0.772]
+att_uad_max            0.5000 [0.500..0.500]
+dly_est_end_ms      29.6890 [29.689..29.689]
+dly_est_med_ms      35.9943 [35.994..35.994]
+max_alt_err_m          0.2954 [0.295..0.295]
+max_hold_err_m         0.3091 [0.309..0.309]
+max_tilt_deg        61.3627 [61.363..61.363]
+motor_sat_frac         0.0278 [0.028..0.028]
+pos_theta_end          0.0000 [0.000..0.000]
+pos_theta_lim_frac       0.0000 [0.000..0.000]
+pos_uad_clamp_frac       0.0126 [0.013..0.013]
+pos_uad_max            0.1500 [0.150..0.150]
+rate_rms_rp            0.3328 [0.333..0.333]
+rms_track_err_m        0.5782 [0.578..0.578]
+sched_cut_mean         0.0344 [0.034..0.034]
+sched_cut_p95          0.4040 [0.404..0.404]
+sp_dt_p99_ms     204.0000 [204.000..204.000]
+theta_end              0.0000 [0.000..0.000]
+theta_lim_frac         0.0000 [0.000..0.000]
+tilt_geo_max_deg    61.7320 [61.732..61.732]
+uad_clamp_frac         0.0000 [0.000..0.000]
+uad_max                0.2064 [0.206..0.206]
+xy_err_rms_m           4.2454 [4.245..4.245]
+xy_offset_m            0.1145 [0.114..0.114]
+xy_spread_m            4.2439 [4.244..4.244]
+xy_theta_end           0.0000 [0.000..0.000]
+xy_theta_lim_frac       0.0000 [0.000..0.000]
+xy_uad_clamp_frac       0.0000 [0.000..0.000]
+xy_uad_max             1.9259 [1.926..1.926]
+pass                                     0/1
+-> /home/runner/work/px4-mrac-sim/px4-mrac-sim/out/gz-rw-l1bd-r5
+
+== checks gz-rw-l1bd-5
+PASS max_hold_err_m: 0.309 (limit 3.0)
+FAIL max_tilt_deg: 61.363 (limit 45)
+PASS must_land: True (limit True)

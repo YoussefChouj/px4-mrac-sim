@@ -1,0 +1,42 @@
+Setting up libgz-sensors8-camera-dev:amd64 (8.3.0-1~noble) ...
+Setting up libgz-sensors8-gpu-lidar-dev:amd64 (8.3.0-1~noble) ...
+Setting up libgz-sensors8-thermal-camera-dev:amd64 (8.3.0-1~noble) ...
+Setting up libgz-sensors8-air-pressure-dev:amd64 (8.3.0-1~noble) ...
+Setting up libgz-sensors8-logical-camera-dev:amd64 (8.3.0-1~noble) ...
+Setting up libgz-sensors8-depth-camera-dev:amd64 (8.3.0-1~noble) ...
+Setting up libgz-sensors8-dev:amd64 (8.3.0-1~noble) ...
+Setting up libgz-sim8-dev:amd64 (8.15.0-1~noble) ...
+Setting up libgz-launch7-dev:amd64 (7.1.2-1~noble) ...
+Setting up gz-harmonic (1.0.0-1~noble) ...
+
+Running kernel seems to be up-to-date.
+
+No services need to be restarted.
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+/home/runner/work/px4-mrac-sim/px4-mrac-sim/vehicles/models/research_drone/model.sdf
+/home/runner/.venvs/px4/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:3862: RuntimeWarning: Mean of empty slice
+  return _methods._mean(a, axis=axis, dtype=dtype,
+/home/runner/.venvs/px4/lib/python3.12/site-packages/numpy/_core/_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+gzd-l1bd-10 FAIL rate_rms_rp=nan att_track_rms_deg=nan tilt_geo_max_deg=nan motor_sat_frac=nan sp_dt_p99_ms=200.0000 max_tilt_deg=0.2696
+
+metric                              gzd-l1bd
+att_track_rms_deg              nan [nan..nan]
+max_tilt_deg           0.2696 [0.270..0.270]
+motor_sat_frac                nan [nan..nan]
+rate_rms_rp                   nan [nan..nan]
+sp_dt_p99_ms     200.0000 [200.000..200.000]
+tilt_geo_max_deg              nan [nan..nan]
+pass                                     0/1
+-> /home/runner/work/px4-mrac-sim/px4-mrac-sim/out/gzd-l1bd-r10
+
+== checks gzd-l1bd-10
+FAIL max_hold_err_m: None (limit 3.0)
+PASS max_tilt_deg: 0.27 (limit 45)
+FAIL must_land: False (limit True)
+FAIL error: ActionError COMMAND_DENIED: 'Command Denied'; origin: arm(); params: ()
