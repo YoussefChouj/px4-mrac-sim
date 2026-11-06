@@ -1,0 +1,4 @@
+# Q (gz) video, L1 only (2026-11-06): re-fly the L1 chase-camera render; its first job timed out installing Gazebo (slow mirror).
+runs 1
+first 1
+gzv-rw-l1r6t
