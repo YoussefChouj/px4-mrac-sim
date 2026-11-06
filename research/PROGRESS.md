@@ -960,3 +960,7 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
 - Reading: the second physics engine agrees with SIH in direction and size (SIH wave P: hold -0.81..-1.18 m mean,
   track -0.14..-0.16 m, tilt +3.3..+3.9 deg): L1 tracks better, costs a few degrees of peak tilt, and old MRAC is
   unstable with the real delay. Three seeds only: a direction check, not an effect size.
+- Videos (gz runs 42138795657, 42142639940): gzv-rw-alone rendered both times (640x360, 15 fps, sim time, gridded world
+  the second time); gzv-rw-l1r6t timed out twice in the silent Gazebo install (exit 124 at the 20 min limit, no apt
+  output). ci/run_gz.sh now waits for the dpkg lock (a runner's own background apt [S]), bounds each try to 15 min,
+  retries once and keeps the apt output. L1 video re-flown alone.

@@ -1,0 +1,4 @@
+# Q (gz) video, L1 only, gridded world (2026-11-06): its job timed out twice while installing Gazebo; installs now wait for the dpkg lock and retry.
+runs 1
+first 1
+gzv-rw-l1r6t

@@ -16,8 +16,14 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-
 printf 'Acquire::Retries "5";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' \
   | sudo tee /etc/apt/apt.conf.d/80-ci-retries >/dev/null
 sudo apt-get update -qq
-sudo DEBIAN_FRONTEND=noninteractive timeout 20m apt-get install -y -qq gz-harmonic python3-gz-transport13 python3-gz-msgs10 \
-  xvfb ffmpeg libgl1-mesa-dri libegl1 >/dev/null
+# a runner's own background apt can hold the dpkg lock: wait for it, bound each try, retry once, keep the output
+for try in 1 2; do
+  sudo DEBIAN_FRONTEND=noninteractive timeout 15m apt-get -o DPkg::Lock::Timeout=300 install -y -qq gz-harmonic \
+    python3-gz-transport13 python3-gz-msgs10 xvfb ffmpeg libgl1-mesa-dri libegl1 2>&1 | tail -n 20 && \
+    command -v gz >/dev/null && break
+  echo "gz runtime install try $try failed" >&2
+  [[ $try == 2 ]] && exit 124
+done
 python3 -m venv ~/.venvs/px4
 source ~/.venvs/px4/bin/activate
 pip install -q -r "$here/ci/requirements.txt"
