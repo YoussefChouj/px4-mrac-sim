@@ -1,0 +1,39 @@
+{
+ "gzv-rw-alone": [
+  {
+   "rate_rms_rp": 0.15348498170287156,
+   "att_track_rms_deg": 2.605154614539465,
+   "missing_topics": "",
+   "tilt_geo_max_deg": 41.72079086303711,
+   "xy_err_rms_m": 4.044037155423364,
+   "xy_offset_m": 0.06535650889842863,
+   "xy_spread_m": 4.043509001002633,
+   "motor_sat_frac": 0.0074061241283728185,
+   "sp_dt_p99_ms": 228.0,
+   "uad_max": 0.0,
+   "theta_end": 0.0,
+   "uad_clamp_frac": 0.0,
+   "theta_lim_frac": 0.0,
+   "sched_cut_mean": 0.0,
+   "sched_cut_p95": 0.0,
+   "att_uad_max": 0.0,
+   "att_theta_end": 0.0,
+   "att_uad_clamp_frac": 0.0,
+   "att_theta_lim_frac": 0.0,
+   "pos_uad_max": 0.0,
+   "pos_theta_end": 0.0,
+   "pos_uad_clamp_frac": 0.0,
+   "pos_theta_lim_frac": 0.0,
+   "xy_uad_max": 0.0,
+   "xy_theta_end": 0.0,
+   "xy_uad_clamp_frac": 0.0,
+   "xy_theta_lim_frac": 0.0,
+   "pass": true,
+   "landed": true,
+   "max_hold_err_m": 0.5182673312126924,
+   "rms_track_err_m": 0.6867500069034117,
+   "max_tilt_deg": 41.4775276184082,
+   "run": 1
+  }
+ ]
+}
