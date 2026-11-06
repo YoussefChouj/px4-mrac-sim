@@ -85,12 +85,17 @@ this file (state + next) before every session ends.
    the high-fidelity physics (gate 45 binds: 20-22/30 pass vs PX4 26-27/30); L1 fails seed 8 (delay 32 ms vs 25
    assumed, slow motors). Next: tilt budget from the real tilt limit / thrust margin across all loops; robust delay
    (online estimate or lower rate bandwidth). Figures: research/figs (tools/mc_figs.py, tools/key_flight_plots.py),
-   emailed to the owner 2026-11-06. Gazebo: .github/workflows/gz.yml + ci/build_gz.sh + ci/run_gz.sh, waves-gz/;
-   first run 42106084872 (gz build OK in 19 min; flights hit the 40 min scenario timeout, cause to read).
+   emailed to the owner 2026-11-06. Gazebo on CI works: push `waves-gz/<name>.txt` -> `.github/workflows/gz.yml`
+   (ci/build_gz.sh, ci/run_gz.sh; about 5 min per flight, max 10 in parallel: validation sets only). Wave Q
+   (run 42138795657, 3 seeds, gz-rw-*): L1 + tilt budget vs PX4 hold -0.21 m [-0.30, -0.09], track -0.14 m, tilt
+   +4.2 deg, pass 2/3 vs 3/3; old MRAC flips 3/3. Same ranking as SIH wave P. Digest
+   `research/digests/wave-digest-Q-gz.md`, figure `research/figs/Q-gz-key-seed2`, side-by-side video
+   `research/videos/gz-px4-vs-l1.mp4` (vehicles/research_drone_chase, worlds/gusty_video.sdf; waves-gz/Q-gz-video*.txt).
+   Both emailed to the owner 2026-11-06. Branch claude/collect-landed is not merged into main yet.
    Open inside 3b: the inner-loop share of the extra tilt (rate L1 bandwidth or a rate-loop budget); L1 vs MRAC at
    0/20/30 ms on the V5 decks (delay-margin curve).
 4. The review experiments below, then V4, V6-V8 and P13-P16 (`research/OPEN-ITEMS.md`).
-5. Owner decision: the 35 deg tilt gate on the real-world mission decks (rw-*, rwf-*: PX4 PID itself peaks 35.3-36.7 deg
+5. Decided 2026-11-06 (owner): 45 deg on the mission decks. Was: owner decision on the 35 deg tilt gate on the real-world mission decks (rw-*, rwf-*: PX4 PID itself peaks 35.3-36.7 deg
    in 7 of 18 flights) and heavy-hover-step's 35 deg tilt limit (PX4's default tilt maximum is 45 deg [S]). Do not change
    the gate without the owner.
 

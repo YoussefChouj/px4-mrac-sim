@@ -48,6 +48,10 @@ cycle that blocks the land detector (PROGRESS "Delay failure traced"); the gam-v
 V9 v2 (rate layer): built; waves K and L: scheduler moves the delay edge to >30 ms and beats a constant low gain.
 L1 (all loops, three roles): waves M, N real-world mission: roles 2+3 + xy tilt budget hold ~35 % better and track
 ~15 % better than PX4 PID (18 seeds); memory role pays nothing in one mission, to be tested episodically (E4).
+2026-11-06: Monte Carlo (wave O) and high-fidelity SIH physics (wave P, sih_fidelity.hpp) confirm the L1 gain in
+27-29/30 seeds at +3.3-3.9 deg peak tilt (gate 45 binds); Gazebo on CI (gz.yml, wave Q, 3 seeds) gives the same
+ranking; old MRAC flips there. Open: all-loop tilt/thrust-margin budget, robust delay handling, E4; L4 real-log
+identification and HITL need the owner.
 
 Checks live in PROGRESS.md. Done: P1-P7, P9, P10, P12 (pipeline), P8 M2 (actuator delay). P11 done except wind
 gusts (SIH has no wind; moved to P13). Open: P8 gyro noise + attitude step vs lab_d_sysid_angle, P13-P15.
