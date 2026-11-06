@@ -106,7 +106,7 @@ this file (state + next) before every session ends.
    Open inside 3c: the dense error left is the baseline's reference lag (lap 2 lag rms 1.3 m at 3 m/s): offboard
    position + velocity setpoints, no acceleration feed-forward. Proposed to the owner: an acceleration (curvature)
    feed-forward arm in the dense step (guidance, not adaptation). Gazebo jobs can die in apt (gz runtime install);
-   wave S lost 7 of 62 that way.
+   wave S lost 10 of 62 that way (3 hung 30 min first).
 4. The review experiments below, then V4, V6-V8 and P13-P16 (`research/OPEN-ITEMS.md`).
 5. Decided 2026-11-06 (owner): 45 deg on the mission decks. Was: owner decision on the 35 deg tilt gate on the real-world mission decks (rw-*, rwf-*: PX4 PID itself peaks 35.3-36.7 deg
    in 7 of 18 flights) and heavy-hover-step's 35 deg tilt limit (PX4's default tilt maximum is 45 deg [S]). Do not change
@@ -128,5 +128,7 @@ this file (state + next) before every session ends.
 - Claim shape: bounded and configurable (which loops, disturbances and delay range), not "MRAC is better".
 
 ## Desktop-only (needs the owner's PC)
+- 2026-11-06: gz.yml fly-gz job: cache the gz runtime apt packages (or a prebuilt runner image) and give the
+  install step its own short timeout; wave S lost 10 of 62 jobs in `gz runtime install`.
 - 2026-11-06: Gazebo on CI (`build-gz` + `fly-gz` jobs), see `research/notes/fidelity-ladder.md` L5.
 - Any `.github/workflows/` change; Gazebo (gz) runs with rendering or video; local WSL caches; publishing the review.

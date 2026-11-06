@@ -1035,10 +1035,10 @@ Paired medians [bootstrap 95 %]:
 ## 2026-11-06 Gazebo wave S: 10 seeds, mission and dense path (run 42175778654)
 Gazebo Harmonic on CI (gz.yml, fresh gz build of ebced6d), research drone, decks gz-rw-* (real-world mission, as
 wave Q) and gzd-* (gusty_dense world: wind mean (3, 1.5) m/s, sigma 1, gust +4 m/s at 58 s, then the dense path of
-R/R3), 10 seeds, arms PX4 alone, L1 all loops (l1bd), L1 outer loops only (l1obd). Digest from the job artifacts
-(metrics.json) at 07:50 UTC with 3 gzd jobs still running (gzd-l1bd 3, 6; gzd-l1obd 5); 7 gz-rw jobs lost before
-flight (apt mirror: "gz runtime install try 2 failed"), 2 gzd flights refused arming (COMMAND_DENIED, gzd-alone 2,
-gzd-l1bd 10). Paired medians over the seeds both arms flew [bootstrap 95 %; n 6-9, so intervals are rough]:
+R/R3), 10 seeds, arms PX4 alone, L1 all loops (l1bd), L1 outer loops only (l1obd). Results folder
+`S-gz-validation+S-gz-video-dense-42175778654`: 49/62 pass, 10 jobs lost before flight (apt mirror: "gz runtime
+install try 2 failed"; 3 of them hung 30 min first), 2 flights refused arming (COMMAND_DENIED: gzd-alone 2, gzd-l1bd
+10), 1 real failure (gz-rw-l1bd 5, tilt 61.4 deg). Desktop-only fix proposed: cache the gz runtime apt packages. Paired medians over the seeds both arms flew [bootstrap 95 %; n 6-9, so intervals are rough]:
 - Mission (gz-rw): l1obd vs PX4 hold -0.21 m [-0.25, -0.05] (5/6 better), track -0.09 m [-0.15, -0.06] (6/6), tilt
   -1.1 deg [-1.5, +0.4]; pass 8/8 vs 7/7. l1bd vs PX4 hold -0.25, track -0.14, tilt +2.9 deg; pass 7/8 (seed 5:
   61.4 deg). l1obd vs l1bd: tilt -3.0 deg (6/6), hold +0.04, track +0.01.
