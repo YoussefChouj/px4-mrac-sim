@@ -1,4 +1,4 @@
-# R (owner 2026-11-06: do the recommended fixes; dense trajectory with 5 cm between waypoints). High-fidelity SIH,
+# R (second try 2026-11-06: first build failed, C++17 inline variable in a C++14 build) (owner 2026-11-06: do the recommended fixes; dense trajectory with 5 cm between waypoints). High-fidelity SIH,
 # every vehicle/sensor/scene param drawn per seed (same draws as wave P). Arms: PX4 PID, L1 + xy tilt budget (control,
 # wave P recommendation), L1 + all-loop authority budget, + online delay estimate. hf2 = wave P mission, dn = dense
 # 5 cm waypoint path at 1.5 and 3 m/s (sim speed 1). 4 arms x 2 decks x 30 seeds = 240 jobs.

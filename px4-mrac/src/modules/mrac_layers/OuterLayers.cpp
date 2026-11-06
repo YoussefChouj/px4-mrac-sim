@@ -90,7 +90,7 @@ void MracAttLayer::Run()
 		if (l1) {
 			// L1: x = angle, command = rate setpoint [rad/s], nominal angle_dot = rate (b = 1); role 3 knows the
 			// inner rate loop as a first-order lag MRL_A_L1T plus the transport delay
-			const float de = g_mrl_dly_est.load();
+			const float de = mrl_dly_est().load();
 			const float dly = (_param_dest.get() >= 2 && de >= 0.f) ? de : math::max(_param_kdly.get(), 0.f) * 1e-3f;
 			const L1Cfg lc = L1Cfg{_param_al1b.get(), _param_al1a.get(), _param_al1w.get(), _param_al1t.get(), dly, _param_umax.get(), _param_al1r.get(), _param_s_fc.get(), _param_s_k.get(), _param_s_tav.get(), _param_l1_ef.get(), _param_l1_kf.get(), _param_l1_lk.get(), _param_l1_mv.get()};
 			_l1[a].s[0] = _ax[a].s[0];
@@ -186,7 +186,7 @@ void MracPosLayer::Run()
 		_z.s[1] = PX4_ISFINITE(lpos.vx) && PX4_ISFINITE(lpos.vy) ? lpos.vx * lpos.vx + lpos.vy * lpos.vy : 0.f;
 	}
 	const bool l1z = _param_plaw.get() == 1;
-	const float de = g_mrl_dly_est.load();
+	const float de = mrl_dly_est().load();
 	const float dly = (_param_dest.get() >= 2 && de >= 0.f) ? de : math::max(_param_kdly.get(), 0.f) * 1e-3f;
 	float u = 0.f;
 

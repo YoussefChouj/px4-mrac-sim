@@ -151,11 +151,11 @@ void MracLayers::Run()
 
 	if (_param_dest.get() >= 1 && _dly_est[0] >= 0.f && _dly_est[1] >= 0.f) {
 		st.dly_est = 0.5f * (_dly_est[0] + _dly_est[1]);
-		g_mrl_dly_est.store(_param_dest.get() >= 2 ? st.dly_est : -1.f);
+		mrl_dly_est().store(_param_dest.get() >= 2 ? st.dly_est : -1.f);
 
 	} else {
 		st.dly_est = -1.f;
-		g_mrl_dly_est.store(-1.f);
+		mrl_dly_est().store(-1.f);
 	}
 
 	out.timestamp = hrt_absolute_time();

@@ -967,3 +967,8 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
 - Video: `research/videos/gz-px4-vs-l1.mp4` (10.2 MB, 1280x360, 106 s, H.264 crf 28): Gazebo chase-camera renders of
   PX4 PID (gz run 42142639940) and L1 + tilt budget (gz run 42145058896), seed 1, gridded gusty world (same physics as
   wave Q), side by side from takeoff, labelled. The L1 video flew after the install fix (c6da7f8).
+
+## 2026-11-06 Wave R first try: build failed (C++14)
+- Run 42171710576 (dfabd2a): compile error, `inline` variable in L1Axis.hpp needs C++17; PX4 v1.17 builds modules
+  with -std=gnu++14. 0/240 flown. Fixed with a function-local static (`mrl_dly_est()`); the module headers now
+  compile locally with PX4's warning flags at -std=gnu++14 before pushing.

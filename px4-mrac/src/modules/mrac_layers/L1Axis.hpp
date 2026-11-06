@@ -35,7 +35,12 @@
 #include <atomic>
 
 // online delay estimate [s] of the rate layer (MRL_R_DEST), read by the outer layers when MRL_R_DEST = 2; < 0 = none
-inline std::atomic<float> g_mrl_dly_est{-1.f};
+// (a function-local static: PX4 builds C++14, no inline variables; one instance across translation units)
+inline std::atomic<float> &mrl_dly_est()
+{
+	static std::atomic<float> v{-1.f};
+	return v;
+}
 
 struct L1Cfg {
 	float b{1.f}, as{10.f}, wc{1.f}, tau{0.f}, dly{0.f}, umax{1.f};
