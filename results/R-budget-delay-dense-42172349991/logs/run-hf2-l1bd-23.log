@@ -1,0 +1,68 @@
+/home/runner/.venvs/px4/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:3862: RuntimeWarning: Mean of empty slice
+  return _methods._mean(a, axis=axis, dtype=dtype,
+/home/runner/.venvs/px4/lib/python3.12/site-packages/numpy/_core/_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+hf2-l1bd-23 FAIL rate_rms_rp=nan att_track_rms_deg=nan tilt_geo_max_deg=nan motor_sat_frac=nan sp_dt_p99_ms=200.0000 pos_uad_max=0.0000 pos_theta_end=0.0000 xy_uad_max=0.0000 xy_theta_end=0.0000 max_tilt_deg=0.1363 d_SIH_LOC_H0=2266.5271 d_SIH_MASS=0.9902 d_SIH_IXX=0.0134 d_SIH_IYY=0.0151 d_SIH_IZZ=0.0128 d_SIH_T_MAX=6.1133 d_SIH_Q_MAX=0.1065 d_SIH_L_ROLL=0.1399 d_SIH_L_PITCH=0.1402 d_SIH_T_TAU=0.0422 d_SIH_KDV=0.0674 d_SIH_KDW=0.0302 d_SIH_MOT1_EFF=0.9877 d_SIH_ACT_DLY=28.0000 d_SIH_ACT_DJIT=1.8634 d_SIH_GYR_STD=0.0208 d_SIH_ACC_STD=0.1277 d_SIM_GPS_NSCL=0.9331 d_SIH_THR_FAC=0.2617 d_SIH_T_TAU_DN=0.0831 d_SIH_MOT2_EFF=0.9663 d_SIH_MOT3_EFF=0.9649 d_SIH_MOT4_EFF=0.9537 d_SIH_AIR_T=16.1199 d_SIH_RA_KAX=0.3353 d_SIH_RA_KTL=0.1504 d_SIH_RD_K=0.1299 d_SIH_CDA=0.0117 d_SIH_BAT_CAP=1653.5292 d_SIH_BAT_R0=0.0678 d_SIH_BAT_SOC0=0.8068 d_SIH_BAT_ETA=0.4557 d_SIH_COM_X=0.0027 d_SIH_COM_Y=-0.0066 d_SIH_VIB_ACC=0.5696 d_SIH_VIB_GYR=0.0377 d_SIH_VIB_H2=0.2085 d_SIH_ACC_BX=0.0609 d_SIH_ACC_BY=-0.1078 d_SIH_ACC_BZ=-0.0451 d_SIH_GYR_BX=-0.0056 d_SIH_GYR_BY=0.0064 d_SIH_GYR_BZ=-0.0085
+
+metric                              hf2-l1bd
+att_track_rms_deg              nan [nan..nan]
+d_SIH_ACC_BX           0.0609 [0.061..0.061]
+d_SIH_ACC_BY        -0.1078 [-0.108..-0.108]
+d_SIH_ACC_BZ        -0.0451 [-0.045..-0.045]
+d_SIH_ACC_STD          0.1277 [0.128..0.128]
+d_SIH_ACT_DJIT         1.8634 [1.863..1.863]
+d_SIH_ACT_DLY       28.0000 [28.000..28.000]
+d_SIH_AIR_T         16.1199 [16.120..16.120]
+d_SIH_BAT_CAP   1653.5292 [1653.529..1653.529]
+d_SIH_BAT_ETA          0.4557 [0.456..0.456]
+d_SIH_BAT_R0           0.0678 [0.068..0.068]
+d_SIH_BAT_SOC0         0.8068 [0.807..0.807]
+d_SIH_CDA              0.0117 [0.012..0.012]
+d_SIH_COM_X            0.0027 [0.003..0.003]
+d_SIH_COM_Y         -0.0066 [-0.007..-0.007]
+d_SIH_GYR_BX        -0.0056 [-0.006..-0.006]
+d_SIH_GYR_BY           0.0064 [0.006..0.006]
+d_SIH_GYR_BZ        -0.0085 [-0.009..-0.009]
+d_SIH_GYR_STD          0.0208 [0.021..0.021]
+d_SIH_IXX              0.0134 [0.013..0.013]
+d_SIH_IYY              0.0151 [0.015..0.015]
+d_SIH_IZZ              0.0128 [0.013..0.013]
+d_SIH_KDV              0.0674 [0.067..0.067]
+d_SIH_KDW              0.0302 [0.030..0.030]
+d_SIH_LOC_H0    2266.5271 [2266.527..2266.527]
+d_SIH_L_PITCH          0.1402 [0.140..0.140]
+d_SIH_L_ROLL           0.1399 [0.140..0.140]
+d_SIH_MASS             0.9902 [0.990..0.990]
+d_SIH_MOT1_EFF         0.9877 [0.988..0.988]
+d_SIH_MOT2_EFF         0.9663 [0.966..0.966]
+d_SIH_MOT3_EFF         0.9649 [0.965..0.965]
+d_SIH_MOT4_EFF         0.9537 [0.954..0.954]
+d_SIH_Q_MAX            0.1065 [0.106..0.106]
+d_SIH_RA_KAX           0.3353 [0.335..0.335]
+d_SIH_RA_KTL           0.1504 [0.150..0.150]
+d_SIH_RD_K             0.1299 [0.130..0.130]
+d_SIH_THR_FAC          0.2617 [0.262..0.262]
+d_SIH_T_MAX            6.1133 [6.113..6.113]
+d_SIH_T_TAU            0.0422 [0.042..0.042]
+d_SIH_T_TAU_DN         0.0831 [0.083..0.083]
+d_SIH_VIB_ACC          0.5696 [0.570..0.570]
+d_SIH_VIB_GYR          0.0377 [0.038..0.038]
+d_SIH_VIB_H2           0.2085 [0.209..0.209]
+d_SIM_GPS_NSCL         0.9331 [0.933..0.933]
+max_tilt_deg           0.1363 [0.136..0.136]
+motor_sat_frac                nan [nan..nan]
+pos_theta_end          0.0000 [0.000..0.000]
+pos_uad_max            0.0000 [0.000..0.000]
+rate_rms_rp                   nan [nan..nan]
+sp_dt_p99_ms     200.0000 [200.000..200.000]
+tilt_geo_max_deg              nan [nan..nan]
+xy_theta_end           0.0000 [0.000..0.000]
+xy_uad_max             0.0000 [0.000..0.000]
+pass                                     0/1
+-> /home/runner/work/px4-mrac-sim/px4-mrac-sim/out/hf2-l1bd-r23
+
+== checks hf2-l1bd-23
+FAIL max_hold_err_m: None (limit 3.0)
+PASS max_tilt_deg: 0.136 (limit 45)
+FAIL must_land: False (limit True)
+FAIL error: ActionError COMMAND_DENIED: 'Command Denied'; origin: arm(); params: ()

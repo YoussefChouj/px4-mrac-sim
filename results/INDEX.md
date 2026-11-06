@@ -4,6 +4,7 @@ One folder per finished `arms` run: `all.json` (every flight; `run` = seed index
 
 | finished UTC | wave | branch | sha | pass / jobs | lost | plan / build / fly | folder |
 |---|---|---|---|---|---|---|---|
+| 2026-11-06 06:26 | R-budget-delay-dense | claude/collect-landed | 7b23344 | 203 / 240 | 0 | success / success / success | [R-budget-delay-dense-42172349991](R-budget-delay-dense-42172349991/) |
 | 2026-11-06 06:05 | R-budget-delay-dense | claude/collect-landed | dfabd2a | 0 / 240 | 240 | success / failure / skipped | [R-budget-delay-dense-42171710576](R-budget-delay-dense-42171710576/) |
 | 2026-11-06 01:43 | Q-gz-video-l1 | claude/collect-landed | c6da7f8 | 1 / 1 | 0 | success / success / success | [Q-gz-video-l1-42145058896](Q-gz-video-l1-42145058896/) |
 | 2026-11-06 01:36 | Q-gz-video | claude/collect-landed | 39d34a0 | 1 / 2 | 1 | success / success / failure | [Q-gz-video-42142639940](Q-gz-video-42142639940/) |
