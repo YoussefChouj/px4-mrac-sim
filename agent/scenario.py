@@ -432,6 +432,9 @@ async def dense_follow(drone, step, pos, ground, alt, offboard):
     wp, total = dense_path(ds, float(step.get('L', 8)), float(step.get('R', 3)), float(step.get('A', 1)),
                            float(step.get('lam', 8)), float(step.get('dz', 0.4)))
     N = len(wp)
+    # the step's clock is the IMU stream (simt); at 50 Hz it moves in 20 ms ticks, 6 cm at 3 m/s, so some 5 cm
+    # waypoints would never be sent (wave R: 7 % skipped). 250 Hz ticks are 1.2 cm.
+    await drone.telemetry.set_rate_imu(250)
     if not offboard:
         await drone.offboard.set_position_ned(PositionNedYaw(pos()[1], pos()[2], -(ground + alt), 0))
         await drone.offboard.start()

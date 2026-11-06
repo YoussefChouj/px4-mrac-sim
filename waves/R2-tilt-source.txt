@@ -1,0 +1,7 @@
+# R2 (2026-11-06, after wave R): wave R showed the extra peak tilt of the L1 arms is attitude overshoot past the
+# setpoint in the braking at the end of a goto (setpoint <= PX4's own), not a larger outer command, so the outer
+# budget hardly acts. This wave splits the cause: tilt limit held to 37 deg for PX4 and L1 (same limit both arms),
+# and L1 in the outer loops only. Same per-seed draws as waves P and R. 5 arms x 30 = 150 jobs.
+runs 30
+first 1
+hf3-alone hf3-alone-t37 hf3-l1bd hf3-l1bd-t37 hf3-l1obd

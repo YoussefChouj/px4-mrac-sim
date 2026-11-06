@@ -972,3 +972,25 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
 - Run 42171710576 (dfabd2a): compile error, `inline` variable in L1Axis.hpp needs C++17; PX4 v1.17 builds modules
   with -std=gnu++14. 0/240 flown. Fixed with a function-local static (`mrl_dly_est()`); the module headers now
   compile locally with PX4's warning flags at -std=gnu++14 before pushing.
+
+## 2026-11-06 Wave R: all-loop authority budget, online delay estimate, dense 5 cm waypoints (run 42172349991)
+Results folder `R-budget-delay-dense-42172349991` (dfabd2a+7b23344, one build), 30 paired seeds, same per-seed
+vehicle/sensor/scene draws as wave P (high-fidelity SIH physics). Paired medians vs PX4 PID [bootstrap 95 %].
+- Mission (hf2): L1 + xy tilt budget (l1r6t) hold -0.63 m [-0.83, -0.47], track -0.13 m, tilt +3.1 deg; + all-loop
+  budget (l1b) hold -0.60, track -0.13, tilt +3.7; + online delay (l1bd) hold -0.68 [-0.79, -0.39], track -0.14,
+  tilt +3.4 deg. Pass 26/30 PX4, 20, 20, 21/30: the 45 deg gate binds for every L1 arm. PX4 median hold 1.60 m.
+- The budget barely acts (cut in 0.6 % of airborne time). ULogs of seeds 2, 10, 12, 15 (PX4, l1r6t, l1b): the peak
+  tilt is in the braking at the end of a 20 m goto; PX4 commands 43-45 deg and flies 41-43, the L1 arms command
+  42-44 deg (no more than PX4) and fly 45-49: the extra is attitude overshoot past the setpoint (inner rate/attitude
+  L1 at 0.06-0.10 torque / 0.06 rad/s, scheduler already cutting w_c by 65-79 %), not a larger outer command.
+- Online delay estimate (l1bd, mrac_rate_status.dly_est, median of the second half of the flight): correlates with
+  the drawn SIH_ACT_DLY (r 0.86 hf2, 0.77 dn); fit est = 1.6 dly + 0.4 tau_ms - 35 ms (resid sd 5 ms): an effective
+  delay that also takes the motor lag and reads high at the long end (33 ms + slow motor -> 46 ms).
+- Dense waypoints (dn: 51.8 m loop, 1035 waypoints 5 cm apart, laps at 1.5 and 3 m/s, wind draws as hf): cross-track
+  rms PX4 61.9 cm (lap 1 42.8, lap 2 91.2), L1 arms 47.1-48.5 cm; paired l1b -14.7 cm [-17.5, -12.4] (30/30 seeds
+  better), lap 2 -22 cm, peak -36 cm; l1bd -13.6 cm (30/30), peak -37 cm. Tilt there 29-30 deg (no gate issue).
+  Pass: PX4 30/30, l1r6t 28, l1b 28, l1bd 30/30: seeds 8 and 27 (delay 32-33 ms, slow motors) do not land with the
+  assumed 25 ms (rate limit cycle on the ground, as wave H); with the online delay estimate they land.
+- Caveat: the step clock was the 50 Hz IMU stream, so at 3 m/s 7 % of the waypoints were never sent (6 cm ticks);
+  the IMU stream is 250 Hz in the dense step from now on. The waypoint polyline is the reference either way.
+- Next (inside the plan): wave R2 splits the tilt cause (same 37 deg tilt limit for PX4 and L1; L1 outer loops only).

@@ -1,0 +1,449 @@
+{
+ "sim": "sih",
+ "airframe": "research-drone",
+ "speed": 5,
+ "alt": 3.0,
+ "limits": {
+  "max_hold_err_m": 3.0,
+  "max_tilt_deg": 45,
+  "must_land": true
+ },
+ "why": "Wave R2 (source of the extra tilt), high-fidelity Monte Carlo mission as hf2-*: as l1bd with the rate and attitude L1 off (route only; the rate layer still identifies the delay for the outer loops): outer-loop L1 (vz, xy) only.",
+ "params": {
+  "SIH_MASS": {
+   "uniform": [
+    0.94,
+    1.04
+   ]
+  },
+  "SIH_IXX": {
+   "uniform": [
+    0.0118,
+    0.016
+   ]
+  },
+  "SIH_IYY": {
+   "uniform": [
+    0.0131,
+    0.0177
+   ]
+  },
+  "SIH_IZZ": {
+   "uniform": [
+    0.0096,
+    0.013
+   ]
+  },
+  "SIH_T_MAX": {
+   "uniform": [
+    6.06,
+    6.7
+   ]
+  },
+  "SIH_Q_MAX": {
+   "uniform": [
+    0.08,
+    0.12
+   ]
+  },
+  "SIH_L_ROLL": {
+   "uniform": [
+    0.1386,
+    0.1442
+   ]
+  },
+  "SIH_L_PITCH": {
+   "uniform": [
+    0.1386,
+    0.1442
+   ]
+  },
+  "SIH_T_TAU": {
+   "uniform": [
+    0.035,
+    0.07
+   ]
+  },
+  "SIH_KDV": {
+   "uniform": [
+    0.03,
+    0.1
+   ]
+  },
+  "SIH_KDW": {
+   "uniform": [
+    0.018,
+    0.032
+   ]
+  },
+  "SIH_MOT1_EFF": {
+   "uniform": [
+    0.95,
+    1.0
+   ]
+  },
+  "SIH_ACT_DLY": {
+   "uniform": [
+    15,
+    35
+   ]
+  },
+  "SIH_ACT_DJIT": {
+   "uniform": [
+    0.0,
+    6.0
+   ]
+  },
+  "SIH_GYR_STD": {
+   "uniform": [
+    0.02,
+    0.035
+   ]
+  },
+  "SIH_ACC_STD": {
+   "uniform": [
+    0.1,
+    0.2
+   ]
+  },
+  "SIM_GPS_NSCL": {
+   "uniform": [
+    0.5,
+    2.0
+   ]
+  },
+  "XYC_MODE": 0,
+  "MPC_XY_VEL_MAX": 5.0,
+  "MRL_R_KDLY": 25.0,
+  "MRL_X_L1D": 0.455,
+  "MRL_EN_RATE": 2,
+  "MRL_EN_ATT": 2,
+  "MRL_EN_POS": 1,
+  "MRL_EN_XY": 1,
+  "MRL_R_LAW": 1,
+  "MRL_A_LAW": 1,
+  "MRL_P_LAW": 1,
+  "MRL_X_LAW": 1,
+  "MRL_R_L1R": 6,
+  "MRL_A_L1R": 6,
+  "MRL_P_L1R": 6,
+  "MRL_X_L1R": 6,
+  "MRL_L1_MV": 0,
+  "MRL_X_TILT": 0.0,
+  "SIH_THR_FAC": {
+   "uniform": [
+    0.2,
+    0.45
+   ]
+  },
+  "SIH_T_TAU_DN": {
+   "uniform": [
+    0.05,
+    0.1
+   ]
+  },
+  "SIH_MOT2_EFF": {
+   "uniform": [
+    0.95,
+    1.0
+   ]
+  },
+  "SIH_MOT3_EFF": {
+   "uniform": [
+    0.95,
+    1.0
+   ]
+  },
+  "SIH_MOT4_EFF": {
+   "uniform": [
+    0.95,
+    1.0
+   ]
+  },
+  "SIH_RHO_EN": 1,
+  "SIH_AIR_T": {
+   "uniform": [
+    -20.0,
+    35.0
+   ]
+  },
+  "SIH_RA_KAX": {
+   "uniform": [
+    0.3,
+    0.7
+   ]
+  },
+  "SIH_RA_KTL": {
+   "uniform": [
+    0.1,
+    0.3
+   ]
+  },
+  "SIH_PROP_R": 0.0635,
+  "SIH_RD_K": {
+   "uniform": [
+    0.1,
+    0.18
+   ]
+  },
+  "SIH_CDA": {
+   "uniform": [
+    0.005,
+    0.015
+   ]
+  },
+  "SIH_BAT_CAP": {
+   "uniform": [
+    1300.0,
+    1800.0
+   ]
+  },
+  "SIH_BAT_N": 4.0,
+  "SIH_BAT_R0": {
+   "uniform": [
+    0.04,
+    0.1
+   ]
+  },
+  "SIH_BAT_SOC0": {
+   "uniform": [
+    0.55,
+    1.0
+   ]
+  },
+  "SIH_BAT_ETA": {
+   "uniform": [
+    0.45,
+    0.6
+   ]
+  },
+  "SIH_COM_X": {
+   "uniform": [
+    -0.008,
+    0.008
+   ]
+  },
+  "SIH_COM_Y": {
+   "uniform": [
+    -0.008,
+    0.008
+   ]
+  },
+  "SIH_VIB_ACC": {
+   "uniform": [
+    0.3,
+    1.5
+   ]
+  },
+  "SIH_VIB_GYR": {
+   "uniform": [
+    0.01,
+    0.04
+   ]
+  },
+  "SIH_VIB_H2": {
+   "uniform": [
+    0.0,
+    0.3
+   ]
+  },
+  "SIH_W_MAX": 969.0,
+  "SIH_ACC_BX": {
+   "uniform": [
+    -0.15,
+    0.15
+   ]
+  },
+  "SIH_ACC_BY": {
+   "uniform": [
+    -0.15,
+    0.15
+   ]
+  },
+  "SIH_ACC_BZ": {
+   "uniform": [
+    -0.15,
+    0.15
+   ]
+  },
+  "SIH_GYR_BX": {
+   "uniform": [
+    -0.01,
+    0.01
+   ]
+  },
+  "SIH_GYR_BY": {
+   "uniform": [
+    -0.01,
+    0.01
+   ]
+  },
+  "SIH_GYR_BZ": {
+   "uniform": [
+    -0.01,
+    0.01
+   ]
+  },
+  "MRL_B_EN": 3,
+  "MRL_B_TMRG": 8.0,
+  "MRL_B_FMRG": 0.1,
+  "MRL_R_DEST": 2
+ },
+ "steps": [
+  {
+   "do": "takeoff"
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_SEED",
+   "value": "run"
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_TAU",
+   "value": {
+    "uniform": [
+     1.0,
+     6.0
+    ]
+   }
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_SIG",
+   "value": {
+    "uniform": [
+     0.3,
+     1.5
+    ]
+   }
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_N",
+   "value": {
+    "uniform": [
+     -4.0,
+     4.0
+    ]
+   }
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_E",
+   "value": {
+    "uniform": [
+     -4.0,
+     4.0
+    ]
+   }
+  },
+  {
+   "do": "hold",
+   "s": 10
+  },
+  {
+   "do": "goto",
+   "n": 20,
+   "e": 0
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "track",
+   "shape": "fig8",
+   "size": 4,
+   "period": 16,
+   "laps": 1
+  },
+  {
+   "do": "param",
+   "name": "SIH_MASS",
+   "value": {
+    "scale": [
+     1.1,
+     1.3
+    ],
+    "tag": "payload"
+   }
+  },
+  {
+   "do": "hold",
+   "s": 8
+  },
+  {
+   "do": "goto",
+   "n": 0,
+   "e": 0
+  },
+  {
+   "do": "hold",
+   "s": 8
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_E",
+   "value": {
+    "uniform": [
+     5.0,
+     9.0
+    ],
+    "tag": "gust"
+   }
+  },
+  {
+   "do": "hold",
+   "s": 6
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_E",
+   "value": {
+    "uniform": [
+     -4.0,
+     4.0
+    ]
+   }
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_SIG",
+   "value": 0.0
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_N",
+   "value": 0.0
+  },
+  {
+   "do": "param",
+   "name": "SIH_WIND_E",
+   "value": 0.0
+  },
+  {
+   "do": "hold",
+   "s": 3
+  },
+  {
+   "do": "land"
+  }
+ ],
+ "boot_params": {
+  "SIH_LOC_H0": {
+   "uniform": [
+    0.0,
+    2500.0
+   ]
+  }
+ }
+}
