@@ -1,0 +1,25 @@
+{
+ "run_id": 42145058896,
+ "url": "https://github.com/YoussefChouj/px4-mrac-sim/actions/runs/42145058896",
+ "label": "Q-gz-video-l1",
+ "folder": "Q-gz-video-l1-42145058896",
+ "event": "push",
+ "branch": "claude/collect-landed",
+ "sha": "c6da7f8d9d75f16a2e60388cdfbaa8e03089b935",
+ "decks": [
+  "gzv-rw-l1r6t"
+ ],
+ "runs": [
+  1
+ ],
+ "jobs": 1,
+ "flights": 1,
+ "pass": 1,
+ "lost": [],
+ "plan": "success",
+ "build": "success",
+ "fly": "success",
+ "error": "",
+ "finished_utc": "2026-11-06T01:43:10Z",
+ "results_url": "https://github.com/YoussefChouj/px4-mrac-sim/tree/results/results/Q-gz-video-l1-42145058896"
+}
