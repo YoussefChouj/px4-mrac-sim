@@ -994,3 +994,19 @@ vehicle/sensor/scene draws as wave P (high-fidelity SIH physics). Paired medians
 - Caveat: the step clock was the 50 Hz IMU stream, so at 3 m/s 7 % of the waypoints were never sent (6 cm ticks);
   the IMU stream is 250 Hz in the dense step from now on. The waypoint polyline is the reference either way.
 - Next (inside the plan): wave R2 splits the tilt cause (same 37 deg tilt limit for PX4 and L1; L1 outer loops only).
+
+## 2026-11-06 Wave R2: where the extra tilt comes from (run 42174790900)
+Results `R2-tilt-source-42174790900` (532c8e5, cached build), 30 paired seeds, high-fidelity mission (draws as P, R).
+Paired medians [bootstrap 95 %]:
+- L1 in the outer loops only (vz, xy; + budget + online delay; rate and attitude route-only, l1obd) vs PX4: hold
+  -0.52 m [-0.66, -0.34] (29/30 better), track -0.16 m [-0.19, -0.13] (30/30), tilt -0.1 deg [-0.7, +0.7]; pass 29/30
+  (PX4 28/30). Against L1 in all loops (l1bd): hold +0.02 [-0.04, +0.06], track -0.013, tilt -3.8 deg [-4.3, -3.1]
+  (30/30). The inner (rate, attitude) L1 layers carry the whole +3.8 deg peak-tilt cost and add no hold or track.
+- Same 37 deg tilt limit for both (MPC_TILTMAX_AIR 37): PX4 itself unchanged on hold/track (-0.02 / +0.005 m) and
+  -4.4 deg tilt; L1 all loops at 37 vs PX4 at 37: hold -0.48, track -0.15, tilt +3.2 deg, pass 29/30 vs 27/30.
+- The one failure left in every arm (seed 14: home 2357 m, 70 % pack, +22 % payload, 7 m/s gust) drifts 9-10 m in
+  every arm, PX4 included: thrust-limited, no controller holds it.
+- Reading: the matched uncertainty that matters on this mission (wind, drag, payload, thrust loss) enters at force
+  level, where the outer L1 removes it; the inner loops are fast and well modelled, so their adaptation mainly reacts
+  to transients (braking reversals) and overshoots. Next (R3): does the motor-fault mission need the inner layers,
+  and the dense path with the outer-only stack; Gazebo S: 10 seeds, mission + dense, plus the dense-path video.

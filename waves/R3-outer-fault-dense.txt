@@ -1,0 +1,8 @@
+# R3 (2026-11-06, after R2): wave R2 showed L1 in the outer loops only (vz, xy, + budget + delay estimate) keeps the
+# hold and track gain with no extra tilt. Does the motor-fault mission need the inner L1 layers, and how does the
+# outer-only stack follow dense 5 cm waypoints (IMU clock now 250 Hz)? Same per-seed draws as P, R, R2.
+# 3 arms x 2 decks x 30 = 180 jobs.
+runs 30
+first 1
+hff3-alone hff3-l1bd hff3-l1obd
+dn2-alone dn2-l1bd dn2-l1obd

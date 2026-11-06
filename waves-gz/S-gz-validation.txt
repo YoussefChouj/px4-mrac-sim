@@ -1,0 +1,7 @@
+# S (gz, 2026-11-06, owner: longer Gazebo runs are fine): 10-seed Gazebo validation of waves R/R2 on the research
+# drone gz model in the gusty world (+25 ms delay): real-world mission and dense 5 cm waypoints, PX4 PID vs L1 all
+# loops + budget + delay estimate vs L1 outer loops only. 3 arms x 2 decks x 10 = 60 jobs.
+runs 10
+first 1
+gz-rw-alone gz-rw-l1bd gz-rw-l1obd
+gzd-alone gzd-l1bd gzd-l1obd

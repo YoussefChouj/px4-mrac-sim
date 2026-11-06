@@ -1,0 +1,87 @@
+{
+ "sim": "gz",
+ "vehicle": "research_drone",
+ "world": "gusty",
+ "speed": 1,
+ "alt": 3.0,
+ "limits": {
+  "max_hold_err_m": 3.0,
+  "max_tilt_deg": 45,
+  "must_land": true
+ },
+ "why": "Gazebo dense waypoint following (owner 2026-11-06: 5 cm between waypoints): the dense step of wave R (51.8 m loop, 1035 waypoints 5 cm apart, 1.5 then 3 m/s) in the gusty world (3.4 m/s mean, 1 m/s turbulence, +4 m/s gust during the fast lap), research drone gz model, +25 ms delay. Arm l1obd: L1 in the outer loops (vz, xy) only + authority budget + online delay estimate.",
+ "params": {
+  "XYC_MODE": 0,
+  "MRL_R_KDLY": 25.0,
+  "MPC_XY_VEL_MAX": 5.0,
+  "MRL_X_L1D": 0.45,
+  "MRL_EN_RATE": 2,
+  "MRL_EN_ATT": 2,
+  "MRL_EN_POS": 1,
+  "MRL_EN_XY": 1,
+  "MRL_R_LAW": 1,
+  "MRL_A_LAW": 1,
+  "MRL_P_LAW": 1,
+  "MRL_X_LAW": 1,
+  "MRL_R_L1R": 6,
+  "MRL_A_L1R": 6,
+  "MRL_P_L1R": 6,
+  "MRL_X_L1R": 6,
+  "MRL_L1_MV": 0,
+  "MRL_X_TILT": 0.0,
+  "SIM_GZ_ACT_DLY": 25,
+  "MRL_P_L1B": 17.8,
+  "MRL_B_EN": 3,
+  "MRL_B_TMRG": 8.0,
+  "MRL_B_FMRG": 0.1,
+  "MRL_R_DEST": 2
+ },
+ "steps": [
+  {
+   "do": "takeoff"
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "wind",
+   "mean": [
+    3.0,
+    1.5
+   ],
+   "sigma": 1.0,
+   "L_m": 23,
+   "dur_s": 150,
+   "seed": "run",
+   "gusts": [
+    {
+     "t": 58,
+     "amp": 4.0,
+     "dur": 3.0,
+     "dir_deg": 0
+    }
+   ]
+  },
+  {
+   "do": "hold",
+   "s": 10
+  },
+  {
+   "do": "dense",
+   "ds": 0.05,
+   "speeds": [
+    1.5,
+    3.0
+   ],
+   "accel": 1.0
+  },
+  {
+   "do": "hold",
+   "s": 5
+  },
+  {
+   "do": "land"
+  }
+ ]
+}
