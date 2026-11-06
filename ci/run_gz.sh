@@ -12,8 +12,11 @@ tar -C "$P" -I zstd -xf "$1"
 sudo curl -fsSL https://packages.osrfoundation.org/gazebo.gpg -o /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" \
   | sudo tee /etc/apt/sources.list.d/gazebo-stable.list >/dev/null
+# apt must not hang on a stalled mirror (2026-11-06: see build_gz.sh): short timeouts, retries
+printf 'Acquire::Retries "5";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' \
+  | sudo tee /etc/apt/apt.conf.d/80-ci-retries >/dev/null
 sudo apt-get update -qq
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq gz-harmonic python3-gz-transport13 python3-gz-msgs10 \
+sudo DEBIAN_FRONTEND=noninteractive timeout 20m apt-get install -y -qq gz-harmonic python3-gz-transport13 python3-gz-msgs10 \
   xvfb ffmpeg libgl1-mesa-dri libegl1 >/dev/null
 python3 -m venv ~/.venvs/px4
 source ~/.venvs/px4/bin/activate

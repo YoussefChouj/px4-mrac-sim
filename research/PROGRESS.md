@@ -943,3 +943,7 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
 - Re-fly run 42123822795 (4670815): the gz build compiled, then my new pack check failed it falsely (`tar | grep -q` under
   pipefail: grep exits at the first match, tar dies on SIGPIPE). The check now lists to a file first (tested on a good
   and a broken archive). No flight data; wave Q re-flown again.
+- Third run 42124975534 (c28d855): the gz build job stalled 110 min inside PX4's ubuntu.sh, mid-download from the
+  Ubuntu mirror (338 MB, "Ign:" retries); cancelled, no flight data. ci/build_gz.sh and ci/run_gz.sh now set apt
+  retries (5) and 30 s HTTP timeouts, and bound the installs (30 min with one retry; 20 min on the fly runners).
+  Wave Q re-flown (fourth try).

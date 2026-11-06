@@ -10,9 +10,13 @@ if [[ ! -d $P/.git ]]; then
   git clone --depth 1 --branch "$tag" --recurse-submodules --shallow-submodules \
     https://github.com/PX4/PX4-Autopilot.git "$P"
 fi
+# apt must not hang on a stalled mirror (2026-11-06: a gz build sat 110 min mid-download): short timeouts, retries
+printf 'Acquire::Retries "5";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' \
+  | sudo tee /etc/apt/apt.conf.d/80-ci-retries >/dev/null
 sudo apt-get update -qq
 # PX4's own dependency script WITH the sim tools: installs Gazebo Harmonic and its dev packages
-bash "$P/Tools/setup/ubuntu.sh" --no-nuttx
+# (hard limit and one retry: a stalled download must fail fast, not hold the job)
+timeout 30m bash "$P/Tools/setup/ubuntu.sh" --no-nuttx || timeout 30m bash "$P/Tools/setup/ubuntu.sh" --no-nuttx
 python3 -m venv ~/.venvs/px4
 source ~/.venvs/px4/bin/activate
 pip install -q -r "$P/Tools/setup/requirements.txt" -r "$here/ci/requirements.txt"
