@@ -947,3 +947,16 @@ Cloud run 41778016663, deck v6-wind-lqr-set4, 2 reps (one job each). Read from t
   Ubuntu mirror (338 MB, "Ign:" retries); cancelled, no flight data. ci/build_gz.sh and ci/run_gz.sh now set apt
   retries (5) and 30 s HTTP timeouts, and bound the installs (30 min with one retry; 20 min on the fly runners).
   Wave Q re-flown (fourth try).
+
+## Wave Q: Gazebo cross-check of the real-world mission (2026-11-06, gz run 42138795657)
+- `results/Q-gz-crosscheck+Q-gz-video-42138795657` (86694c8, gz.yml, fourth try): Gazebo Harmonic, research-drone gz
+  model (per-rotor MulticopterMotorModel), gusty world (WindEffects: 3.4 m/s mean, 1 m/s Dryden turbulence, +4 m/s gust),
+  +25 ms actuator delay, PX4 PID baseline, mission as rw-* without payload/sag/fault steps; seeds 1-3. 6/11 passed;
+  gzv-rw-l1r6t (video) lost: its Gazebo install hit the 20 min limit (slow mirror). Tables
+  `research/digests/wave-digest-Q-gz.md`, figure `research/figs/Q-gz-key-seed2.png`.
+- Per seed (1, 2, 3), L1 + tilt budget minus PX4 PID: max_hold_err_m -0.30 / -0.24 / -0.09, rms_track_err_m
+  -0.16 / -0.10 / -0.15, max_tilt_deg +7.8 / +3.1 / +1.8 (seed 1 49.1 deg fails the 45 deg gate). PX4 PID 3/3 pass,
+  L1 2/3, old MRAC 0/3: all three flip (tilt 180 deg, motors saturated 97 % of the time).
+- Reading: the second physics engine agrees with SIH in direction and size (SIH wave P: hold -0.81..-1.18 m mean,
+  track -0.14..-0.16 m, tilt +3.3..+3.9 deg): L1 tracks better, costs a few degrees of peak tilt, and old MRAC is
+  unstable with the real delay. Three seeds only: a direction check, not an effect size.
