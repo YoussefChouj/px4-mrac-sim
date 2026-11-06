@@ -38,6 +38,8 @@ import subprocess
 import sys
 import time
 
+import numpy as np
+
 from mavsdk_grpc import System
 from mavsdk_grpc.failure import FailureType, FailureUnit
 from mavsdk_grpc.offboard import Attitude, OffboardError, PositionNedYaw, VelocityNedYaw
@@ -287,6 +289,9 @@ async def fly(drone):
                 metrics['rms_track_err_m'] = max(metrics.get('rms_track_err_m', 0), rms)
                 metrics['max_track_err_m'] = max(metrics.get('max_track_err_m', 0), max(errs, default=0))
                 say(f'track {shape} {a} m / {T} s x{laps}: rms {rms:.2f} m, max {max(errs, default=0):.2f} m')
+            elif do == 'dense':
+                await dense_follow(drone, step, pos, ground, alt, offboard)
+                offboard = True
             elif do == 'excite':
                 # Attitude multisine, the twin of the real drone's angle sysid (ground_station/autotune/excitation.py:
                 # 20 log-spaced tones, Schroeder phases, f/f0 pre-emphasis, 1.5 s cosine ramps). Flown in offboard
@@ -378,6 +383,112 @@ async def fly(drone):
                 await set_param(drone, k, v, quiet=True)
     if rows:
         metrics['max_tilt_deg'] = max(max(abs(r[6]), abs(r[7])) for r in rows)
+
+
+def dense_path(ds=0.05, L=8.0, R=3.0, A=1.0, lam=8.0, dz=0.4, lz=12.0):
+    """Closed test path in local (north, east, up) metres from the start point: straight north L, half turn R to the
+    east, a two-bump slalom south (amplitude A, wavelength lam, windowed so the heading is continuous), half turn R
+    back, straight north to the start; height wave dz with a wavelength near lz that closes on itself. Sampled every
+    ds metres of arc length: the dense waypoint list a planner would hand over."""
+    pts = []
+    f = 1e-3
+    for x in np.arange(0, L, f):
+        pts.append((x, 0.0))
+    for ph in np.arange(-math.pi / 2, math.pi / 2, f / R):
+        pts.append((L + R * math.cos(ph), R + R * math.sin(ph)))
+    for x in np.arange(0, 2 * L, f):
+        w = math.sin(math.pi * x / (2 * L)) ** 2
+        pts.append((L - x, 2 * R + A * math.sin(2 * math.pi * x / lam) * w))
+    for ph in np.arange(math.pi / 2, -math.pi / 2, -f / R):
+        pts.append((-L - R * math.cos(ph), R + R * math.sin(ph)))
+    for x in np.arange(-L, 0, f):
+        pts.append((x, 0.0))
+    p = np.array(pts)
+    s = np.r_[0, np.cumsum(np.hypot(*np.diff(p, axis=0).T))]
+    total = s[-1] + math.hypot(*(p[0] - p[-1]))
+    n = int(total / ds)
+    sq = np.arange(n) * ds
+    k = max(1, round(total / lz))
+    wp = np.stack([np.interp(sq, s, p[:, 0]), np.interp(sq, s, p[:, 1]), dz * np.sin(2 * math.pi * k * sq / total)], 1)
+    return wp, total
+
+
+def seg_dist(P, A, B):
+    """Distance from points P (m x d) to segments A->B (m x d each)."""
+    d = B - A
+    t = np.clip(np.sum((P - A) * d, 1) / np.maximum(np.sum(d * d, 1), 1e-12), 0, 1)
+    return np.linalg.norm(P - (A + d * t[:, None]), axis=1)
+
+
+async def dense_follow(drone, step, pos, ground, alt, offboard):
+    """Dense waypoint following: the waypoints of dense_path (default 5 cm apart) stream as offboard position
+    setpoints, with a velocity feed-forward from the waypoint differences (no analytic derivative), the index advancing
+    at the commanded speed: one lap per entry of 'speeds' [m/s], speed changes limited to 'accel' m/s^2, stop at the
+    end. Errors, at each lap's full speed: cross-track = distance to the waypoint polyline near the commanded index
+    (horizontal and 3D), lag = distance to the commanded waypoint. Setpoint rate and skipped waypoints are recorded,
+    because a waypoint the link never carried was not followed."""
+    ds = float(step.get('ds', 0.05))
+    speeds, acc = [float(v) for v in step.get('speeds', [1.5, 3.0])], float(step.get('accel', 1.0))
+    wp, total = dense_path(ds, float(step.get('L', 8)), float(step.get('R', 3)), float(step.get('A', 1)),
+                           float(step.get('lam', 8)), float(step.get('dz', 0.4)))
+    N = len(wp)
+    if not offboard:
+        await drone.offboard.set_position_ned(PositionNedYaw(pos()[1], pos()[2], -(ground + alt), 0))
+        await drone.offboard.start()
+    n0, e0 = pos()[1], pos()[2]
+    W = wp + np.array([n0, e0, ground + alt])          # world (north, east, up)
+    np.savetxt(os.path.join(out, 'dense_path.csv'), W, delimiter=',', header='n,e,up', comments='', fmt='%.4f')
+    s_end = total * len(speeds)
+    s, v, us_prev, i_row = 0.0, 0.0, simt['us'], len(rows)
+    sent, n_sp, t0 = np.zeros(N * len(speeds) + 2, bool), 0, simt['us']
+    laps = [dict(xt=[], xt3=[], lag=[]) for _ in speeds]
+    while s < s_end - 1e-6 or v > 1e-3:
+        now = simt['us']
+        dt = max(0.0, (now - us_prev) / 1e6)
+        us_prev = now
+        lap = min(int(s / total), len(speeds) - 1)
+        vt = speeds[lap] if s_end - s > v * v / (2 * acc) + 1e-3 else 0.0
+        v = max(0.0, v + max(-acc * dt, min(acc * dt, vt - v)))
+        s = min(s + v * dt, s_end)
+        if s >= s_end and v < 0.05:
+            break
+        k = int(s / ds)
+        a, b = W[k % N], W[(k + 1) % N]
+        vel = (b - a) / ds * v
+        await drone.offboard.set_position_velocity_ned(PositionNedYaw(a[0], a[1], -a[2], 0),
+                                                       VelocityNedYaw(vel[0], vel[1], -vel[2], 0))
+        sent[k] = True
+        n_sp += 1
+        # score the telemetry samples that came in since the last setpoint
+        new = rows[i_row:]
+        i_row = len(rows)
+        if new and abs(v - speeds[lap]) < 0.05 and vt > 0:
+            idx = (np.arange(k - 120, k + 20)) % N           # 6 m back, 1 m ahead: never the other leg of the loop
+            A_, B_ = W[idx], W[(idx + 1) % N]
+            for r in new:
+                P = np.array([[r[1], r[2], r[3]]])
+                laps[lap]['xt'].append(float(np.min(seg_dist(P[:, :2], A_[:, :2], B_[:, :2]))))
+                laps[lap]['xt3'].append(float(np.min(seg_dist(P, A_, B_))))
+                laps[lap]['lag'].append(float(np.linalg.norm(P[0] - a)))
+        await asyncio.sleep(0.005)
+    await drone.offboard.set_position_ned(PositionNedYaw(W[0][0], W[0][1], -W[0][2], 0))
+    rms = lambda x: math.sqrt(sum(y * y for y in x) / len(x)) if x else float('nan')
+    for i, L_ in enumerate(laps):
+        metrics[f'dense_xt_rms_m_l{i + 1}'] = rms(L_['xt'])
+        metrics[f'dense_xt_max_m_l{i + 1}'] = max(L_['xt'], default=float('nan'))
+        metrics[f'dense_xt3_rms_m_l{i + 1}'] = rms(L_['xt3'])
+        metrics[f'dense_lag_rms_m_l{i + 1}'] = rms(L_['lag'])
+    allx = [x for L_ in laps for x in L_['xt']]
+    metrics['dense_xt_rms_m'] = rms(allx)
+    metrics['dense_xt_max_m'] = max(allx, default=float('nan'))
+    metrics['dense_xt3_rms_m'] = rms([x for L_ in laps for x in L_['xt3']])
+    dur = (simt['us'] - t0) / 1e6
+    metrics['dense_sp_hz'] = n_sp / dur if dur > 0 else float('nan')
+    kmax = int(s_end / ds)
+    metrics['dense_wp_skip_frac'] = float(1 - sent[:kmax].mean()) if kmax else float('nan')
+    say(f'dense {N} waypoints {ds * 100:.0f} cm apart, {total:.1f} m/lap, speeds {speeds}: cross-track rms '
+        f'{metrics["dense_xt_rms_m"]:.3f} m, max {metrics["dense_xt_max_m"]:.3f} m; {metrics["dense_sp_hz"]:.0f} '
+        f'setpoints/s (sim), {100 * metrics["dense_wp_skip_frac"]:.0f} % of waypoints skipped')
 
 
 async def set_param(drone, k, v, quiet=False):

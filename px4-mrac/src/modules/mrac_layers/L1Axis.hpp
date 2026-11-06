@@ -32,6 +32,10 @@
 #pragma once
 
 #include <lib/mathlib/mathlib.h>
+#include <atomic>
+
+// online delay estimate [s] of the rate layer (MRL_R_DEST), read by the outer layers when MRL_R_DEST = 2; < 0 = none
+inline std::atomic<float> g_mrl_dly_est{-1.f};
 
 struct L1Cfg {
 	float b{1.f}, as{10.f}, wc{1.f}, tau{0.f}, dly{0.f}, umax{1.f};
@@ -152,5 +156,99 @@ struct L1Axis {
 		u_out = math::constrain(-(fm + uf), -c.umax, c.umax);
 		uprev = u_out;
 		return u_out;
+	}
+};
+
+/**
+ * Role 3 upgrade, online transport-delay estimate (rate layer, MRL_R_DEST): the known delay of role 3 is replaced by
+ * one identified in flight. Model w_dot = b m_k, m_k = the applied command delayed by k samples (candidate k) and
+ * lagged by the known motor lag. Both sides go through the same band-pass (two first-order low-passes at f2 against
+ * gyro noise, a high-pass at f1 against the slow disturbance and bias), the measured side differentiated; the rate
+ * measured at step n holds the commands up to n - 1, so it is paired with the regressor of the previous step. Then
+ * a windowed least-squares fit y = beta_k v_k per candidate, score J_k = 1 - rho_k^2 (rho = normalised correlation),
+ * so a wrong b does not bias the choice. The estimate is argmin J refined by a parabola through its neighbours,
+ * low-passed (time constant tsm) after tmin s of flight, and held on the ground, where nothing excites the axis.
+ * It is an effective delay: a wrong assumed motor lag is partly absorbed by it, which is what the predictor needs.
+ */
+struct DelayBank {
+	static constexpr int NK = 25;     // 0..24 samples: 0-60 ms at the 400 Hz rate loop, 0-96 ms at 250 Hz
+	static constexpr int NB = 64;
+	float ubuf[NB] {};
+	float m[NK] {}, v1[NK] {}, v2[NK] {}, vh[NK] {}, vp[NK] {}, syv[NK] {}, svv[NK] {}, J[NK] {};
+	float y1{0.f}, y2{0.f}, y2p{0.f}, yh{0.f}, yp{0.f}, syy{0.f}, dts{0.004f}, dhat{-1.f};
+	int bi{0};
+	bool init{false};
+	float t_air{0.f};
+
+	// x: measured rate; u: command applied this step (after clamps); d0: prior delay [s]; returns the delay to use [s]
+	float step(float x, float u, float dt, bool landed, float tau, float d0,
+		   float f1 = 1.f, float f2 = 12.f, float tw = 4.f, float tsm = 1.f, float tmin = 5.f)
+	{
+		dt = math::constrain(dt, 1e-4f, 0.02f);
+
+		if (!init) {
+			for (float &q : ubuf) { q = u; }
+
+			for (int k = 0; k < NK; k++) { m[k] = v1[k] = v2[k] = vp[k] = u; vh[k] = syv[k] = svv[k] = 0.f; J[k] = 1.f; }
+
+			y1 = y2 = y2p = x; yh = yp = syy = 0.f;
+			dts = dt;
+			dhat = d0;
+			init = true;
+		}
+
+		dts += (dt - dts) * 0.01f;
+		const float a2 = math::min(dt * 6.2831853f * f2, 1.f);
+		const float th = 1.f / (6.2831853f * math::max(f1, 0.01f)), ah = th / (th + dt);
+		const float aw = math::min(dt / math::max(tw, 0.1f), 1.f);
+		// measured side: low-pass twice, differentiate, high-pass
+		y1 += (x - y1) * a2;
+		y2 += (y1 - y2) * a2;
+		const float yd = (y2 - y2p) / dt;
+		y2p = y2;
+		yh = ah * (yh + yd - yp);
+		yp = yd;
+
+		if (landed) {
+			t_air = 0.f;
+
+		} else {
+			t_air += dt;
+			syy += (yh * yh - syy) * aw;
+
+			for (int k = 0; k < NK; k++) {   // pair with the regressor of the previous step
+				syv[k] += (yh * vh[k] - syv[k]) * aw;
+				svv[k] += (vh[k] * vh[k] - svv[k]) * aw;
+				J[k] = 1.f - syv[k] * syv[k] / math::max(syy * svv[k], 1e-12f);
+			}
+		}
+
+		ubuf[bi] = u; bi = (bi + 1) % NB;
+		int best = 0;
+
+		for (int k = 0; k < NK; k++) {
+			const float ud = ubuf[(bi - 1 - k + 2 * NB) % NB];
+			m[k] = (tau > 1e-4f) ? m[k] + (ud - m[k]) * math::min(dt / tau, 1.f) : ud;
+			v1[k] += (m[k] - v1[k]) * a2;
+			v2[k] += (v1[k] - v2[k]) * a2;
+			vh[k] = ah * (vh[k] + v2[k] - vp[k]);
+			vp[k] = v2[k];
+
+			if (J[k] < J[best]) { best = k; }
+		}
+
+		if (!landed && t_air >= tmin) {
+			float kk = (float)best;
+
+			if (best > 0 && best < NK - 1) {   // parabola through the minimum and its neighbours
+				const float den = J[best - 1] - 2.f * J[best] + J[best + 1];
+
+				if (den > 1e-9f) { kk += math::constrain(0.5f * (J[best - 1] - J[best + 1]) / den, -0.5f, 0.5f); }
+			}
+
+			dhat += (kk * dts - dhat) * math::min(dt / math::max(tsm, 0.01f), 1.f);
+		}
+
+		return dhat;
 	}
 };

@@ -19,6 +19,7 @@
 #include <uORB/Publication.hpp>
 #include <uORB/Subscription.hpp>
 #include <uORB/SubscriptionCallback.hpp>
+#include <uORB/topics/control_allocator_status.h>
 #include <uORB/topics/mrac_rate_status.h>
 #include <uORB/topics/parameter_update.h>
 #include <uORB/topics/vehicle_attitude.h>
@@ -46,12 +47,14 @@ private:
 	uORB::Subscription _att_sub{ORB_ID(vehicle_attitude)};
 	uORB::Subscription _att_sp_sub{ORB_ID(vehicle_attitude_setpoint)};
 	uORB::Subscription _land_detected_sub{ORB_ID(vehicle_land_detected)};
+	uORB::Subscription _alloc_status_sub{ORB_ID(control_allocator_status)};
 	uORB::Publication<vehicle_rates_setpoint_s> _rates_pub{ORB_ID(vehicle_rates_setpoint)};
 	uORB::Publication<mrac_rate_status_s> _status_pub{ORB_ID(mrac_att_status)};
 
 	MracAxis _ax[2];
 	L1Axis _l1[2];
 	float _ang_sp[2] {};
+	bool _tsat_pos[2] {}, _tsat_neg[2] {};
 	bool _landed{true};
 	hrt_abstime _last_t{0};
 	int _status_div{0};
@@ -81,7 +84,11 @@ private:
 		(ParamFloat<px4::params::MRL_L1_EF>) _param_l1_ef,
 		(ParamFloat<px4::params::MRL_L1_KF>) _param_l1_kf,
 		(ParamFloat<px4::params::MRL_L1_LK>) _param_l1_lk,
-		(ParamInt<px4::params::MRL_L1_MV>) _param_l1_mv
+		(ParamInt<px4::params::MRL_L1_MV>) _param_l1_mv,
+		(ParamInt<px4::params::MRL_R_DEST>) _param_dest,
+		(ParamInt<px4::params::MRL_B_EN>) _param_b_en,
+		(ParamFloat<px4::params::MRL_B_TMRG>) _param_b_tmrg,
+		(ParamFloat<px4::params::MPC_TILTMAX_AIR>) _param_tilt_max
 	)
 };
 
@@ -101,6 +108,7 @@ private:
 	uORB::Subscription _lpos_sub{ORB_ID(vehicle_local_position)};
 	uORB::Subscription _lpos_sp_sub{ORB_ID(vehicle_local_position_setpoint)};
 	uORB::Subscription _land_detected_sub{ORB_ID(vehicle_land_detected)};
+	uORB::Subscription _alloc_status_sub{ORB_ID(control_allocator_status)};
 	uORB::Publication<vehicle_attitude_setpoint_s> _att_sp_pub{ORB_ID(vehicle_attitude_setpoint)};
 	uORB::Publication<mrac_rate_status_s> _status_pub{ORB_ID(mrac_pos_status)};
 	uORB::Publication<mrac_rate_status_s> _xy_status_pub{ORB_ID(mrac_xy_status)};
@@ -110,6 +118,9 @@ private:
 	L1Axis _l1z;
 	L1Axis _l1xy[2];
 	bool _xy_clip_pos[2] {}, _xy_clip_neg[2] {};
+	bool _z_clip_pos{false}, _z_clip_neg{false};
+	bool _alloc_sat{false};
+	float _bud_cut{0.f}, _bud_tilt_prev{0.f}, _bud_norm_prev{0.f};
 	float _acc_sp[2] {};
 	float _vz_sp{0.f};
 	bool _landed{true};
@@ -159,6 +170,11 @@ private:
 		(ParamFloat<px4::params::MRL_L1_EF>) _param_l1_ef,
 		(ParamFloat<px4::params::MRL_L1_KF>) _param_l1_kf,
 		(ParamFloat<px4::params::MRL_L1_LK>) _param_l1_lk,
-		(ParamInt<px4::params::MRL_L1_MV>) _param_l1_mv
+		(ParamInt<px4::params::MRL_L1_MV>) _param_l1_mv,
+		(ParamInt<px4::params::MRL_R_DEST>) _param_dest,
+		(ParamInt<px4::params::MRL_B_EN>) _param_b_en,
+		(ParamFloat<px4::params::MRL_B_TMRG>) _param_b_tmrg,
+		(ParamFloat<px4::params::MRL_B_FMRG>) _param_b_fmrg,
+		(ParamFloat<px4::params::MPC_TILTMAX_AIR>) _param_tilt_max
 	)
 };

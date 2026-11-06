@@ -63,6 +63,8 @@ private:
 
 	MracAxis _ax[3];
 	L1Axis _l1[3];
+	DelayBank _dbank[2];
+	float _dly_est[2] {-1.f, -1.f};
 	float _rate_sp[3] {};
 	bool _landed{true};
 	hrt_abstime _last_t{0};
@@ -100,6 +102,7 @@ private:
 		(ParamFloat<px4::params::MRL_L1_EF>) _param_l1_ef,
 		(ParamFloat<px4::params::MRL_L1_KF>) _param_l1_kf,
 		(ParamFloat<px4::params::MRL_L1_LK>) _param_l1_lk,
-		(ParamInt<px4::params::MRL_L1_MV>) _param_l1_mv
+		(ParamInt<px4::params::MRL_L1_MV>) _param_l1_mv,
+		(ParamInt<px4::params::MRL_R_DEST>) _param_dest
 	)
 };

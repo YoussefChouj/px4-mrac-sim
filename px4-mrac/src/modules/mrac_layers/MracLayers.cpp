@@ -110,9 +110,12 @@ void MracLayers::Run()
 
 		if (_param_law.get() == 1) {
 			// L1 (L1Axis.hpp): x = body rate, command = normalized torque; nominal w_dot = b u (b measured in SIH,
-			// 2026-11-05: 160-180 rad/s^2 per unit with the 50 ms motor lag); role 3 knows that lag and the delay
+			// 2026-11-05: 160-180 rad/s^2 per unit with the 50 ms motor lag); role 3 knows that lag and the delay,
+			// the delay from MRL_R_KDLY or, MRL_R_DEST >= 1, identified online (DelayBank, roll and pitch)
+			const float kd = math::max(_param_kdly.get(), 0.f) * 1e-3f;
+			const float dly = (_param_dest.get() >= 1 && a < 2 && _dly_est[a] >= 0.f) ? _dly_est[a] : kd;
 			const L1Cfg lc{_param_l1b.get(), _param_l1a.get(), _param_l1w.get(), _param_l1t.get(),
-				       math::max(_param_kdly.get(), 0.f) * 1e-3f, _param_umax.get(), _param_l1r.get(),
+				       dly, _param_umax.get(), _param_l1r.get(),
 				       _param_s_fc.get(), _param_s_k.get(), _param_s_tav.get(), _param_l1_ef.get(),
 				       _param_l1_kf.get(), _param_l1_lk.get(), _param_l1_mv.get()};
 			_l1[a].s[0] = _ax[a].s[0];
@@ -128,6 +131,11 @@ void MracLayers::Run()
 
 		out.xyz[a] = math::constrain(base.xyz[a] + u_ad + (_landed ? 0.f : dist[a]), -1.f, 1.f);
 
+		if (_param_dest.get() >= 1 && a < 2) {   // identified on the command the plant actually got
+			_dly_est[a] = _dbank[a].step(av.xyz[a], out.xyz[a], dt, _landed, _param_l1t.get(),
+						     math::max(_param_kdly.get(), 0.f) * 1e-3f);
+		}
+
 		st.xm[a] = _ax[a].xm;
 		st.e[a] = _ax[a].e;
 		st.u_ad[a] = u_ad;
@@ -139,6 +147,15 @@ void MracLayers::Run()
 		st.theta_norm[a] = l1 ? _l1[a].tnorm() : _ax[a].tnorm();
 		st.sched_cut[a] = 1.f - _ax[a].sc;
 		st.n_phi = _ax[a].nphi;
+	}
+
+	if (_param_dest.get() >= 1 && _dly_est[0] >= 0.f && _dly_est[1] >= 0.f) {
+		st.dly_est = 0.5f * (_dly_est[0] + _dly_est[1]);
+		g_mrl_dly_est.store(_param_dest.get() >= 2 ? st.dly_est : -1.f);
+
+	} else {
+		st.dly_est = -1.f;
+		g_mrl_dly_est.store(-1.f);
 	}
 
 	out.timestamp = hrt_absolute_time();

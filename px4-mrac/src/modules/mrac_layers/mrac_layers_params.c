@@ -770,3 +770,53 @@ PARAM_DEFINE_INT32(MRL_L1_MV, 0);
  * @group MRAC layers
  */
 PARAM_DEFINE_FLOAT(MRL_X_TILT, 0.0f);
+
+/**
+ * Online delay estimate (role 3 upgrade, 0 = off).
+ *
+ * 1: the rate-layer L1 replaces MRL_R_KDLY by a delay identified in flight per roll/pitch axis (DelayBank: band-passed
+ * correlation of the measured angular acceleration with the applied command delayed by 0..24 samples, best fit by a
+ * parabola, low-passed). 2: the attitude, vz and xy L1 layers use the same estimate. MRL_R_KDLY stays the prior
+ * until 5 s of flight. Logged as mrac_rate_status.dly_est.
+ * @min 0
+ * @max 2
+ * @group MRAC layers
+ */
+PARAM_DEFINE_INT32(MRL_R_DEST, 0);
+
+/**
+ * Authority budget across the loops (bitmask, 0 = off).
+ *
+ * Bit 1 (outer): the vz and xy adaptive increments together may not tilt the thrust vector past
+ * MPC_TILTMAX_AIR - MRL_B_TMRG nor raise collective thrust past 1 - MRL_B_FMRG (the baseline's own command is never
+ * cut), and may not grow either while the allocator saturates. Bit 2 (attitude): the attitude L1 may not push an
+ * axis further into torque saturation, nor raise the tilt once within MRL_B_TMRG / 2 of MPC_TILTMAX_AIR.
+ * @min 0
+ * @max 3
+ * @bit 0 outer loops (vz + xy)
+ * @bit 1 attitude loop
+ * @group MRAC layers
+ */
+PARAM_DEFINE_INT32(MRL_B_EN, 0);
+
+/**
+ * Authority budget tilt margin below MPC_TILTMAX_AIR.
+ *
+ * Room left for inner-loop overshoot: the outer adaptive part keeps the commanded tilt below
+ * MPC_TILTMAX_AIR minus this margin; the attitude part stops raising the tilt at half of it.
+ * @unit deg
+ * @min 0
+ * @max 30
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_B_TMRG, 8.0f);
+
+/**
+ * Authority budget collective thrust margin.
+ *
+ * Fraction of full collective thrust that the outer adaptive part leaves for attitude control.
+ * @min 0
+ * @max 0.5
+ * @group MRAC layers
+ */
+PARAM_DEFINE_FLOAT(MRL_B_FMRG, 0.1f);

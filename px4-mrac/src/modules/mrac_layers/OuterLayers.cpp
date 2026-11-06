@@ -1,4 +1,7 @@
 #include "OuterLayers.hpp"
+#include "AuthorityBudget.hpp"
+
+#include <float.h>
 
 #include <drivers/drv_hrt.h>
 #include <matrix/math.hpp>
@@ -10,6 +13,13 @@ static float layer_dt(hrt_abstime now, hrt_abstime &last, float nominal)
 	last = now;
 	return dt;
 }
+
+static void thrust_to_att(const matrix::Vector3f &F, float yaw, vehicle_attitude_setpoint_s &out)
+{
+	mrl_budget::thrust_to_att(F, yaw, out.q_d, out.thrust_body[2]);
+}
+
+using mrl_budget::tilt_of;
 
 MracAttLayer::MracAttLayer() :
 	ModuleParams(nullptr),
@@ -37,6 +47,15 @@ void MracAttLayer::Run()
 		_ang_sp[1] = e.theta();
 	}
 
+	control_allocator_status_s cas{};
+
+	if (_alloc_status_sub.update(&cas)) {   // same rule as mc_rate_control setSaturationStatus, roll and pitch
+		for (int i = 0; i < 2; i++) {
+			_tsat_pos[i] = !cas.torque_setpoint_achieved && cas.unallocated_torque[i] > FLT_EPSILON;
+			_tsat_neg[i] = !cas.torque_setpoint_achieved && cas.unallocated_torque[i] < -FLT_EPSILON;
+		}
+	}
+
 	vehicle_rates_setpoint_s base{};
 
 	if (!_rates_base_sub.update(&base)) { return; }
@@ -45,6 +64,11 @@ void MracAttLayer::Run()
 	_att_sub.copy(&att);
 	const matrix::Eulerf ang(matrix::Quatf(att.q));
 	const float x[2] {ang.phi(), ang.theta()};
+	// authority budget, attitude part (MRL_B_EN bit 2): the layer may not push an axis further into torque
+	// saturation, nor tilt the vehicle further once it is within half the margin of the tilt limit
+	const bool bud = _param_b_en.get() & 2;
+	const float tilt = acosf(math::constrain(1.f - 2.f * (att.q[1] * att.q[1] + att.q[2] * att.q[2]), -1.f, 1.f));
+	const bool tilt_hi = bud && tilt > math::radians(math::max(_param_tilt_max.get() - 0.5f * _param_b_tmrg.get(), 5.f));
 
 	const float dt = layer_dt(base.timestamp, _last_t, 0.004f);
 	const int mode = _param_en.get();
@@ -66,10 +90,15 @@ void MracAttLayer::Run()
 		if (l1) {
 			// L1: x = angle, command = rate setpoint [rad/s], nominal angle_dot = rate (b = 1); role 3 knows the
 			// inner rate loop as a first-order lag MRL_A_L1T plus the transport delay
-			const L1Cfg lc = L1Cfg{_param_al1b.get(), _param_al1a.get(), _param_al1w.get(), _param_al1t.get(), math::max(_param_kdly.get(), 0.f) * 1e-3f, _param_umax.get(), _param_al1r.get(), _param_s_fc.get(), _param_s_k.get(), _param_s_tav.get(), _param_l1_ef.get(), _param_l1_kf.get(), _param_l1_lk.get(), _param_l1_mv.get()};
+			const float de = g_mrl_dly_est.load();
+			const float dly = (_param_dest.get() >= 2 && de >= 0.f) ? de : math::max(_param_kdly.get(), 0.f) * 1e-3f;
+			const L1Cfg lc = L1Cfg{_param_al1b.get(), _param_al1a.get(), _param_al1w.get(), _param_al1t.get(), dly, _param_umax.get(), _param_al1r.get(), _param_s_fc.get(), _param_s_k.get(), _param_s_tav.get(), _param_l1_ef.get(), _param_l1_kf.get(), _param_l1_lk.get(), _param_l1_mv.get()};
 			_l1[a].s[0] = _ax[a].s[0];
 			_l1[a].s[1] = _ax[a].s[1];
-			u = _l1[a].step(x[a], *rate[a], 0.f, dt, _landed, mode == 1, lc);
+			// a positive rate command raises the angle; torque sign = rate sign on roll and pitch
+			const bool sp = bud && (_tsat_pos[a] || (tilt_hi && x[a] > 0.f));
+			const bool sn = bud && (_tsat_neg[a] || (tilt_hi && x[a] < 0.f));
+			u = _l1[a].step(x[a], *rate[a], 0.f, dt, _landed, mode == 1, lc, sp, sn);
 
 		} else {
 			u = _ax[a].step(x[a], _ang_sp[a], dt, _landed, mode == 1, mode == 1, g);
@@ -126,6 +155,10 @@ void MracPosLayer::Run()
 	// touchdown while vz_sp still descends, so adapting there only winds Theta up
 	if (_land_detected_sub.update(&land)) { _landed = land.landed || land.maybe_landed || land.ground_contact; }
 
+	control_allocator_status_s cas{};
+
+	if (_alloc_status_sub.update(&cas)) { _alloc_sat = !cas.thrust_setpoint_achieved || !cas.torque_setpoint_achieved; }
+
 	vehicle_attitude_setpoint_s base{};
 
 	if (!_att_sp_base_sub.update(&base)) { return; }
@@ -153,6 +186,8 @@ void MracPosLayer::Run()
 		_z.s[1] = PX4_ISFINITE(lpos.vx) && PX4_ISFINITE(lpos.vy) ? lpos.vx * lpos.vx + lpos.vy * lpos.vy : 0.f;
 	}
 	const bool l1z = _param_plaw.get() == 1;
+	const float de = g_mrl_dly_est.load();
+	const float dly = (_param_dest.get() >= 2 && de >= 0.f) ? de : math::max(_param_kdly.get(), 0.f) * 1e-3f;
 	float u = 0.f;
 
 	if (l1z) {
@@ -160,10 +195,11 @@ void MracPosLayer::Run()
 		// thrust (MRL_P_L1B); role 3 adds the tilt factor cos(tilt) to b, the motor lag and the delay
 		const float ct = 1.f - 2.f * (base.q_d[1] * base.q_d[1] + base.q_d[2] * base.q_d[2]);
 		const bool phys = _param_pl1r.get() & 4;
-		const L1Cfg lc = L1Cfg{_param_pl1b.get() * (phys ? math::max(ct, 0.5f) : 1.f), _param_pl1a.get(), _param_pl1w.get(), _param_pl1t.get(), math::max(_param_kdly.get(), 0.f) * 1e-3f, _param_umax.get(), _param_pl1r.get(), _param_s_fc.get(), _param_s_k.get(), _param_s_tav.get(), _param_l1_ef.get(), _param_l1_kf.get(), _param_l1_lk.get(), _param_l1_mv.get()};
+		const L1Cfg lc = L1Cfg{_param_pl1b.get() * (phys ? math::max(ct, 0.5f) : 1.f), _param_pl1a.get(), _param_pl1w.get(), _param_pl1t.get(), dly, _param_umax.get(), _param_pl1r.get(), _param_s_fc.get(), _param_s_k.get(), _param_s_tav.get(), _param_l1_ef.get(), _param_l1_kf.get(), _param_l1_lk.get(), _param_l1_mv.get()};
 		_l1z.s[0] = _z.s[0];
 		_l1z.s[1] = _z.s[1];
-		u = PX4_ISFINITE(lpos.vz) ? _l1z.step(lpos.vz, base.thrust_body[2], 9.80665f, dt, _landed, mode == 1, lc) : 0.f;
+		u = PX4_ISFINITE(lpos.vz) ? _l1z.step(lpos.vz, base.thrust_body[2], 9.80665f, dt, _landed, mode == 1, lc,
+						      _z_clip_pos, _z_clip_neg) : 0.f;
 
 	} else {
 		u = _z.step(lpos.vz, _vz_sp, dt, _landed, mode == 1, mode == 1, g);
@@ -195,7 +231,7 @@ void MracPosLayer::Run()
 		if (_param_xlaw.get() == 1) {
 			// L1: x = velocity (NED), command = acceleration setpoint [m/s^2], nominal v_dot = u (b = 1); role 3 adds
 			// linear drag -MRL_X_L1D v, the attitude-loop lag MRL_X_L1T and the delay
-			const L1Cfg lc = L1Cfg{_param_xl1b.get(), _param_xl1a.get(), _param_xl1w.get(), _param_xl1t.get(), math::max(_param_kdly.get(), 0.f) * 1e-3f, _param_xy_umax.get(), _param_xl1r.get(), _param_s_fc.get(), _param_s_k.get(), _param_s_tav.get(), _param_l1_ef.get(), _param_l1_kf.get(), _param_l1_lk.get(), _param_l1_mv.get()};
+			const L1Cfg lc = L1Cfg{_param_xl1b.get(), _param_xl1a.get(), _param_xl1w.get(), _param_xl1t.get(), dly, _param_xy_umax.get(), _param_xl1r.get(), _param_s_fc.get(), _param_s_k.get(), _param_s_tav.get(), _param_l1_ef.get(), _param_l1_kf.get(), _param_l1_lk.get(), _param_l1_mv.get()};
 			_l1xy[i].s[0] = _xy[i].s[0];
 			_l1xy[i].s[1] = _xy[i].s[1];
 			_l1xy[i].fk = PX4_ISFINITE(vi) ? -_param_xl1d.get() * vi : 0.f;
@@ -241,20 +277,59 @@ void MracPosLayer::Run()
 			const float k = -F(2) / 9.80665f;
 			F(0) += uxy[0] * k;
 			F(1) += uxy[1] * k;
-			// same construction as PX4 ControlMath::bodyzToAttitude: keep the base yaw, body z along -F
-			const float yaw = matrix::Eulerf(qb).psi();
-			const matrix::Vector3f bz = -F.normalized();
-			matrix::Vector3f bx = matrix::Vector3f(-sinf(yaw), cosf(yaw), 0.f) % bz;
-			bx.normalize();
-			const matrix::Vector3f by = bz % bx;
-			matrix::Dcmf Rn;
-
-			for (int j = 0; j < 3; j++) { Rn(j, 0) = bx(j); Rn(j, 1) = by(j); Rn(j, 2) = bz(j); }
-
-			matrix::Quatf(Rn).copyTo(out.q_d);
-			out.thrust_body[2] = math::constrain(-F.norm(), -1.f, 0.f);
+			thrust_to_att(F, matrix::Eulerf(qb).psi(), out);
 		}
 	}
+
+	// authority budget, outer part (MRL_B_EN bit 1). The adaptive increments of the vz and xy layers together move the
+	// thrust vector from the baseline's F_b to F_f; the applied vector is F_b + lambda (F_f - F_b), lambda in [0, 1] the
+	// largest that keeps tilt <= max(MPC_TILTMAX_AIR - MRL_B_TMRG, tilt(F_b)) (room for the inner loops to overshoot)
+	// and |F| <= max(1 - MRL_B_FMRG, |F_b|) (thrust left for attitude control). While the allocator saturates, the
+	// adaptive part may not grow tilt or thrust past last step's (hold, not cut). The baseline is never cut. Both sets
+	// are convex and hold F_b, so the feasible lambda form an interval [0, lambda*], found by bisection. A cut is fed
+	// back to the L1 filters as saturation and to their predictors as the applied command.
+	_z_clip_pos = _z_clip_neg = false;
+	_bud_cut = 0.f;
+
+	if ((_param_b_en.get() & 1) && !_landed && (mode == 1 || xy_mode == 1)) {
+		const matrix::Quatf qb(base.q_d);
+		const matrix::Vector3f Fb = matrix::Dcmf(qb) * matrix::Vector3f(0.f, 0.f, math::constrain(base.thrust_body[2] + dist, -1.f, 0.f));
+		const matrix::Vector3f Ff = matrix::Dcmf(matrix::Quatf(out.q_d)) * matrix::Vector3f(0.f, 0.f, out.thrust_body[2]);
+		const float tb = tilt_of(Fb), nb = Fb.norm();
+		float tlim = math::max(math::radians(math::max(_param_tilt_max.get() - _param_b_tmrg.get(), 1.f)), tb);
+		float flim = math::max(1.f - math::constrain(_param_b_fmrg.get(), 0.f, 0.5f), nb);
+
+		if (_alloc_sat) {
+			tlim = math::max(tb, math::min(tlim, _bud_tilt_prev));
+			flim = math::max(nb, math::min(flim, _bud_norm_prev));
+		}
+
+		const matrix::Vector3f dF = Ff - Fb;
+		const float lo = mrl_budget::lambda_max(Fb, Ff, tlim, flim);
+
+		if (lo < 1.f) {
+			thrust_to_att(Fb + dF * lo, matrix::Eulerf(qb).psi(), out);
+			_bud_cut = 1.f - lo;
+			_z_clip_pos = u > 0.f;
+			_z_clip_neg = u < 0.f;
+			u *= lo;
+			_l1z.uprev = u;
+
+			for (int i = 0; i < 2; i++) {
+				_xy_clip_pos[i] = _xy_clip_pos[i] || uxy[i] > 0.f;
+				_xy_clip_neg[i] = _xy_clip_neg[i] || uxy[i] < 0.f;
+				uxy[i] *= lo;
+				_l1xy[i].uprev = uxy[i];
+			}
+		}
+	}
+
+	{
+		const matrix::Vector3f Fo = matrix::Dcmf(matrix::Quatf(out.q_d)) * matrix::Vector3f(0.f, 0.f, out.thrust_body[2]);
+		_bud_tilt_prev = tilt_of(Fo);
+		_bud_norm_prev = Fo.norm();
+	}
+
 	out.timestamp = hrt_absolute_time();
 	_att_sp_pub.publish(out);
 
@@ -283,6 +358,7 @@ void MracPosLayer::Run()
 		sx.e[i] = l1 ? _l1xy[i].xt : _xy[i].e;
 		sx.u_ad[i] = uxy[i];
 		sx.sched_cut[i] = l1 ? 1.f - _l1xy[i].sc : 0.f;
+		sx.sched_cut[2] = _bud_cut;   // authority budget cut 1 - lambda (MRL_B_EN bit 1)
 
 		for (int j = 0; j < MracAxis::NPHI; j++) { sx.theta[i * MracAxis::NPHI + j] = l1 ? _l1xy[i].theta[j] : _xy[i].theta[j]; }
 

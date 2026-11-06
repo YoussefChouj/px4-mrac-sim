@@ -158,6 +158,13 @@ def ulog_metrics(path):
                 sc = np.stack([s[f'sched_cut[{a}]'][w] for a in range(2)], 1)
                 m['sched_cut_mean'] = float(np.mean(sc))
                 m['sched_cut_p95'] = float(np.percentile(np.max(sc, 1), 95))
+            if key == '' and 'dly_est' in s and w.any() and np.any(s['dly_est'][w] >= 0):  # online delay estimate
+                de = s['dly_est'][w]
+                de = de[de >= 0]
+                m['dly_est_end_ms'] = float(de[-1] * 1e3)
+                m['dly_est_med_ms'] = float(np.median(de[len(de) // 2:]) * 1e3)   # second half of the flight
+            if key == 'xy_' and w.any() and float(par.get('MRL_B_EN', 0)) >= 1:  # authority budget: share of time cut
+                m['bud_cut_frac'] = float(np.mean(s['sched_cut[2]'][w] > 1e-3))
     return m
 
 
@@ -200,9 +207,12 @@ def main():
             sm = json.loads((d / 'metrics.json').read_text()) if (d / 'metrics.json').exists() else {}
             m['pass'] = bool(sm.get('pass'))
             m['landed'] = bool(sm.get('metrics', {}).get('landed', False))  # a bool, so the float tables skip it
-            for k in ('max_hold_err_m', 'rms_track_err_m', 'max_tilt_deg'):
+            for k in ('max_hold_err_m', 'rms_track_err_m', 'max_tilt_deg', 'max_alt_err_m'):
                 if k in sm.get('metrics', {}):
                     m[k] = sm['metrics'][k]
+            for k, v in sm.get('metrics', {}).items():  # dense waypoint following (scenario.py step 'dense')
+                if k.startswith('dense_') and isinstance(v, (int, float)) and not isinstance(v, bool):
+                    m[k] = float(v)
             for k, v in sm.get('metrics', {}).items():  # dispersion draws (scenario.py draw), for sensitivity analysis
                 if k.startswith('d_') and isinstance(v, (int, float)):
                     m[k] = float(v)
