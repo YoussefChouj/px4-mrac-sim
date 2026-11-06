@@ -4,6 +4,7 @@ One folder per finished `arms` run: `all.json` (every flight; `run` = seed index
 
 | finished UTC | wave | branch | sha | pass / jobs | lost | plan / build / fly | folder |
 |---|---|---|---|---|---|---|---|
+| 2026-11-06 01:13 | Q-gz-crosscheck+Q-gz-video | claude/collect-landed | 86694c8 | 6 / 11 | 1 | success / success / failure | [Q-gz-crosscheck+Q-gz-video-42138795657](Q-gz-crosscheck+Q-gz-video-42138795657/) |
 | 2026-11-06 00:41 | Q-gz-crosscheck+Q-gz-video | claude/collect-landed | c28d855 | 0 / 11 | 11 | success / cancelled / cancelled | [Q-gz-crosscheck+Q-gz-video-42124975534](Q-gz-crosscheck+Q-gz-video-42124975534/) |
 | 2026-11-05 22:50 | Q-gz-crosscheck+Q-gz-video | claude/collect-landed | 4670815 | 0 / 11 | 11 | success / failure / skipped | [Q-gz-crosscheck+Q-gz-video-42123822795](Q-gz-crosscheck+Q-gz-video-42123822795/) |
 | 2026-11-05 22:43 | Q-gz-crosscheck+Q-gz-video | claude/collect-landed | 95acc71 | 0 / 11 | 11 | success / success / cancelled | [Q-gz-crosscheck+Q-gz-video-42106084872](Q-gz-crosscheck+Q-gz-video-42106084872/) |

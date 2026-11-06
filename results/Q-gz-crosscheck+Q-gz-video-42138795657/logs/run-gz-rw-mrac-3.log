@@ -1,0 +1,50 @@
+
+Running kernel seems to be up-to-date.
+
+No services need to be restarted.
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+/home/runner/work/px4-mrac-sim/px4-mrac-sim/vehicles/models/research_drone/model.sdf
+gz-rw-mrac-3 FAIL rate_rms_rp=3.6396 att_track_rms_deg=117.3585 tilt_geo_max_deg=180.0000 xy_err_rms_m=73.1665 xy_offset_m=56.6140 xy_spread_m=46.3486 motor_sat_frac=0.9777 sp_dt_p99_ms=216.0000 uad_max=0.3000 theta_end=0.0952 uad_clamp_frac=0.7813 theta_lim_frac=0.0000 sched_cut_mean=0.0000 sched_cut_p95=0.0000 att_uad_max=0.5000 att_theta_end=0.4663 att_uad_clamp_frac=0.8480 att_theta_lim_frac=0.0000 pos_uad_max=0.1500 pos_theta_end=0.1548 pos_uad_clamp_frac=0.8679 pos_theta_lim_frac=0.0000 xy_uad_max=2.0000 xy_theta_end=2.0009 xy_uad_clamp_frac=0.9129 xy_theta_lim_frac=0.9104 max_hold_err_m=5.9600 rms_track_err_m=9.4360 max_tilt_deg=179.9999
+
+metric                            gz-rw-mrac
+att_theta_end          0.4663 [0.466..0.466]
+att_theta_lim_frac       0.0000 [0.000..0.000]
+att_track_rms_deg 117.3585 [117.358..117.358]
+att_uad_clamp_frac       0.8480 [0.848..0.848]
+att_uad_max            0.5000 [0.500..0.500]
+max_hold_err_m         5.9600 [5.960..5.960]
+max_tilt_deg     179.9999 [180.000..180.000]
+motor_sat_frac         0.9777 [0.978..0.978]
+pos_theta_end          0.1548 [0.155..0.155]
+pos_theta_lim_frac       0.0000 [0.000..0.000]
+pos_uad_clamp_frac       0.8679 [0.868..0.868]
+pos_uad_max            0.1500 [0.150..0.150]
+rate_rms_rp            3.6396 [3.640..3.640]
+rms_track_err_m        9.4360 [9.436..9.436]
+sched_cut_mean         0.0000 [0.000..0.000]
+sched_cut_p95          0.0000 [0.000..0.000]
+sp_dt_p99_ms     216.0000 [216.000..216.000]
+theta_end              0.0952 [0.095..0.095]
+theta_lim_frac         0.0000 [0.000..0.000]
+tilt_geo_max_deg 180.0000 [180.000..180.000]
+uad_clamp_frac         0.7813 [0.781..0.781]
+uad_max                0.3000 [0.300..0.300]
+xy_err_rms_m        73.1665 [73.167..73.167]
+xy_offset_m         56.6140 [56.614..56.614]
+xy_spread_m         46.3486 [46.349..46.349]
+xy_theta_end           2.0009 [2.001..2.001]
+xy_theta_lim_frac       0.9104 [0.910..0.910]
+xy_uad_clamp_frac       0.9129 [0.913..0.913]
+xy_uad_max             2.0000 [2.000..2.000]
+pass                                     0/1
+-> /home/runner/work/px4-mrac-sim/px4-mrac-sim/out/gz-rw-mrac-r3
+
+== checks gz-rw-mrac-3
+FAIL max_hold_err_m: 5.96 (limit 3.0)
+FAIL max_tilt_deg: 180.0 (limit 45)
+PASS must_land: True (limit True)
