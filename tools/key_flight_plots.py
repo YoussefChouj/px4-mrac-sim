@@ -20,7 +20,7 @@ from pyulog import ULog
 
 COL = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100']  # categorical slots 1-4, validated (light surface #fcfcfb)
 # colour follows the arm, as in mc_figs.py; a label starting with the key picks it, else the slot order
-ARM_COL = {'PX4': COL[0], 'old MRAC': COL[1], 'L1 roles': COL[2], 'L1 +': COL[3]}
+ARM_COL = {'PX4': COL[0], 'old MRAC': COL[1], 'L1 roles': COL[2], 'L1 +': COL[3], 'L1 all loops': COL[3], 'L1 outer loops': COL[2]}
 DASH = ['-', (0, (5, 2)), (0, (1.5, 1.5))]
 INK, INK2, GRID, SURF = '#0b0b0b', '#52514e', '#e4e3df', '#fcfcfb'
 TOPICS = ['vehicle_local_position', 'trajectory_setpoint', 'vehicle_attitude', 'actuator_motors', 'vehicle_land_detected',

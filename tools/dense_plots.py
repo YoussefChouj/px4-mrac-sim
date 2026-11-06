@@ -18,7 +18,7 @@ import numpy as np
 from pyulog import ULog
 
 COL = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100']
-ARM_COL = {'PX4': COL[0], 'old MRAC': COL[1], 'L1 + tilt': COL[2], 'L1 + budget': COL[3]}
+ARM_COL = {'PX4': COL[0], 'old MRAC': COL[1], 'L1 + tilt': COL[2], 'L1 + budget': COL[3], 'L1 all loops': COL[3], 'L1 outer loops': COL[2]}
 DASH = ['-', (0, (5, 2)), (0, (1.5, 1.5)), (0, (6, 2, 1.5, 2))]
 INK, INK2, GRID, SURF = '#0b0b0b', '#52514e', '#e4e3df', '#fcfcfb'
 
@@ -38,7 +38,8 @@ def load(d):
     # the dense step is where the setpoint carries a velocity feed-forward
     vs = np.hypot(np.nan_to_num(sp['velocity[0]']), np.nan_to_num(sp['velocity[1]']))
     on = sp['timestamp'][vs > 0.05] * 1e-6
-    t0, t1 = on[0], on[-1]
+    gap = np.where(np.diff(on) > 1.0)[0]                                    # stray later setpoints (return, land)
+    t0, t1 = on[0], (on[gap[0]] if len(gap) else on[-1])
     T = lp['timestamp'] * 1e-6
     m = (T >= t0) & (T <= t1)
     P = np.stack([lp['x'][m], lp['y'][m], -lp['z'][m]], 1)

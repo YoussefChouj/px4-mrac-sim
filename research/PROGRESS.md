@@ -1010,3 +1010,24 @@ Paired medians [bootstrap 95 %]:
   level, where the outer L1 removes it; the inner loops are fast and well modelled, so their adaptation mainly reacts
   to transients (braking reversals) and overshoots. Next (R3): does the motor-fault mission need the inner layers,
   and the dense path with the outer-only stack; Gazebo S: 10 seeds, mission + dense, plus the dense-path video.
+
+## 2026-11-06 Wave R3: motor fault mission and the dense path with outer-only L1 (run 42175778673)
+Results `R3-outer-fault-dense-42175778673` (ebced6d, cached build), 30 paired seeds, draws as P/R/R2.
+Paired medians [bootstrap 95 %]:
+- Motor fault mission (hff3; payload, one motor loses thrust, gust): L1 outer only (l1obd) vs PX4: hold -0.41 m
+  [-0.64, -0.14], track -0.13 m [-0.17, -0.09], tilt -0.0 deg [-0.7, +0.9]; pass 28/30 vs PX4 27/30. L1 all loops
+  (l1bd) vs PX4: hold -0.41, track -0.14, tilt +4.3 deg [+3.3, +5.4]; pass 23/30 (7 flights over the 45 deg gate,
+  peak 51.6 deg on seed 27, at the motor fault). l1obd vs l1bd: hold 0.00 [-0.21, +0.19], track +0.01 (n.s.), tilt
+  -4.3 deg [-4.7, -3.9], altitude error peak +0.11 m [+0.01, +0.24]. The fault does not change the R2 reading: the
+  inner layers add tilt and no hold or track. Left failures: seed 15 (hold 10 m in every arm, thrust-limited as R2
+  seed 14), l1obd seed 3 (hold 3.16 m > 3.0), PX4 seeds 4 (3.58 m), 8 (45.8 deg).
+- Dense path (dn2, step IMU stream 250 Hz: 0 % waypoints skipped, setpoints 167 Hz): cross-track rms PX4 62.9 cm
+  (lap 1 at 1.5 m/s 43.8, lap 2 at 3 m/s 90.7), l1bd 46.7 cm, l1obd 48.7 cm. Paired l1bd -15.1 cm [-16.6, -13.6],
+  l1obd -13.7 cm [-15.5, -12.1]; peak -34 / -33 cm; l1obd vs l1bd +1.4 cm [+0.5, +2.3]. Pass 30/30 in all arms.
+  Along-track lag rms PX4 0.60 m / 1.52 m (lap 1 / lap 2), L1 0.52-0.53 / 1.32: most of what is left is the
+  baseline's reference lag (position P loop with velocity feed-forward only, no acceleration feed-forward), which
+  the outer L1 is not meant to remove (it cancels force disturbances, not the nominal loop's lag).
+- Figures: research/figs/R3-dense-seed1.png (seed 1 is the median paired dense gain), R3-motorfault-seed27.png
+  (all-loops L1 passes 51.6 deg just after the fault; outer-only peaks 43.6 deg).
+- Reading: outer-only L1 is the configuration to carry: it keeps the hold/track gain of the full stack (fault or
+  not) at PX4's tilt. Next: Gazebo wave S (10 seeds) checks the same ranking on a different simulator.
